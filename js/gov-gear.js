@@ -11,8 +11,8 @@ function getGovGearImageFileName(gearName, levelName) {
 		'Watch': 'cavalry_gear_2',
 		'Body': 'infantry_gear_1',
 		'Pant': 'infantry_gear_2',
-		'Belt': 'archer_gear_1',
-		'Shoe': 'archer_gear_2'
+		'Belt': 'archery_gear_1',
+		'Shoe': 'archery_gear_2'
 	};
 	const prefix = gearMap[gearName] || gearName.toLowerCase().replace(/ /g, '_');
 	// Parse the level name to extract color, tier, and stars
