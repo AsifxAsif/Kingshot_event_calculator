@@ -342,8 +342,8 @@ function refreshTroopsCalculations() {
 		const lvlSelect = document.getElementById(`troop_lvl_${safeId}`);
 		const qtyInput = document.getElementById(`troop_qty_${safeId}`);
 		const status = document.getElementById(`status_${safeId}`);
-		const isActive = document.getElementById(`active_${safeId}`)?.checked || false;
-		const speedupTroop = document.getElementById(`speed_${safeId}`)?.checked || false;
+		const activeCb = document.getElementById(`active_${safeId}`);
+		const speedCb = document.getElementById(`speed_${safeId}`);
 		if (!lvlSelect || !qtyInput || !status) continue;
 		
 		const level = parseInt(lvlSelect.value) || 0;
@@ -372,7 +372,7 @@ function refreshTroopsCalculations() {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
 			let finalSpeedupPoints = 0;
 			let actualSpeedupUsed = 0;
-			if (isActive && speedupTroop && totalTimeSeconds > 0) {
+			if (activeCb?.checked && speedCb?.checked && totalTimeSeconds > 0) {
 				const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
 				const speedKey = 'training_speedup';
 				const available = (vault[speedKey] || 0) - (runningLocked[speedKey] || 0);
@@ -390,14 +390,14 @@ function refreshTroopsCalculations() {
 			}
 			lockedUpgrades.set(upgradeKey, {
 				costTotals: JSON.parse(JSON.stringify(costTotals)),
-				stepPoints: stepPoints + (isActive ? finalSpeedupPoints : 0),
+				stepPoints: stepPoints + (activeCb?.checked ? finalSpeedupPoints : 0),
 				qty: quantity,
 				level: level,
-				speedupWasChecked: speedupTroop || false,
-				isActive: isActive || false,
+				speedupWasChecked: speedCb?.checked || false,
+				isActive: activeCb?.checked || false,
 				type: 'training'
 			});
-			if (isActive) {
+			if (activeCb?.checked) {
 				totalTroopPoints += stepPoints;
 				totalSpeedupPoints += finalSpeedupPoints;
 			}
@@ -407,7 +407,31 @@ function refreshTroopsCalculations() {
 			}
 		}
 		
-		displayTroopStatus(status, troopType, level, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked);
+		// ============================================
+		// DISABLE CHECKBOXES IF CAN'T AFFORD
+		// ============================================
+		if (activeCb) {
+			if (!canAfford || level === 0 || quantity === 0) {
+				activeCb.disabled = true;
+				activeCb.checked = false;
+				activeCb.parentElement.style.opacity = '0.5';
+			} else {
+				activeCb.disabled = false;
+				activeCb.parentElement.style.opacity = '1';
+			}
+		}
+		if (speedCb) {
+			if (!canAfford || level === 0 || quantity === 0 || totalTimeSeconds === 0) {
+				speedCb.disabled = true;
+				speedCb.checked = false;
+				speedCb.parentElement.style.opacity = '0.5';
+			} else {
+				speedCb.disabled = false;
+				speedCb.parentElement.style.opacity = '1';
+			}
+		}
+		
+		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked);
 		if (level > 0 && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
 				runningLocked[res] = (runningLocked[res] || 0) + amt;
@@ -424,8 +448,8 @@ function refreshTroopsCalculations() {
 		const toSelect = document.getElementById(`promo_to_${safeId}`);
 		const qtyInput = document.getElementById(`promo_qty_${safeId}`);
 		const status = document.getElementById(`promo_status_${safeId}`);
-		const isActive = document.getElementById(`promo_active_${safeId}`)?.checked || false;
-		const speedupTroop = document.getElementById(`promo_speed_${safeId}`)?.checked || false;
+		const activeCb = document.getElementById(`promo_active_${safeId}`);
+		const speedCb = document.getElementById(`promo_speed_${safeId}`);
 		if (!fromSelect || !toSelect || !qtyInput || !status) continue;
 		
 		const fromLevel = parseInt(fromSelect.value) || 0;
@@ -442,8 +466,14 @@ function refreshTroopsCalculations() {
 			if (toLevel <= fromLevel) {
 				status.className = "status-pane status-warning";
 				status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
-				const activeCb = document.getElementById(`promo_active_${safeId}`);
-				if (activeCb) activeCb.checked = false;
+				if (activeCb) {
+					activeCb.checked = false;
+					activeCb.disabled = true;
+				}
+				if (speedCb) {
+					speedCb.checked = false;
+					speedCb.disabled = true;
+				}
 				continue;
 			}
 			const currentPoints = getTroopPointsForLevel(troopType, fromLevel);
@@ -465,7 +495,7 @@ function refreshTroopsCalculations() {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
 			let finalSpeedupPoints = 0;
 			let actualSpeedupUsed = 0;
-			if (isActive && speedupTroop && totalTimeSeconds > 0) {
+			if (activeCb?.checked && speedCb?.checked && totalTimeSeconds > 0) {
 				const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
 				const speedKey = 'training_speedup';
 				const available = (vault[speedKey] || 0) - (runningLocked[speedKey] || 0);
@@ -483,16 +513,16 @@ function refreshTroopsCalculations() {
 			}
 			lockedUpgrades.set(upgradeKey, {
 				costTotals: JSON.parse(JSON.stringify(costTotals)),
-				stepPoints: stepPoints + (isActive ? finalSpeedupPoints : 0),
+				stepPoints: stepPoints + (activeCb?.checked ? finalSpeedupPoints : 0),
 				qty: quantity,
 				fromLevel: fromLevel,
 				toLevel: toLevel,
-				speedupWasChecked: speedupTroop || false,
-				isActive: isActive || false,
+				speedupWasChecked: speedCb?.checked || false,
+				isActive: activeCb?.checked || false,
 				type: 'promotion',
 				pointsPerUnit: pointsPerUnit
 			});
-			if (isActive) {
+			if (activeCb?.checked) {
 				totalTroopPoints += stepPoints;
 				totalSpeedupPoints += finalSpeedupPoints;
 			}
@@ -502,7 +532,31 @@ function refreshTroopsCalculations() {
 			}
 		}
 		
-		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked, pointsPerUnit);
+		// ============================================
+		// DISABLE CHECKBOXES IF CAN'T AFFORD
+		// ============================================
+		if (activeCb) {
+			if (!canAfford || fromLevel === 0 || toLevel === 0 || quantity === 0 || toLevel <= fromLevel) {
+				activeCb.disabled = true;
+				activeCb.checked = false;
+				activeCb.parentElement.style.opacity = '0.5';
+			} else {
+				activeCb.disabled = false;
+				activeCb.parentElement.style.opacity = '1';
+			}
+		}
+		if (speedCb) {
+			if (!canAfford || fromLevel === 0 || toLevel === 0 || quantity === 0 || toLevel <= fromLevel || totalTimeSeconds === 0) {
+				speedCb.disabled = true;
+				speedCb.checked = false;
+				speedCb.parentElement.style.opacity = '0.5';
+			} else {
+				speedCb.disabled = false;
+				speedCb.parentElement.style.opacity = '1';
+			}
+		}
+		
+		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked, pointsPerUnit);
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
 				runningLocked[res] = (runningLocked[res] || 0) + amt;
