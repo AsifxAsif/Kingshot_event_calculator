@@ -61,7 +61,6 @@ function getForgehammerUpgradeSteps(dataArray, fromLevel, toLevel) {
 	const steps = [];
 	const fromStr = String(fromLevel);
 	const toStr = String(toLevel);
-
 	// If from is "0", start from the beginning
 	if (fromStr === '0') {
 		for (const item of dataArray) {
@@ -73,8 +72,8 @@ function getForgehammerUpgradeSteps(dataArray, fromLevel, toLevel) {
 		}
 		return steps;
 	}
-
-	let start = -1, end = -1;
+	let start = -1,
+		end = -1;
 	for (let i = 0; i < dataArray.length; i++) {
 		let lvl = dataArray[i].level ?? dataArray[i].target_lvl ?? dataArray[i].target;
 		if (lvl !== undefined && lvl !== 0 && String(lvl) === fromStr) start = i;
@@ -104,7 +103,6 @@ function createForgehammerCard(name, dataArray) {
 	const toLevels = getForgehammerTargetLevels(dataArray);
 	const safeId = `forgehammer_${name.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
-	
 	// Build current level dropdown
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	// Add level 0 first
@@ -119,7 +117,6 @@ function createForgehammerCard(name, dataArray) {
 	if (highestLevel && !fromLevels.includes(highestLevel)) {
 		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	// Build target dropdown - SHOW ALL LEVELS initially
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	// Add all levels from toLevels
@@ -129,7 +126,6 @@ function createForgehammerCard(name, dataArray) {
 	if (highestLevel && !toLevels.includes(highestLevel)) {
 		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	const imgUrl = getForgehammerImageFileName(name);
 	return `<div class="item-card" data-type="forgehammer" data-name="${name}" data-id="${safeId}">
         <div class="item-card-header">
@@ -207,7 +203,6 @@ function refreshCalculations() {
 			to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-
 		// Check if no levels are selected (placeholder)
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
@@ -218,7 +213,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-
 		// Check if already at max
 		const toLevels = getForgehammerTargetLevels(dataArray);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
@@ -232,7 +226,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-
 		if (String(from) === String(to)) {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
@@ -242,7 +235,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-
 		if (isLocked) {
 			const locked = lockedUpgrades.get(safeId);
 			const {
@@ -272,7 +264,6 @@ function refreshCalculations() {
 			if (activeCb) activeCb.disabled = false;
 			continue;
 		}
-
 		const otherLocked = {};
 		for (const [oid, ld] of lockedUpgrades.entries())
 			if (oid !== safeId) {
@@ -343,12 +334,10 @@ function onForgehammerCurrentSelect(safeId) {
 	const curr = document.getElementById(`curr_${safeId}`);
 	const targ = document.getElementById(`targ_${safeId}`);
 	if (!curr || !targ) return;
-	
 	const from = curr.value;
 	const dataArray = getForgehammerData();
 	const toLevels = getForgehammerTargetLevels(dataArray);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-	
 	// If "Current Level" placeholder is selected, show ALL levels in target
 	if (!from || from === '') {
 		// Reset target dropdown with ALL levels
@@ -370,10 +359,8 @@ function onForgehammerCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-	
 	const currentNum = parseFloat(from);
 	const next = getForgehammerNextLevel(dataArray, from);
-	
 	// Dynamically rebuild target dropdown - only show levels above current
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
@@ -389,7 +376,6 @@ function onForgehammerCurrentSelect(safeId) {
 		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
-	
 	// Auto-select the next logical level if it exists
 	if (next) {
 		let found = false;
@@ -406,7 +392,6 @@ function onForgehammerCurrentSelect(safeId) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
-	
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);
@@ -431,13 +416,11 @@ function onForgehammerUpgradeCheckboxChange(safeId, isChecked) {
 		if (!curr || !targ) return;
 		const from = curr.value,
 			to = targ.value;
-
 		if (!from || from === '' || !to || to === '' || String(from) === String(to)) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = false;
 			return;
 		}
-
 		const vault = getCurrentVault();
 		let otherLocked = {};
 		for (const [oid, ld] of lockedUpgrades.entries())
@@ -508,29 +491,24 @@ function loadForgehammer() {
 			}
 		}
 	}
-
 	// ============================================
 	// FORCE 2 COLUMN LAYOUT FOR FORGEHAMMER PAGE
 	// ============================================
 	if (window._forgehammerResizeHandler) {
 		window.removeEventListener('resize', window._forgehammerResizeHandler);
 	}
-
-	const resizeHandler = function () {
+	const resizeHandler = function() {
 		if (window.innerWidth > 768) {
 			container.style.gridTemplateColumns = 'repeat(2, 1fr)';
 		} else {
 			container.style.gridTemplateColumns = '1fr';
 		}
 	};
-
 	window._forgehammerResizeHandler = resizeHandler;
 	resizeHandler();
 	window.addEventListener('resize', resizeHandler);
-
 	refreshCalculations();
 }
-
 window.loadForgehammer = loadForgehammer;
 window.refreshCalculations = refreshCalculations;
 window.onForgehammerCurrentSelect = onForgehammerCurrentSelect;

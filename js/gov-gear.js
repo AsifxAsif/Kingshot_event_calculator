@@ -720,6 +720,26 @@ function loadGovGear() {
 			}
 		});
 	}
+	// ============================================
+	// FORCE 2 COLUMN LAYOUT FOR GOV GEAR PAGE
+	// ============================================
+	// Remove any existing resize listener to prevent duplicates
+	if (window._govGearResizeHandler) {
+		window.removeEventListener('resize', window._govGearResizeHandler);
+	}
+	const resizeHandler = function() {
+		if (window.innerWidth > 768) {
+			container.style.gridTemplateColumns = 'repeat(2, 1fr)';
+		} else {
+			container.style.gridTemplateColumns = '1fr';
+		}
+	};
+	// Store reference to remove later
+	window._govGearResizeHandler = resizeHandler;
+	// Apply initial layout
+	resizeHandler();
+	// Add resize listener
+	window.addEventListener('resize', resizeHandler);
 	refreshCalculations();
 }
 // ============================================

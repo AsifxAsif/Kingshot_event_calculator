@@ -24,7 +24,6 @@ function getAllPets() {
 	}
 	return petList;
 }
-
 // Convert pet level string to a numeric coordinate for sequence sorting
 // Handles "10_Advancement" as 10.5 so it evaluates immediately after level 10
 function convertPetLevelToNumeric(level) {
@@ -38,7 +37,6 @@ function convertPetLevelToNumeric(level) {
 	const num = parseFloat(levelStr);
 	return isNaN(num) ? 0 : num;
 }
-
 // Generates sorted source options for the 'Current Level' Dropdown
 function getPetLevels(dataArray) {
 	if (!dataArray?.length) return ["0"];
@@ -54,7 +52,6 @@ function getPetLevels(dataArray) {
 		return convertPetLevelToNumeric(a) - convertPetLevelToNumeric(b);
 	});
 }
-
 // Generates sorted target options for the 'Target Level' Dropdown
 function getPetTargetLevels(dataArray) {
 	if (!dataArray?.length) return [];
@@ -78,7 +75,6 @@ function getPetUpgradeSteps(dataArray, fromLevel, toLevel) {
 	if (fromStr === 'max') fromStr = maxLvl;
 	if (toStr === 'max') toStr = maxLvl;
 	if (fromStr === toStr) return steps;
-
 	// Build exact sequential lookup map
 	const nextMap = {};
 	for (const item of dataArray) {
@@ -88,7 +84,6 @@ function getPetUpgradeSteps(dataArray, fromLevel, toLevel) {
 			nextMap[curr] = next;
 		}
 	}
-
 	// Step link traversal
 	let current = fromStr;
 	let safety = 0;
@@ -106,7 +101,6 @@ function getPetUpgradeSteps(dataArray, fromLevel, toLevel) {
 		current = next;
 		safety++;
 	}
-
 	// Fallback to array indices if link sequence drops out
 	if (current !== toStr) {
 		let startIndex = -1;
@@ -154,7 +148,6 @@ function getMaxLevel(dataArray) {
 	const lastItem = dataArray[dataArray.length - 1];
 	return String(lastItem.target_lvl ?? lastItem.target ?? lastItem.level).trim();
 }
-
 // Clean pass-through: preserves exactly "10_Advancement", "20_Advancement" inside UI selections
 function getDisplayLevel(level) {
 	return String(level).trim();
@@ -167,7 +160,6 @@ function createPetCard(pet) {
 	const safeId = `pet_${pet.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const imgUrl = getPetImageFileName(pet.name);
 	const maxLvl = getMaxLevel(dataArray);
-
 	// Build current level dropdown
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	// Add level 0 first
@@ -182,7 +174,6 @@ function createPetCard(pet) {
 	if (maxLvl && !fromLevels.includes(maxLvl)) {
 		currOpts += `<option value="${maxLvl}">${getDisplayLevel(maxLvl)}</option>`;
 	}
-
 	// Build target dropdown - SHOW ALL LEVELS initially
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
@@ -193,7 +184,6 @@ function createPetCard(pet) {
 	if (maxLvl && maxLvl !== "0" && !toLevels.includes(maxLvl)) {
 		targOpts += `<option value="${maxLvl}">${getDisplayLevel(maxLvl)}</option>`;
 	}
-
 	return `<div class="item-card" data-type="pet" data-name="${pet.name}" data-id="${safeId}">
         <div class="item-card-header">
             <img src="${imgUrl}" onerror="this.style.display='none';">
@@ -211,7 +201,6 @@ function createPetCard(pet) {
         </div>
     </div>`;
 }
-
 // Helper function to look up dynamic event points for hitting advancement targets
 function getPetAdvancementPoints(targetLevelStr) {
 	const levelStr = String(targetLevelStr).toLowerCase().trim();
@@ -298,7 +287,6 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-
 		// Check if no levels are selected (placeholder)
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
@@ -309,7 +297,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-
 		const maxLvl = getMaxLevel(pet.data);
 		const isMax = String(from).trim() === 'max' || String(from).trim() === String(maxLvl).trim();
 		if (isMax) {
@@ -435,7 +422,6 @@ function onPetCurrentSelect(safeId) {
 	const petData = getPetData(card.dataset.name);
 	const toLevels = getPetTargetLevels(petData);
 	const maxLvl = getMaxLevel(petData);
-
 	// If "Current Level" placeholder is selected, show ALL levels in target
 	if (!from || from === '') {
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
@@ -454,7 +440,6 @@ function onPetCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-
 	if (from === 'max') {
 		if (lockedUpgrades.has(safeId)) {
 			lockedUpgrades.delete(safeId);
@@ -464,10 +449,8 @@ function onPetCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-
 	const currentNum = convertPetLevelToNumeric(from);
 	const nextLevelVal = getPetNextLevel(petData, from);
-
 	// Dynamically rebuild target dropdown - only show levels above current
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
@@ -488,7 +471,6 @@ function onPetCurrentSelect(safeId) {
 		dynamicTargOpts = `<option value="max" selected>${getDisplayLevel(maxLvl)}</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
-
 	// Auto-select the next logical level if it exists
 	if (nextLevelVal !== null && nextLevelVal !== undefined) {
 		let found = false;
@@ -505,7 +487,6 @@ function onPetCurrentSelect(safeId) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
-
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);
@@ -537,7 +518,6 @@ function onPetUpgradeCheckboxChange(safeId, isChecked) {
 		const from = curr.value;
 		const to = targ.value;
 		const maxLvl = getMaxLevel(pet.data);
-
 		// Validate selections
 		if (!from || from === '' || !to || to === '') {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -626,7 +606,6 @@ function loadPets() {
 	}
 	refreshCalculations();
 }
-
 // ============================================
 // EXPORTS
 // ============================================

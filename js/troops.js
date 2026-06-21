@@ -1,7 +1,6 @@
 // ============================================
 // TROOPS - TRAINING & PROMOTION
 // ============================================
-
 // Get training data for a troop type
 function getTroopsTrainingData(type) {
 	const training = window.gameDB.Troops?.Troops?.Training;
@@ -11,7 +10,6 @@ function getTroopsTrainingData(type) {
 	if (type === 'Archer') return training.Archer || [];
 	return null;
 }
-
 // Get promotion data for a troop type
 function getTroopsPromotionData(type) {
 	const promoting = window.gameDB.Troops?.Troops?.Promoting;
@@ -35,7 +33,6 @@ function validateNumberInput(input) {
 		input.value = value;
 	}
 }
-
 // ============================================
 // IMAGE MAPPING FOR TROOPS
 // ============================================
@@ -52,7 +49,6 @@ function getTroopImageFileName(troopType) {
 	else if (troopType.includes('Archer')) baseType = 'Archer';
 	return `assets/${imageMap[baseType] || 'infantry.png'}`;
 }
-
 // ============================================
 // CREATE INDIVIDUAL TROOP CARDS (for use inside group)
 // ============================================
@@ -90,7 +86,6 @@ function createPromotionIndividualCard(troopType) {
 	const safeId = `promotion_${troopType.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const promotionData = getTroopsPromotionData(troopType);
 	if (!promotionData || promotionData.length === 0) return '';
-	
 	const fromTiers = [];
 	const allTiers = [];
 	for (const item of promotionData) {
@@ -104,14 +99,12 @@ function createPromotionIndividualCard(troopType) {
 	fromTiers.sort((a, b) => a - b);
 	allTiers.sort((a, b) => a - b);
 	const highestTier = allTiers.length > 0 ? Math.max(...allTiers) : 0;
-	
 	// Build current tier dropdown with placeholder
 	let fromOptions = '<option value="" disabled selected hidden>Current Tier</option>';
 	for (const tier of fromTiers) {
 		if (tier === highestTier) continue;
 		fromOptions += `<option value="${tier}">Tier ${tier}</option>`;
 	}
-	
 	// Build target tier dropdown - placeholder is selected AND NOT disabled
 	let toOptions = '<option value="" selected hidden>Target Tier</option>';
 	const firstTier = fromTiers.length > 0 ? fromTiers[0] : 0;
@@ -120,7 +113,6 @@ function createPromotionIndividualCard(troopType) {
 			toOptions += `<option value="${tier}">Tier ${tier}</option>`;
 		}
 	}
-	
 	const imgUrl = getTroopImageFileName(troopType);
 	return `<div class="item-card troop-card" data-type="promotion" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: #d8d8d8;">
@@ -147,7 +139,6 @@ function createPromotionIndividualCard(troopType) {
         </div>
     </div>`;
 }
-
 // ============================================
 // CREATE GROUP CARDS
 // ============================================
@@ -179,7 +170,6 @@ function onPromotionCurrentSelect(safeId, troopType) {
 	const from = parseInt(fromSelect.value) || 0;
 	const promotionData = getTroopsPromotionData(troopType);
 	if (!promotionData) return;
-	
 	const fromTiers = [];
 	const allTiers = [];
 	for (const item of promotionData) {
@@ -193,7 +183,6 @@ function onPromotionCurrentSelect(safeId, troopType) {
 	fromTiers.sort((a, b) => a - b);
 	allTiers.sort((a, b) => a - b);
 	const highestTier = allTiers.length > 0 ? Math.max(...allTiers) : 0;
-	
 	// If no current tier selected (placeholder), show all available target tiers with placeholder
 	if (from === 0 || from === '') {
 		let toOptions = '<option value="" selected hidden>Target Tier</option>';
@@ -204,7 +193,6 @@ function onPromotionCurrentSelect(safeId, troopType) {
 		refreshTroopsCalculations();
 		return;
 	}
-	
 	// Rebuild target dropdown - only show tiers greater than current
 	let toOptions = '<option value="" selected hidden>Target Tier</option>';
 	let hasHigherLevels = false;
@@ -219,14 +207,12 @@ function onPromotionCurrentSelect(safeId, troopType) {
 		toOptions += `<option value="" disabled>No higher tiers available</option>`;
 	}
 	toSelect.innerHTML = toOptions;
-	
 	// Auto-select the first higher tier if it exists
 	if (hasHigherLevels && toSelect.options.length > 1) {
 		toSelect.selectedIndex = 1; // Skip the placeholder
 	}
 	refreshTroopsCalculations();
 }
-
 // ============================================
 // RESOURCE AND TIME CALCULATIONS
 // ============================================
@@ -324,7 +310,6 @@ function getBuffedTrainingTime(originalSeconds) {
 	}
 	return originalSeconds;
 }
-
 // ============================================
 // REFRESH CALCULATIONS
 // ============================================
@@ -333,7 +318,6 @@ function refreshTroopsCalculations() {
 	let runningLocked = {};
 	let totalTroopPoints = 0;
 	let totalSpeedupPoints = 0;
-	
 	// Process Training Cards
 	const cards = document.querySelectorAll('.troop-card[data-type="troops"]');
 	for (const card of cards) {
@@ -345,7 +329,6 @@ function refreshTroopsCalculations() {
 		const activeCb = document.getElementById(`active_${safeId}`);
 		const speedCb = document.getElementById(`speed_${safeId}`);
 		if (!lvlSelect || !qtyInput || !status) continue;
-		
 		const level = parseInt(lvlSelect.value) || 0;
 		let rawQty = qtyInput.value.replace(/,/g, '');
 		const quantity = parseFloat(rawQty) || 0;
@@ -353,7 +336,6 @@ function refreshTroopsCalculations() {
 		let canAfford = true;
 		let stepPoints = 0;
 		let totalTimeSeconds = 0;
-		
 		if (level > 0 && quantity > 0) {
 			const troopPoints = getTroopPointsForLevel(troopType, level);
 			stepPoints = quantity * troopPoints;
@@ -366,7 +348,6 @@ function refreshTroopsCalculations() {
 			}
 			totalTimeSeconds = getTroopTrainingTime(troopType, level, quantity);
 		}
-		
 		const upgradeKey = safeId;
 		if (level > 0 && quantity > 0) {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
@@ -406,7 +387,6 @@ function refreshTroopsCalculations() {
 				lockedUpgrades.delete(upgradeKey);
 			}
 		}
-		
 		// ============================================
 		// DISABLE CHECKBOXES IF CAN'T AFFORD
 		// ============================================
@@ -430,7 +410,6 @@ function refreshTroopsCalculations() {
 				speedCb.parentElement.style.opacity = '1';
 			}
 		}
-		
 		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked);
 		if (level > 0 && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
@@ -438,7 +417,6 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
-	
 	// Process Promotion Cards
 	const promoCards = document.querySelectorAll('.troop-card[data-type="promotion"]');
 	for (const card of promoCards) {
@@ -451,7 +429,6 @@ function refreshTroopsCalculations() {
 		const activeCb = document.getElementById(`promo_active_${safeId}`);
 		const speedCb = document.getElementById(`promo_speed_${safeId}`);
 		if (!fromSelect || !toSelect || !qtyInput || !status) continue;
-		
 		const fromLevel = parseInt(fromSelect.value) || 0;
 		const toLevel = parseInt(toSelect.value) || 0;
 		let rawQty = qtyInput.value.replace(/,/g, '');
@@ -461,7 +438,6 @@ function refreshTroopsCalculations() {
 		let stepPoints = 0;
 		let totalTimeSeconds = 0;
 		let pointsPerUnit = 0;
-		
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0) {
 			if (toLevel <= fromLevel) {
 				status.className = "status-pane status-warning";
@@ -489,7 +465,6 @@ function refreshTroopsCalculations() {
 			}
 			totalTimeSeconds = getPromotionTime(troopType, fromLevel, toLevel, quantity);
 		}
-		
 		const upgradeKey = safeId;
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0) {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
@@ -531,7 +506,6 @@ function refreshTroopsCalculations() {
 				lockedUpgrades.delete(upgradeKey);
 			}
 		}
-		
 		// ============================================
 		// DISABLE CHECKBOXES IF CAN'T AFFORD
 		// ============================================
@@ -555,7 +529,6 @@ function refreshTroopsCalculations() {
 				speedCb.parentElement.style.opacity = '1';
 			}
 		}
-		
 		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked, pointsPerUnit);
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
@@ -563,7 +536,6 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
-	
 	const totalScore = totalTroopPoints + totalSpeedupPoints;
 	document.getElementById('globalScoreDisplay').innerText = totalScore.toLocaleString();
 	if (typeof saveCurrentPageScore === 'function') {
@@ -575,7 +547,6 @@ function refreshTroopsCalculations() {
 	if (speedupPointsElem) speedupPointsElem.innerText = totalSpeedupPoints.toLocaleString();
 	window.dispatchEvent(new Event('troopsUpdate'));
 }
-
 // ============================================
 // DISPLAY HELPER FUNCTIONS
 // ============================================
@@ -694,7 +665,6 @@ function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity,
 		status.innerHTML = `⚙️ Select current tier, target tier, and quantity`;
 	}
 }
-
 // ============================================
 // HELPER FUNCTIONS FOR HTML BUILDING
 // ============================================
@@ -737,7 +707,6 @@ function buildPointsDisplay(troopPoints, speedupPoints) {
 	}
 	return '';
 }
-
 // ============================================
 // LOAD TROOPS
 // ============================================
@@ -746,7 +715,6 @@ function loadTroops() {
 	if (!container) return;
 	container.innerHTML = '';
 	const troopTypes = ['Infantry', 'Cavalry', 'Archer'];
-	
 	// ============================================
 	// BUILD TRAINING GROUP
 	// ============================================
@@ -755,7 +723,6 @@ function loadTroops() {
 		trainingHtml += createTroopIndividualCard(troopType + ' Tiers');
 	}
 	container.innerHTML += createTroopGroupCard('TRAINING', trainingHtml);
-	
 	// ============================================
 	// BUILD PROMOTION GROUP
 	// ============================================
@@ -767,7 +734,6 @@ function loadTroops() {
 	if (promotionHtml) {
 		container.innerHTML += createTroopGroupCard('PROMOTION', promotionHtml);
 	}
-	
 	// ============================================
 	// RESTORE ALL TROOPS STATE FROM LOCKED UPGRADES
 	// ============================================
@@ -850,7 +816,6 @@ function loadTroops() {
 			}
 		}
 	}
-	
 	// ============================================
 	// FORCE 2 COLUMN LAYOUT FOR TROOPS PAGE
 	// ============================================
@@ -871,12 +836,10 @@ function loadTroops() {
 	resizeHandler();
 	// Add resize listener
 	window.addEventListener('resize', resizeHandler);
-	
 	setTimeout(() => {
 		refreshTroopsCalculations();
 	}, 50);
 }
-
 // ============================================
 // EXPORTS
 // ============================================

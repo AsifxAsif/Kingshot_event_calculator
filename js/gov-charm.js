@@ -283,12 +283,10 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 		'Boot': 'assets/archer.png'
 	};
 	const iconPath = iconMap[groupName] || 'assets/infantry.png';
-	
 	let charmsHtml = '';
 	for (let i = 0; i < charmNames.length; i++) {
 		charmsHtml += createIndividualCharmCard(charmNames[i], i + 1, dataArray);
 	}
-	
 	return `
         <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
             <div class="item-card-header" style="background: #c8c8c8; border-bottom: 1px solid #888; display: flex; align-items: center; gap: 10px;">
@@ -770,6 +768,26 @@ function loadGovCharm() {
 			}
 		});
 	}
+	// ============================================
+	// FORCE 2 COLUMN LAYOUT FOR GOV CHARM PAGE
+	// ============================================
+	// Remove any existing resize listener to prevent duplicates
+	if (window._govCharmResizeHandler) {
+		window.removeEventListener('resize', window._govCharmResizeHandler);
+	}
+	const resizeHandler = function() {
+		if (window.innerWidth > 768) {
+			container.style.gridTemplateColumns = 'repeat(2, 1fr)';
+		} else {
+			container.style.gridTemplateColumns = '1fr';
+		}
+	};
+	// Store reference to remove later
+	window._govCharmResizeHandler = resizeHandler;
+	// Apply initial layout
+	resizeHandler();
+	// Add resize listener
+	window.addEventListener('resize', resizeHandler);
 	refreshCalculations();
 }
 // ============================================

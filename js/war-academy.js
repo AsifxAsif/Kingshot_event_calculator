@@ -152,7 +152,6 @@ function getAcademyNextLevel(dataArray, fromLevel) {
 	}
 	return null;
 }
-
 // ============================================
 // CREATE INDIVIDUAL RESEARCH CARD (for use inside group)
 // ============================================
@@ -166,19 +165,16 @@ function createAcademyIndividualCard(item, dataArray) {
 		fromLevels.push(maxTargetLvl);
 		fromLevels.sort((a, b) => parseFloat(a) - parseFloat(b));
 	}
-
 	// Build current level dropdown
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	for (let i = 0; i < fromLevels.length; i++) {
 		currOpts += `<option value="${fromLevels[i]}">${fromLevels[i]}</option>`;
 	}
-
 	// Build target dropdown - SHOW ALL LEVELS (NO "Max" option)
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
 		targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
 	}
-
 	const imgUrl = getWarAcademyImageFileName(item.displayName);
 	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: #d8d8d8;">
@@ -202,7 +198,6 @@ function createAcademyIndividualCard(item, dataArray) {
         </div>
     </div>`;
 }
-
 // ============================================
 // CREATE GROUP CARD (contains multiple research items)
 // ============================================
@@ -492,7 +487,6 @@ function onAcademyCurrentSelect(safeId, name) {
 	if (!item) return;
 	const toLevels = getAcademyTargetLevels(item.data);
 	const absoluteMaxLevel = String(toLevels[toLevels.length - 1]);
-
 	// If "Current Level" placeholder is selected, show ALL levels
 	if (!from || from === '') {
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
@@ -514,7 +508,6 @@ function onAcademyCurrentSelect(safeId, name) {
 		refreshCalculations();
 		return;
 	}
-
 	if (from === absoluteMaxLevel) {
 		let maxTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		maxTargOpts += `<option value="${absoluteMaxLevel}" selected>${absoluteMaxLevel}</option>`;
@@ -534,10 +527,8 @@ function onAcademyCurrentSelect(safeId, name) {
 		refreshCalculations();
 		return;
 	}
-
 	const currentNum = parseFloat(from);
 	const next = getAcademyNextLevel(item.data, from);
-
 	// Dynamically rebuild target dropdown - only show levels above current (NO "Max" option)
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
@@ -547,7 +538,6 @@ function onAcademyCurrentSelect(safeId, name) {
 		}
 	}
 	targ.innerHTML = dynamicTargOpts;
-
 	// Auto-select the next logical level if it exists
 	if (next !== null && next !== undefined) {
 		for (let i = 0; i < targ.options.length; i++) {
@@ -559,7 +549,6 @@ function onAcademyCurrentSelect(safeId, name) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
-
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		if (activeCb) activeCb.checked = false;
@@ -689,7 +678,6 @@ function onAcademySpeedupChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-
 // ============================================
 // LOAD WAR ACADEMY
 // ============================================
@@ -698,7 +686,6 @@ function loadWarAcademy() {
 	if (!container) return;
 	container.innerHTML = '';
 	const allItems = getWarAcademyData();
-
 	// Define category groups
 	const categoryGroups = {
 		'INFANTRY': {
@@ -714,7 +701,6 @@ function loadWarAcademy() {
 			icon: 'assets/archer.png'
 		}
 	};
-
 	// Build group cards
 	for (const [categoryName, group] of Object.entries(categoryGroups)) {
 		const categoryItems = [];
@@ -728,7 +714,6 @@ function loadWarAcademy() {
 			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
 		}
 	}
-
 	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('academy_')) {
@@ -755,7 +740,6 @@ function loadWarAcademy() {
 	}
 	refreshCalculations();
 }
-
 window.loadWarAcademy = loadWarAcademy;
 window.refreshCalculations = refreshCalculations;
 window.onAcademyCurrentSelect = onAcademyCurrentSelect;
