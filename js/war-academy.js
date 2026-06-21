@@ -125,9 +125,12 @@ function getAcademyUpgradeSteps(dataArray, fromLevel, toLevel) {
 }
 
 function getAcademyNextLevel(dataArray, fromLevel) {
-	if (fromLevel === 'max') {
-		const allLevels = getAcademyTargetLevels(dataArray);
-		return allLevels[allLevels.length - 1];
+	// If fromLevel is already the highest, return null
+	const allLevels = getAcademyTargetLevels(dataArray);
+	if (!allLevels.length) return null;
+	const highestLevel = allLevels[allLevels.length - 1];
+	if (fromLevel === 'max' || String(fromLevel) === String(highestLevel)) {
+		return null;
 	}
 	for (let i = 0; i < dataArray.length; i++) {
 		let prev = dataArray[i].current_lvl ?? dataArray[i].current;
@@ -141,7 +144,6 @@ function getAcademyNextLevel(dataArray, fromLevel) {
 			}
 		}
 	}
-	const allLevels = getAcademyTargetLevels(dataArray);
 	const currentNum = parseFloat(fromLevel);
 	for (const lvl of allLevels) {
 		if (parseFloat(lvl) > currentNum) {
@@ -151,7 +153,10 @@ function getAcademyNextLevel(dataArray, fromLevel) {
 	return null;
 }
 
-function createAcademyCard(item, dataArray) {
+// ============================================
+// CREATE INDIVIDUAL RESEARCH CARD (for use inside group)
+// ============================================
+function createAcademyIndividualCard(item, dataArray) {
 	if (!dataArray?.length) return '';
 	const fromLevels = getAcademyLevels(dataArray);
 	const toLevels = getAcademyTargetLevels(dataArray);
@@ -161,48 +166,65 @@ function createAcademyCard(item, dataArray) {
 		fromLevels.push(maxTargetLvl);
 		fromLevels.sort((a, b) => parseFloat(a) - parseFloat(b));
 	}
+
+	// Build current level dropdown
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	for (let i = 0; i < fromLevels.length; i++) {
 		currOpts += `<option value="${fromLevels[i]}">${fromLevels[i]}</option>`;
 	}
+
+	// Build target dropdown - SHOW ALL LEVELS (NO "Max" option)
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
 		targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
 	}
-	targOpts += `<option value="max">Max (Highest)</option>`;
+
 	const imgUrl = getWarAcademyImageFileName(item.displayName);
-	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}">
-        <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';">
-            <span>${item.displayName}</span>
+	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}" style="margin-bottom: 10px;">
+        <div class="item-card-header" style="padding: 8px 12px; background: #d8d8d8;">
+            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;">
+            <span style="font-size: 0.85rem;">${item.displayName}</span>
         </div>
-        <div class="item-card-body">
-            <div class="level-controls">
+        <div class="item-card-body" style="padding: 8px 12px;">
+            <div class="level-controls" style="gap: 8px;">
                 <select id="curr_${safeId}" onchange="onAcademyCurrentSelect('${safeId}', '${item.displayName}')">${currOpts}</select>
                 <select id="targ_${safeId}" onchange="onAcademyTargetChange('${safeId}')">${targOpts}</select>
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onAcademyUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade</label>
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="onAcademySpeedupChange('${safeId}', this.checked)"> ⏩ +Speedups</label>
+            <div class="checkbox-group" style="gap: 8px;">
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onAcademyUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade
+                </label>
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="onAcademySpeedupChange('${safeId}', this.checked)"> ⏩ +Speedups
+                </label>
             </div>
-            <div id="status_${safeId}" class="status-pane">⚙️ Select current & target level</div>
+            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current & target level</div>
         </div>
     </div>`;
 }
 
-function createCategorySection(categoryName, items, iconPath) {
-	let html = `<div class="academy-category-section" style="margin-bottom: 30px;">
-        <div class="speedup-buff-header" style="margin-bottom: 15px; background: #c0c0c0; display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 5px 10px; font-weight: bold;">
-            <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'">
-            <span>${categoryName} RESEARCH</span>
-        </div>
-        <div class="items-grid" style="grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));">
-    `;
+// ============================================
+// CREATE GROUP CARD (contains multiple research items)
+// ============================================
+function createAcademyGroupCard(categoryName, items, iconPath) {
+	let itemsHtml = '';
 	for (const item of items) {
-		html += createAcademyCard(item, item.data);
+		itemsHtml += createAcademyIndividualCard(item, item.data);
 	}
-	html += `</div></div>`;
-	return html;
+	return `
+        <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
+            <div class="item-card-header" style="background: #c8c8c8; border-bottom: 1px solid #888; display: flex; align-items: center; gap: 10px;">
+                <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                <span style="font-size: 1.1rem;">${categoryName} RESEARCH</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: auto;">${items.length} technologies</span>
+            </div>
+            <div class="item-card-body" style="padding: 12px;">
+                <div class="items-grid" style="grid-template-columns: 1fr; gap: 10px;">
+                    ${itemsHtml}
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function getBuffedTime(originalSeconds) {
@@ -470,11 +492,14 @@ function onAcademyCurrentSelect(safeId, name) {
 	if (!item) return;
 	const toLevels = getAcademyTargetLevels(item.data);
 	const absoluteMaxLevel = String(toLevels[toLevels.length - 1]);
-	if (from === absoluteMaxLevel) {
-		let maxTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
-		maxTargOpts += `<option value="max" selected>Max (Highest)</option>`;
-		targ.innerHTML = maxTargOpts;
-		targ.value = "max";
+
+	// If "Current Level" placeholder is selected, show ALL levels
+	if (!from || from === '') {
+		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
+		for (let i = 0; i < toLevels.length; i++) {
+			targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
+		}
+		targ.innerHTML = targOpts;
 		if (lockedUpgrades.has(safeId)) {
 			lockedUpgrades.delete(safeId);
 		}
@@ -486,32 +511,58 @@ function onAcademyCurrentSelect(safeId, name) {
 			speedCb.checked = false;
 			speedCb.disabled = true;
 		}
-	} else {
-		const currentNum = parseFloat(from);
-		const next = getAcademyNextLevel(item.data, from);
-		let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
-		for (let i = 0; i < toLevels.length; i++) {
-			const targetNum = parseFloat(toLevels[i]);
-			if (targetNum > currentNum) {
-				dynamicTargOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
-			}
-		}
-		dynamicTargOpts += `<option value="max">Max (Highest)</option>`;
-		targ.innerHTML = dynamicTargOpts;
-		if (next !== null && next !== undefined) {
-			for (let i = 0; i < targ.options.length; i++) {
-				if (String(targ.options[i].value) === String(next)) {
-					targ.selectedIndex = i;
-					break;
-				}
-			}
-		} else {
-			targ.value = "max";
-		}
+		refreshCalculations();
+		return;
+	}
+
+	if (from === absoluteMaxLevel) {
+		let maxTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
+		maxTargOpts += `<option value="${absoluteMaxLevel}" selected>${absoluteMaxLevel}</option>`;
+		targ.innerHTML = maxTargOpts;
+		targ.value = absoluteMaxLevel;
 		if (lockedUpgrades.has(safeId)) {
 			lockedUpgrades.delete(safeId);
-			if (activeCb) activeCb.checked = false;
 		}
+		if (activeCb) {
+			activeCb.checked = false;
+			activeCb.disabled = true;
+		}
+		if (speedCb) {
+			speedCb.checked = false;
+			speedCb.disabled = true;
+		}
+		refreshCalculations();
+		return;
+	}
+
+	const currentNum = parseFloat(from);
+	const next = getAcademyNextLevel(item.data, from);
+
+	// Dynamically rebuild target dropdown - only show levels above current (NO "Max" option)
+	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
+	for (let i = 0; i < toLevels.length; i++) {
+		const targetNum = parseFloat(toLevels[i]);
+		if (targetNum > currentNum) {
+			dynamicTargOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
+		}
+	}
+	targ.innerHTML = dynamicTargOpts;
+
+	// Auto-select the next logical level if it exists
+	if (next !== null && next !== undefined) {
+		for (let i = 0; i < targ.options.length; i++) {
+			if (String(targ.options[i].value) === String(next)) {
+				targ.selectedIndex = i;
+				break;
+			}
+		}
+	} else if (targ.options.length > 1) {
+		targ.selectedIndex = 1;
+	}
+
+	if (lockedUpgrades.has(safeId)) {
+		lockedUpgrades.delete(safeId);
+		if (activeCb) activeCb.checked = false;
 	}
 	refreshCalculations();
 }
@@ -639,36 +690,46 @@ function onAcademySpeedupChange(safeId, isChecked) {
 	refreshCalculations();
 }
 
+// ============================================
+// LOAD WAR ACADEMY
+// ============================================
 function loadWarAcademy() {
 	const container = document.getElementById('academyGrid');
 	if (!container) return;
 	container.innerHTML = '';
 	const allItems = getWarAcademyData();
-	const infantryItems = [];
-	const cavalryItems = [];
-	const archerItems = [];
-	const infantryTechs = ['Truegold Battalion (Infantry)', 'Truegold Blades', 'Truegold Shields', 'Truegold Legionaries (Infantry)', 'Truegold Mauls', 'Truegold Plating', 'Truegold Infantry', 'Truegold Infantry Healing', 'Truegold Infantry Training', 'Truegold Infantry Aid'];
-	const cavalryTechs = ['Truegold Battalion (Cavalry)', 'Truegold Charge', 'Truegold Farriery', 'Truegold Legionaries (Cavalry)', 'Truegold Lances', 'Truegold Platecraft', 'Truegold Cavalry', 'Truegold Cavalry Healing', 'Truegold Cavalry Training', 'Truegold Cavalry Aid'];
-	const archerTechs = ['Truegold Battalion (Archer)', 'Truegold Bows', 'Truegold Bracers', 'Truegold Legionaries (Archer)', 'Truegold Arrows', 'Truegold Vests', 'Truegold Archer', 'Truegold Archer Healing', 'Truegold Archer Training', 'Truegold Archer Aid'];
-	for (const item of allItems) {
-		const name = item.displayName;
-		if (infantryTechs.includes(name)) {
-			infantryItems.push(item);
-		} else if (cavalryTechs.includes(name)) {
-			cavalryItems.push(item);
-		} else if (archerTechs.includes(name)) {
-			archerItems.push(item);
+
+	// Define category groups
+	const categoryGroups = {
+		'INFANTRY': {
+			techs: ['Truegold Battalion (Infantry)', 'Truegold Blades', 'Truegold Shields', 'Truegold Legionaries (Infantry)', 'Truegold Mauls', 'Truegold Plating', 'Truegold Infantry', 'Truegold Infantry Healing', 'Truegold Infantry Training', 'Truegold Infantry Aid'],
+			icon: 'assets/infantry.png'
+		},
+		'CAVALRY': {
+			techs: ['Truegold Battalion (Cavalry)', 'Truegold Charge', 'Truegold Farriery', 'Truegold Legionaries (Cavalry)', 'Truegold Lances', 'Truegold Platecraft', 'Truegold Cavalry', 'Truegold Cavalry Healing', 'Truegold Cavalry Training', 'Truegold Cavalry Aid'],
+			icon: 'assets/cavalry.png'
+		},
+		'ARCHER': {
+			techs: ['Truegold Battalion (Archer)', 'Truegold Bows', 'Truegold Bracers', 'Truegold Legionaries (Archer)', 'Truegold Arrows', 'Truegold Vests', 'Truegold Archer', 'Truegold Archer Healing', 'Truegold Archer Training', 'Truegold Archer Aid'],
+			icon: 'assets/archer.png'
+		}
+	};
+
+	// Build group cards
+	for (const [categoryName, group] of Object.entries(categoryGroups)) {
+		const categoryItems = [];
+		for (const techName of group.techs) {
+			const item = allItems.find(i => i.displayName === techName);
+			if (item) {
+				categoryItems.push(item);
+			}
+		}
+		if (categoryItems.length > 0) {
+			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
 		}
 	}
-	if (infantryItems.length > 0) {
-		container.innerHTML += createCategorySection('INFANTRY', infantryItems, 'assets/war_academy/infantry.png');
-	}
-	if (cavalryItems.length > 0) {
-		container.innerHTML += createCategorySection('CAVALRY', cavalryItems, 'assets/war_academy/cavalry.png');
-	}
-	if (archerItems.length > 0) {
-		container.innerHTML += createCategorySection('ARCHER', archerItems, 'assets/war_academy/archer.png');
-	}
+
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('academy_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -678,11 +739,15 @@ function loadWarAcademy() {
 			if (data.toLevel) {
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				if (targSelect) {
+					let valueExists = false;
 					for (let i = 0; i < targSelect.options.length; i++) {
 						if (targSelect.options[i].value === String(data.toLevel)) {
-							targSelect.selectedIndex = i;
+							valueExists = true;
 							break;
 						}
+					}
+					if (valueExists) {
+						targSelect.value = String(data.toLevel);
 					}
 				}
 			}
@@ -690,6 +755,7 @@ function loadWarAcademy() {
 	}
 	refreshCalculations();
 }
+
 window.loadWarAcademy = loadWarAcademy;
 window.refreshCalculations = refreshCalculations;
 window.onAcademyCurrentSelect = onAcademyCurrentSelect;

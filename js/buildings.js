@@ -158,6 +158,7 @@ function createBuildingCard(name, dataArray) {
 	const toLevels = getBuildingTargetLevels(dataArray);
 	const safeId = `building_${name.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
+	
 	// Build current level dropdown with proper placeholder
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	for (let i = 0; i < fromLevels.length; i++) {
@@ -167,23 +168,18 @@ function createBuildingCard(name, dataArray) {
 	if (highestLevel && !fromLevels.includes(highestLevel)) {
 		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	// Build target dropdown with proper placeholder
+	
+	// Build target dropdown - SHOW ALL LEVELS
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
-	const initialCurrentVal = fromLevels[0];
-	const initialCurrentNum = convertLevelToNumeric(initialCurrentVal);
-	// Add all target levels that are higher than the initial current level
-	let hasHigherLevels = false;
+	// Add all target levels
 	for (let i = 0; i < toLevels.length; i++) {
-		const targetNum = convertLevelToNumeric(toLevels[i]);
-		if (targetNum > initialCurrentNum) {
-			targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
-			hasHigherLevels = true;
-		}
+		targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
 	}
-	// If no higher levels exist (already at max), show the highest level as the only option
-	if (!hasHigherLevels && highestLevel) {
-		targOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
+	// If highest level is not in the list, add it
+	if (highestLevel && !toLevels.includes(highestLevel)) {
+		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
+	
 	const imgUrl = getBuildingImageFileName(name);
 	return `<div class="item-card" data-type="building" data-name="${name}" data-id="${safeId}">
         <div class="item-card-header">
@@ -474,14 +470,19 @@ function onBuildingCurrentSelect(safeId, name) {
 		targ = document.getElementById(`targ_${safeId}`);
 	if (!curr || !targ) return;
 	const from = curr.value;
-	// If "Current Level" placeholder is selected, do nothing
+	
+	// If "Current Level" placeholder is selected, show ALL levels in target
 	if (!from || from === '') {
-		// Reset target dropdown with placeholder
 		const dataArray = getBuildingsData(name);
 		const toLevels = getBuildingTargetLevels(dataArray);
+		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
+		// Reset target dropdown with ALL levels
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
-		if (toLevels.length > 0) {
-			targOpts += `<option value="${toLevels[0]}">${toLevels[0]}</option>`;
+		for (let i = 0; i < toLevels.length; i++) {
+			targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
+		}
+		if (highestLevel && !toLevels.includes(highestLevel)) {
+			targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 		}
 		targ.innerHTML = targOpts;
 		if (lockedUpgrades.has(safeId)) {
@@ -492,11 +493,13 @@ function onBuildingCurrentSelect(safeId, name) {
 		refreshCalculations();
 		return;
 	}
+	
 	const dataArray = getBuildingsData(name);
 	const currentNum = convertLevelToNumeric(from);
 	const toLevels = getBuildingTargetLevels(dataArray);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
 	const next = getBuildingNextLevel(dataArray, from, name);
+	
 	// Dynamically rebuild target dropdown - only show levels above current
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
@@ -512,6 +515,7 @@ function onBuildingCurrentSelect(safeId, name) {
 		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
+	
 	// Auto-select the next logical level if it exists
 	if (next) {
 		let found = false;
@@ -528,6 +532,7 @@ function onBuildingCurrentSelect(safeId, name) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
+	
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);

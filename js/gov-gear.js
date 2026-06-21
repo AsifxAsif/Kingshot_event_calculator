@@ -1,18 +1,15 @@
 // ============================================
-// GOV GEAR - UPGRADE SYSTEM WITH DUAL IMAGES
-// ============================================
-// ============================================
 // IMAGE MAPPING
 // ============================================
 function getGovGearImageFileName(gearName, levelName) {
 	// Map gear names to folder prefix
 	const gearMap = {
-		'Head': 'cavalry_gear_1',
+		'Helmet': 'cavalry_gear_1',
 		'Watch': 'cavalry_gear_2',
-		'Body': 'infantry_gear_1',
+		'Armor': 'infantry_gear_1',
 		'Pant': 'infantry_gear_2',
 		'Belt': 'archery_gear_1',
-		'Shoe': 'archery_gear_2'
+		'Boot': 'archery_gear_2'
 	};
 	const prefix = gearMap[gearName] || gearName.toLowerCase().replace(/ /g, '_');
 	// Parse the level name to extract color, tier, and stars
@@ -252,11 +249,11 @@ function createGovGearCard(name, dataArray) {
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
                 <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}">
             </div>
+            <span style="font-weight: 700; font-size: 0.9rem;">${name}</span>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
                 <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgTarget_${safeId}">
             </div>
-            <span style="font-weight: 700; font-size: 0.9rem;">${name}</span>
         </div>
         <div class="item-card-body">
             <div class="level-controls">
@@ -630,7 +627,7 @@ function loadGovGear() {
 	const container = document.getElementById('govGearGrid');
 	if (!container) return;
 	container.innerHTML = '';
-	const parents = ['Head', 'Watch', 'Body', 'Pant', 'Belt', 'Shoe'];
+	const parents = ['Helmet', 'Watch', 'Armor', 'Pant', 'Belt', 'Boot'];
 	const dataArray = getGovGearData();
 	for (const parent of parents) {
 		container.innerHTML += createGovGearCard(parent, dataArray);

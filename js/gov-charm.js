@@ -1,24 +1,26 @@
 // ============================================
-// GOV CHARM - UPGRADE SYSTEM WITH DUAL IMAGES
-// ============================================
-// ============================================
 // IMAGE MAPPING
 // ============================================
 function getGovCharmImageFileName(charmName, levelName) {
 	const typeMap = {
-		'Head': 'cavalry',
+		'Helmet': 'cavalry',
 		'Watch': 'cavalry',
-		'Body': 'infantry',
+		'Armor': 'infantry',
 		'Pant': 'infantry',
 		'Belt': 'archery',
-		'Shoe': 'archery'
+		'Boot': 'archery'
 	};
-	const type = typeMap[charmName] || 'infantry';
+	// Extract base type from full charm name
+	let baseType = 'infantry'; // fallback
+	const match = charmName.match(/^(Helmet|Watch|Armor|Pant|Belt|Boot)/);
+	if (match) {
+		baseType = match[1];
+	}
+	const type = typeMap[baseType] || 'infantry';
 	// DEFAULT: Level 1 (since no lvl0 image exists)
 	let level = '1';
 	if (levelName) {
 		const levelStr = String(levelName).trim();
-		// If level is "0" or empty, use Level 1 as fallback
 		if (levelStr === '0' || levelStr === '') {
 			level = '1';
 		} else {
@@ -115,7 +117,6 @@ function getGovCharmUpgradeSteps(dataArray, fromLevel, toLevel) {
 	const toStr = String(toLevel);
 	let start = -1,
 		end = -1;
-	// Special case: if from is "0", find the first entry where current is null
 	if (fromStr === '0') {
 		for (let i = 0; i < dataArray.length; i++) {
 			let curr = dataArray[i].current !== undefined && dataArray[i].current !== null && dataArray[i].current !== 'null' ? String(dataArray[i].current) : null;
@@ -125,7 +126,6 @@ function getGovCharmUpgradeSteps(dataArray, fromLevel, toLevel) {
 				break;
 			}
 		}
-		// Find end where target matches toStr
 		for (let i = 0; i < dataArray.length; i++) {
 			let targ = dataArray[i].target !== undefined && dataArray[i].target !== null && dataArray[i].target !== 'null' ? String(dataArray[i].target) : null;
 			if (targ === toStr) {
@@ -138,7 +138,6 @@ function getGovCharmUpgradeSteps(dataArray, fromLevel, toLevel) {
 			return steps;
 		}
 	}
-	// Normal case: find by current value
 	for (let i = 0; i < dataArray.length; i++) {
 		let curr = dataArray[i].current !== undefined && dataArray[i].current !== null && dataArray[i].current !== 'null' ? String(dataArray[i].current) : null;
 		let targ = dataArray[i].target !== undefined && dataArray[i].target !== null && dataArray[i].target !== 'null' ? String(dataArray[i].target) : null;
@@ -149,7 +148,6 @@ function getGovCharmUpgradeSteps(dataArray, fromLevel, toLevel) {
 		for (let i = start; i <= end; i++) steps.push(dataArray[i]);
 		return steps;
 	}
-	// Fallback: traverse using current/target relationships
 	let current = fromStr;
 	const visited = new Set();
 	for (let safety = 0; safety < 200; safety++) {
@@ -176,9 +174,7 @@ function getGovCharmNextLevel(dataArray, fromLevel) {
 	const allLevels = getGovCharmTargetLevels(dataArray);
 	if (!allLevels.length) return null;
 	const fromStr = String(fromLevel);
-	// Special case: if from is "0", return the first target
 	if (fromStr === '0') {
-		// Find the first entry with null current
 		for (const item of dataArray) {
 			let curr = item.current !== undefined && item.current !== null && item.current !== 'null' ? String(item.current) : null;
 			if (curr === null || curr === 'null' || curr === undefined) {
@@ -189,7 +185,6 @@ function getGovCharmNextLevel(dataArray, fromLevel) {
 		return allLevels[0] || null;
 	}
 	const fromOrder = getCharmLevelOrder(fromStr, dataArray);
-	// Find the next level by order
 	let nextLevel = null;
 	let nextOrder = Infinity;
 	for (const lvl of allLevels) {
@@ -205,13 +200,11 @@ function getGovCharmNextLevel(dataArray, fromLevel) {
 // UPDATE IMAGES WHEN LEVEL CHANGES
 // ============================================
 function updateGovCharmImages(safeId, charmName, currentLevel, targetLevel) {
-	// Update current level image
 	const currentImg = document.getElementById(`charmImgCurrent_${safeId}`);
 	if (currentImg) {
 		const currentSrc = getGovCharmImageFileName(charmName, currentLevel || 'Level 1');
 		currentImg.src = currentSrc;
 	}
-	// Update target level image
 	const targetImg = document.getElementById(`charmImgTarget_${safeId}`);
 	if (targetImg) {
 		const targetSrc = getGovCharmImageFileName(charmName, targetLevel || 'Level 1');
@@ -219,31 +212,28 @@ function updateGovCharmImages(safeId, charmName, currentLevel, targetLevel) {
 	}
 }
 // ============================================
-// CREATE GOV CHARM CARD (WITH DUAL IMAGES)
+// CREATE INDIVIDUAL CHARM CARD (for use inside group)
 // ============================================
-function createGovCharmCard(name, dataArray) {
-	if (!dataArray?.length) return '';
+function createIndividualCharmCard(charmName, charmNumber, dataArray) {
 	const fromLevels = getGovCharmLevels(dataArray);
 	const toLevels = getGovCharmTargetLevels(dataArray);
-	const safeId = `govcharm_${name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+	const safeId = `govcharm_${charmName.replace(/[^a-zA-Z0-9]/g, '_')}_${charmNumber}`;
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
-	// Default images - use Level 1 (no lvl0 image exists)
-	const defaultCurrentImg = getGovCharmImageFileName(name, 'Level 1');
-	const defaultTargetImg = getGovCharmImageFileName(name, 'Level 1');
-	// Sort levels by order derived from data
+	// Default images - use Level 1
+	const defaultCurrentImg = getGovCharmImageFileName(charmName, 'Level 1');
+	const defaultTargetImg = getGovCharmImageFileName(charmName, 'Level 1');
 	const sortedFrom = [...fromLevels].sort((a, b) => getCharmLevelOrder(a, dataArray) - getCharmLevelOrder(b, dataArray));
 	const sortedTo = [...toLevels].sort((a, b) => getCharmLevelOrder(a, dataArray) - getCharmLevelOrder(b, dataArray));
-	// Build current level dropdown with placeholder
+	// Build current level dropdown
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	const validFrom = sortedFrom.filter(l => l !== 'null' && l !== 'undefined' && l !== '');
 	for (let i = 0; i < validFrom.length; i++) {
 		currOpts += `<option value="${validFrom[i]}">${validFrom[i]}</option>`;
 	}
-	// Add max level if not in list
 	if (highestLevel && !validFrom.includes(highestLevel)) {
 		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	// Build target dropdown with placeholder - NO AUTO-SELECTION
+	// Build target dropdown
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	const validTo = sortedTo.filter(l => l !== 'null' && l !== 'undefined' && l !== '');
 	for (let i = 0; i < validTo.length; i++) {
@@ -252,29 +242,65 @@ function createGovCharmCard(name, dataArray) {
 	if (highestLevel && !validTo.includes(highestLevel)) {
 		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	return `<div class="item-card" data-type="govcharm" data-name="${name}" data-id="${safeId}">
-        <div class="item-card-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
-                <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgCurrent_${safeId}">
+	return `
+        <div class="item-card" data-type="govcharm" data-name="${charmName}" data-charm-number="${charmNumber}" data-id="${safeId}" style="margin-bottom: 10px;">
+            <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center; padding: 8px 12px; background: #d8d8d8;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
+                    <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" id="charmImgCurrent_${safeId}">
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
+                    <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" id="charmImgTarget_${safeId}">
+                </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
-                <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgTarget_${safeId}">
+            <div class="item-card-body" style="padding: 8px 12px;">
+                <div class="level-controls" style="gap: 8px;">
+                    <select id="curr_${safeId}" onchange="onGovCharmCurrentSelect('${safeId}')">${currOpts}</select>
+                    <select id="targ_${safeId}" onchange="onGovCharmTargetChange('${safeId}')">${targOpts}</select>
+                </div>
+                <div class="checkbox-group" style="gap: 8px;">
+                    <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                        <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onGovCharmUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade
+                    </label>
+                </div>
+                <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current & target level</div>
             </div>
-            <span style="font-weight: 700; font-size: 0.9rem;">${name}</span>
         </div>
-        <div class="item-card-body">
-            <div class="level-controls">
-                <select id="curr_${safeId}" onchange="onGovCharmCurrentSelect('${safeId}')">${currOpts}</select>
-                <select id="targ_${safeId}" onchange="onGovCharmTargetChange('${safeId}')">${targOpts}</select>
+    `;
+}
+// ============================================
+// CREATE GROUP CARD (contains multiple charms)
+// ============================================
+function createGovCharmGroupCard(groupName, charmNames, dataArray) {
+	// Map group name to icon path
+	const iconMap = {
+		'Helmet': 'assets/cavalry.png',
+		'Watch': 'assets/cavalry.png',
+		'Armor': 'assets/infantry.png',
+		'Pant': 'assets/infantry.png',
+		'Belt': 'assets/archer.png',
+		'Boot': 'assets/archer.png'
+	};
+	const iconPath = iconMap[groupName] || 'assets/infantry.png';
+	
+	let charmsHtml = '';
+	for (let i = 0; i < charmNames.length; i++) {
+		charmsHtml += createIndividualCharmCard(charmNames[i], i + 1, dataArray);
+	}
+	
+	return `
+        <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
+            <div class="item-card-header" style="background: #c8c8c8; border-bottom: 1px solid #888; display: flex; align-items: center; gap: 10px;">
+                <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'">
+                <span style="font-size: 1.1rem;">${groupName} Charms</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: auto;">${charmNames.length} charms</span>
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onGovCharmUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade</label>
+            <div class="item-card-body" style="padding: 12px;">
+                ${charmsHtml}
             </div>
-            <div id="status_${safeId}" class="status-pane">⚙️ Select current & target level</div>
         </div>
-    </div>`;
+    `;
 }
 // ============================================
 // CALCULATE COSTS
@@ -338,9 +364,7 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		// Update images based on selections
 		updateGovCharmImages(safeId, name, from, to);
-		// Check if no levels are selected (placeholder)
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Select current & target level`;
@@ -479,10 +503,8 @@ function onGovCharmCurrentSelect(safeId) {
 	const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
 	const charmName = card ? card.dataset.name : '';
 	const dataArray = getGovCharmData();
-	// Update images with current selection
 	const to = targ.value;
 	updateGovCharmImages(safeId, charmName, from, to);
-	// If "Current Level" placeholder is selected, reset target to placeholder
 	if (!from || from === '') {
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		const toLevels = getGovCharmTargetLevels(dataArray);
@@ -505,9 +527,7 @@ function onGovCharmCurrentSelect(safeId) {
 	const validTo = sortedTo.filter(l => l && l !== 'null' && l !== 'undefined' && l !== '');
 	const highestLevel = validTo.length ? validTo[validTo.length - 1] : '';
 	const fromOrder = getCharmLevelOrder(from, dataArray);
-	// Check if already at max
 	if (from === highestLevel) {
-		// User selected the max level - show max level as target (already at max)
 		let maxTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		maxTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
 		targ.innerHTML = maxTargOpts;
@@ -519,9 +539,7 @@ function onGovCharmCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-	// Get the NEXT level (not max)
 	const nextLevel = getGovCharmNextLevel(dataArray, from);
-	// Build target dropdown - ONLY show levels above current
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
 	let nextLevelFound = false;
@@ -535,12 +553,10 @@ function onGovCharmCurrentSelect(safeId) {
 			}
 		}
 	}
-	// If no higher levels exist, show a disabled message
 	if (!hasHigherLevels) {
 		dynamicTargOpts += `<option value="" disabled>No higher levels available</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
-	// AUTO-SELECT THE NEXT LEVEL (like Buildings page)
 	if (nextLevel && nextLevelFound) {
 		for (let i = 0; i < targ.options.length; i++) {
 			if (String(targ.options[i].value) === String(nextLevel)) {
@@ -549,7 +565,6 @@ function onGovCharmCurrentSelect(safeId) {
 			}
 		}
 	} else if (hasHigherLevels && targ.options.length > 1) {
-		// If next level not found, select the first available higher level
 		targ.selectedIndex = 1;
 	}
 	if (lockedUpgrades.has(safeId)) {
@@ -565,7 +580,6 @@ function onGovCharmTargetChange(safeId) {
 	const targ = document.getElementById(`targ_${safeId}`);
 	const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
 	const charmName = card ? card.dataset.name : '';
-	// Update images with new target selection
 	const from = curr ? curr.value : '';
 	const to = targ ? targ.value : '';
 	updateGovCharmImages(safeId, charmName, from, to);
@@ -587,7 +601,6 @@ function onGovCharmUpgradeCheckboxChange(safeId, isChecked) {
 		if (!curr || !targ) return;
 		const from = curr.value;
 		const to = targ.value;
-		// Validate selections
 		if (!from || from === '' || !to || to === '' || String(from) === String(to)) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = false;
@@ -643,12 +656,30 @@ function loadGovCharm() {
 	const container = document.getElementById('govCharmGrid');
 	if (!container) return;
 	container.innerHTML = '';
-	const parents = ['Head', 'Watch', 'Body', 'Pant', 'Belt', 'Shoe'];
 	const dataArray = getGovCharmData();
-	for (const parent of parents) {
-		for (let i = 1; i <= 3; i++) {
-			container.innerHTML += createGovCharmCard(`${parent} Charm #${i}`, dataArray);
-		}
+	// Define charm groups - each group has a type and the charm names
+	const charmGroups = [{
+		type: 'Helmet',
+		charms: ['Helmet Charm #1', 'Helmet Charm #2', 'Helmet Charm #3']
+	}, {
+		type: 'Watch',
+		charms: ['Watch Charm #1', 'Watch Charm #2', 'Watch Charm #3']
+	}, {
+		type: 'Armor',
+		charms: ['Armor Charm #1', 'Armor Charm #2', 'Armor Charm #3']
+	}, {
+		type: 'Pant',
+		charms: ['Pant Charm #1', 'Pant Charm #2', 'Pant Charm #3']
+	}, {
+		type: 'Belt',
+		charms: ['Belt Charm #1', 'Belt Charm #2', 'Belt Charm #3']
+	}, {
+		type: 'Boot',
+		charms: ['Boot Charm #1', 'Boot Charm #2', 'Boot Charm #3']
+	}];
+	// Create group cards
+	for (const group of charmGroups) {
+		container.innerHTML += createGovCharmGroupCard(group.type, group.charms, dataArray);
 	}
 	// Restore locked upgrades and selections from preset
 	for (const [safeId, data] of lockedUpgrades.entries()) {
@@ -685,7 +716,6 @@ function loadGovCharm() {
 					}
 				}
 			}
-			// Update images for restored state
 			const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
 			if (card) {
 				const currSelect = document.getElementById(`curr_${safeId}`);

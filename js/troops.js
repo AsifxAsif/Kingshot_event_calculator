@@ -1,6 +1,7 @@
 // ============================================
 // TROOPS - TRAINING & PROMOTION
 // ============================================
+
 // Get training data for a troop type
 function getTroopsTrainingData(type) {
 	const training = window.gameDB.Troops?.Troops?.Training;
@@ -10,6 +11,7 @@ function getTroopsTrainingData(type) {
 	if (type === 'Archer') return training.Archer || [];
 	return null;
 }
+
 // Get promotion data for a troop type
 function getTroopsPromotionData(type) {
 	const promoting = window.gameDB.Troops?.Troops?.Promoting;
@@ -33,38 +35,62 @@ function validateNumberInput(input) {
 		input.value = value;
 	}
 }
+
 // ============================================
-// CREATE TROOP CARDS
+// IMAGE MAPPING FOR TROOPS
 // ============================================
-function createTroopCard(troopType) {
+function getTroopImageFileName(troopType) {
+	const imageMap = {
+		'Infantry': 'infantry.png',
+		'Cavalry': 'cavalry.png',
+		'Archer': 'archer.png'
+	};
+	// Extract base type from "Infantry Tiers" -> "Infantry"
+	let baseType = troopType;
+	if (troopType.includes('Infantry')) baseType = 'Infantry';
+	else if (troopType.includes('Cavalry')) baseType = 'Cavalry';
+	else if (troopType.includes('Archer')) baseType = 'Archer';
+	return `assets/${imageMap[baseType] || 'infantry.png'}`;
+}
+
+// ============================================
+// CREATE INDIVIDUAL TROOP CARDS (for use inside group)
+// ============================================
+function createTroopIndividualCard(troopType) {
 	const safeId = `troops_${troopType.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	let tierOptions = '<option value="" disabled selected hidden>Select Tier</option>';
 	for (let tier = 1; tier <= 11; tier++) {
 		tierOptions += `<option value="${tier}">Tier ${tier}</option>`;
 	}
-	return `<div class="item-card troop-card" data-type="troops" data-name="${troopType}" data-id="${safeId}">
-        <div class="item-card-header">
-            <span>⚔️ ${troopType}</span>
+	const imgUrl = getTroopImageFileName(troopType);
+	return `<div class="item-card troop-card" data-type="troops" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
+        <div class="item-card-header" style="padding: 8px 12px; background: #d8d8d8;">
+            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;">
+            <span style="font-size: 0.85rem;">${troopType}</span>
         </div>
-        <div class="item-card-body">
-            <div class="level-controls">
+        <div class="item-card-body" style="padding: 8px 12px;">
+            <div class="level-controls" style="gap: 8px;">
                 <select id="troop_lvl_${safeId}" onchange="refreshTroopsCalculations()">${tierOptions}</select>
                 <input type="text" id="troop_qty_${safeId}" style="text-align: center;" placeholder="Quantity" value="" oninput="validateNumberInput(this); refreshTroopsCalculations()">
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="refreshTroopsCalculations()"> 🚀 Train Active</label>
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups</label>
+            <div class="checkbox-group" style="gap: 8px;">
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="refreshTroopsCalculations()"> 🚀 Train Active
+                </label>
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups
+                </label>
             </div>
-            <div id="status_${safeId}" class="status-pane">⚔️ Select troop tier and quantity</div>
+            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚔️ Select troop tier and quantity</div>
         </div>
     </div>`;
 }
 
-function createPromotionCard(troopType) {
+function createPromotionIndividualCard(troopType) {
 	const safeId = `promotion_${troopType.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const promotionData = getTroopsPromotionData(troopType);
 	if (!promotionData || promotionData.length === 0) return '';
-	// Get all unique tiers from promotion data
+	
 	const fromTiers = [];
 	const allTiers = [];
 	for (const item of promotionData) {
@@ -75,44 +101,75 @@ function createPromotionCard(troopType) {
 			allTiers.push(item.target_lvl);
 		}
 	}
-	// Sort tiers
 	fromTiers.sort((a, b) => a - b);
 	allTiers.sort((a, b) => a - b);
 	const highestTier = allTiers.length > 0 ? Math.max(...allTiers) : 0;
-	// Build current tier dropdown with placeholder - show all tiers EXCEPT the highest (can't promote from max)
+	
+	// Build current tier dropdown with placeholder
 	let fromOptions = '<option value="" disabled selected hidden>Current Tier</option>';
 	for (const tier of fromTiers) {
-		// Skip the highest tier for current level (can't promote from max)
 		if (tier === highestTier) continue;
 		fromOptions += `<option value="${tier}">Tier ${tier}</option>`;
 	}
-	// Build target tier dropdown - initially only show tiers above the first tier
-	let toOptions = '<option value="" disabled selected hidden>Target Tier</option>';
+	
+	// Build target tier dropdown - placeholder is selected AND NOT disabled
+	let toOptions = '<option value="" selected hidden>Target Tier</option>';
 	const firstTier = fromTiers.length > 0 ? fromTiers[0] : 0;
 	for (const tier of allTiers) {
 		if (tier > firstTier) {
 			toOptions += `<option value="${tier}">Tier ${tier}</option>`;
 		}
 	}
-	return `<div class="item-card troop-card" data-type="promotion" data-name="${troopType}" data-id="${safeId}">
-        <div class="item-card-header">
-            <span>⬆️ ${troopType} Promotion</span>
+	
+	const imgUrl = getTroopImageFileName(troopType);
+	return `<div class="item-card troop-card" data-type="promotion" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
+        <div class="item-card-header" style="padding: 8px 12px; background: #d8d8d8;">
+            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;">
+            <span style="font-size: 0.85rem;">${troopType}</span>
         </div>
-        <div class="item-card-body">
-            <div class="level-controls">
+        <div class="item-card-body" style="padding: 8px 12px;">
+            <div class="level-controls" style="gap: 8px;">
                 <select id="promo_from_${safeId}" onchange="onPromotionCurrentSelect('${safeId}', '${troopType}')">${fromOptions}</select>
                 <select id="promo_to_${safeId}" onchange="refreshTroopsCalculations()">${toOptions}</select>
             </div>
-            <div class="level-controls" style="grid-template-columns: 1fr;">
+            <div class="level-controls" style="grid-template-columns: 1fr; gap: 8px;">
                 <input type="text" id="promo_qty_${safeId}" style="text-align: center;" placeholder="Quantity to promote" value="" oninput="validateNumberInput(this); refreshTroopsCalculations()">
             </div>
-            <div class="checkbox-group">
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="promo_active_${safeId}" onchange="refreshTroopsCalculations()"> ⬆️ Promote Active</label>
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="promo_speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups</label>
+            <div class="checkbox-group" style="gap: 8px;">
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="promo_active_${safeId}" onchange="refreshTroopsCalculations()"> ⬆️ Promote Active
+                </label>
+                <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
+                    <input class="checkbox" type="checkbox" id="promo_speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups
+                </label>
             </div>
-            <div id="promo_status_${safeId}" class="status-pane">⚙️ Select current tier, target tier, and quantity</div>
+            <div id="promo_status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current tier, target tier, and quantity</div>
         </div>
     </div>`;
+}
+
+// ============================================
+// CREATE GROUP CARDS
+// ============================================
+function createTroopGroupCard(groupName, itemsHtml) {
+	const iconMap = {
+		'TRAINING': '⚔️',
+		'PROMOTION': '⬆️'
+	};
+	const icon = iconMap[groupName] || '📚';
+	return `
+        <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
+            <div class="item-card-header" style="background: #c8c8c8; border-bottom: 1px solid #888; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.1rem;">${icon} ${groupName}</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: auto;">3 troop types</span>
+            </div>
+            <div class="item-card-body" style="padding: 12px;">
+                <div class="items-grid" style="grid-template-columns: 1fr; gap: 10px;">
+                    ${itemsHtml}
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function onPromotionCurrentSelect(safeId, troopType) {
@@ -122,7 +179,7 @@ function onPromotionCurrentSelect(safeId, troopType) {
 	const from = parseInt(fromSelect.value) || 0;
 	const promotionData = getTroopsPromotionData(troopType);
 	if (!promotionData) return;
-	// Get all unique tiers
+	
 	const fromTiers = [];
 	const allTiers = [];
 	for (const item of promotionData) {
@@ -136,9 +193,20 @@ function onPromotionCurrentSelect(safeId, troopType) {
 	fromTiers.sort((a, b) => a - b);
 	allTiers.sort((a, b) => a - b);
 	const highestTier = allTiers.length > 0 ? Math.max(...allTiers) : 0;
+	
+	// If no current tier selected (placeholder), show all available target tiers with placeholder
+	if (from === 0 || from === '') {
+		let toOptions = '<option value="" selected hidden>Target Tier</option>';
+		for (const tier of allTiers) {
+			toOptions += `<option value="${tier}">Tier ${tier}</option>`;
+		}
+		toSelect.innerHTML = toOptions;
+		refreshTroopsCalculations();
+		return;
+	}
+	
 	// Rebuild target dropdown - only show tiers greater than current
-	// INCLUDING the highest tier (which is always a valid target)
-	let toOptions = '<option value="" disabled selected hidden>Target Tier</option>';
+	let toOptions = '<option value="" selected hidden>Target Tier</option>';
 	let hasHigherLevels = false;
 	for (const tier of allTiers) {
 		if (tier > from) {
@@ -146,17 +214,19 @@ function onPromotionCurrentSelect(safeId, troopType) {
 			hasHigherLevels = true;
 		}
 	}
-	// If no higher tiers exist, show "No higher tiers available"
+	// If no higher tiers exist, show a disabled message
 	if (!hasHigherLevels) {
-		toOptions += `<option value="${from}" selected>No higher tiers available</option>`;
+		toOptions += `<option value="" disabled>No higher tiers available</option>`;
 	}
 	toSelect.innerHTML = toOptions;
+	
 	// Auto-select the first higher tier if it exists
 	if (hasHigherLevels && toSelect.options.length > 1) {
 		toSelect.selectedIndex = 1; // Skip the placeholder
 	}
 	refreshTroopsCalculations();
 }
+
 // ============================================
 // RESOURCE AND TIME CALCULATIONS
 // ============================================
@@ -254,6 +324,7 @@ function getBuffedTrainingTime(originalSeconds) {
 	}
 	return originalSeconds;
 }
+
 // ============================================
 // REFRESH CALCULATIONS
 // ============================================
@@ -262,6 +333,7 @@ function refreshTroopsCalculations() {
 	let runningLocked = {};
 	let totalTroopPoints = 0;
 	let totalSpeedupPoints = 0;
+	
 	// Process Training Cards
 	const cards = document.querySelectorAll('.troop-card[data-type="troops"]');
 	for (const card of cards) {
@@ -273,6 +345,7 @@ function refreshTroopsCalculations() {
 		const isActive = document.getElementById(`active_${safeId}`)?.checked || false;
 		const speedupTroop = document.getElementById(`speed_${safeId}`)?.checked || false;
 		if (!lvlSelect || !qtyInput || !status) continue;
+		
 		const level = parseInt(lvlSelect.value) || 0;
 		let rawQty = qtyInput.value.replace(/,/g, '');
 		const quantity = parseFloat(rawQty) || 0;
@@ -280,6 +353,7 @@ function refreshTroopsCalculations() {
 		let canAfford = true;
 		let stepPoints = 0;
 		let totalTimeSeconds = 0;
+		
 		if (level > 0 && quantity > 0) {
 			const troopPoints = getTroopPointsForLevel(troopType, level);
 			stepPoints = quantity * troopPoints;
@@ -292,6 +366,7 @@ function refreshTroopsCalculations() {
 			}
 			totalTimeSeconds = getTroopTrainingTime(troopType, level, quantity);
 		}
+		
 		const upgradeKey = safeId;
 		if (level > 0 && quantity > 0) {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
@@ -331,6 +406,7 @@ function refreshTroopsCalculations() {
 				lockedUpgrades.delete(upgradeKey);
 			}
 		}
+		
 		displayTroopStatus(status, troopType, level, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked);
 		if (level > 0 && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
@@ -338,6 +414,7 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
+	
 	// Process Promotion Cards
 	const promoCards = document.querySelectorAll('.troop-card[data-type="promotion"]');
 	for (const card of promoCards) {
@@ -350,6 +427,7 @@ function refreshTroopsCalculations() {
 		const isActive = document.getElementById(`promo_active_${safeId}`)?.checked || false;
 		const speedupTroop = document.getElementById(`promo_speed_${safeId}`)?.checked || false;
 		if (!fromSelect || !toSelect || !qtyInput || !status) continue;
+		
 		const fromLevel = parseInt(fromSelect.value) || 0;
 		const toLevel = parseInt(toSelect.value) || 0;
 		let rawQty = qtyInput.value.replace(/,/g, '');
@@ -359,9 +437,8 @@ function refreshTroopsCalculations() {
 		let stepPoints = 0;
 		let totalTimeSeconds = 0;
 		let pointsPerUnit = 0;
-		// Check if placeholder values are selected
+		
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0) {
-			// Check if target is higher than current
 			if (toLevel <= fromLevel) {
 				status.className = "status-pane status-warning";
 				status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
@@ -382,6 +459,7 @@ function refreshTroopsCalculations() {
 			}
 			totalTimeSeconds = getPromotionTime(troopType, fromLevel, toLevel, quantity);
 		}
+		
 		const upgradeKey = safeId;
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0) {
 			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
@@ -423,6 +501,7 @@ function refreshTroopsCalculations() {
 				lockedUpgrades.delete(upgradeKey);
 			}
 		}
+		
 		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, runningLocked, pointsPerUnit);
 		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0) {
 			for (const [res, amt] of Object.entries(costTotals)) {
@@ -430,6 +509,7 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
+	
 	const totalScore = totalTroopPoints + totalSpeedupPoints;
 	document.getElementById('globalScoreDisplay').innerText = totalScore.toLocaleString();
 	if (typeof saveCurrentPageScore === 'function') {
@@ -441,6 +521,7 @@ function refreshTroopsCalculations() {
 	if (speedupPointsElem) speedupPointsElem.innerText = totalSpeedupPoints.toLocaleString();
 	window.dispatchEvent(new Event('troopsUpdate'));
 }
+
 // ============================================
 // DISPLAY HELPER FUNCTIONS
 // ============================================
@@ -498,7 +579,6 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 }
 
 function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, totalLocked, pointsPerUnit) {
-	// Check if target is lower than current
 	if (fromLevel > 0 && toLevel > 0 && toLevel <= fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
 		status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
@@ -560,6 +640,7 @@ function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity,
 		status.innerHTML = `⚙️ Select current tier, target tier, and quantity`;
 	}
 }
+
 // ============================================
 // HELPER FUNCTIONS FOR HTML BUILDING
 // ============================================
@@ -602,6 +683,7 @@ function buildPointsDisplay(troopPoints, speedupPoints) {
 	}
 	return '';
 }
+
 // ============================================
 // LOAD TROOPS
 // ============================================
@@ -610,31 +692,28 @@ function loadTroops() {
 	if (!container) return;
 	container.innerHTML = '';
 	const troopTypes = ['Infantry', 'Cavalry', 'Archer'];
+	
 	// ============================================
-	// ADD TRAINING HEADER
+	// BUILD TRAINING GROUP
 	// ============================================
-	container.innerHTML += `
-        <div class="speedup-buff-header" style="background: #c0c0c0; display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 5px 10px; font-weight: bold; grid-column: 1 / -1;">
-            <span>⚔️ TRAINING</span>
-        </div>
-    `;
-	// Add Training Cards
+	let trainingHtml = '';
 	for (const troopType of troopTypes) {
-		container.innerHTML += createTroopCard(troopType + ' Tiers');
+		trainingHtml += createTroopIndividualCard(troopType + ' Tiers');
 	}
+	container.innerHTML += createTroopGroupCard('TRAINING', trainingHtml);
+	
 	// ============================================
-	// ADD PROMOTION HEADER
+	// BUILD PROMOTION GROUP
 	// ============================================
-	container.innerHTML += `
-        <div class="speedup-buff-header" style="margin-top: 15px; background: #c0c0c0; display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 5px 10px; font-weight: bold; grid-column: 1 / -1;">
-            <span>⬆️ PROMOTION</span>
-        </div>
-    `;
-	// Add Promotion Cards
+	let promotionHtml = '';
 	for (const troopType of troopTypes) {
-		const promoCard = createPromotionCard(troopType);
-		if (promoCard) container.innerHTML += promoCard;
+		const promoCard = createPromotionIndividualCard(troopType);
+		if (promoCard) promotionHtml += promoCard;
 	}
+	if (promotionHtml) {
+		container.innerHTML += createTroopGroupCard('PROMOTION', promotionHtml);
+	}
+	
 	// ============================================
 	// RESTORE ALL TROOPS STATE FROM LOCKED UPGRADES
 	// ============================================
@@ -657,7 +736,6 @@ function loadTroops() {
 			if (data.level) {
 				const lvlSelect = document.getElementById(`troop_lvl_${safeId}`);
 				if (lvlSelect) {
-					// Check if the level value exists in the dropdown
 					let valueExists = false;
 					for (let i = 0; i < lvlSelect.options.length; i++) {
 						if (String(lvlSelect.options[i].value) === String(data.level)) {
@@ -718,12 +796,33 @@ function loadTroops() {
 			}
 		}
 	}
-	// IMPORTANT: Don't call refreshTroopsCalculations here immediately
-	// Let the preset apply first, then refresh
+	
+	// ============================================
+	// FORCE 2 COLUMN LAYOUT FOR TROOPS PAGE
+	// ============================================
+	// Remove any existing resize listener to prevent duplicates
+	if (window._troopsResizeHandler) {
+		window.removeEventListener('resize', window._troopsResizeHandler);
+	}
+	const resizeHandler = function() {
+		if (window.innerWidth > 768) {
+			container.style.gridTemplateColumns = 'repeat(2, 1fr)';
+		} else {
+			container.style.gridTemplateColumns = '1fr';
+		}
+	};
+	// Store reference to remove later
+	window._troopsResizeHandler = resizeHandler;
+	// Apply initial layout
+	resizeHandler();
+	// Add resize listener
+	window.addEventListener('resize', resizeHandler);
+	
 	setTimeout(() => {
 		refreshTroopsCalculations();
 	}, 50);
 }
+
 // ============================================
 // EXPORTS
 // ============================================

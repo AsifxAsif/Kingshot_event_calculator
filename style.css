@@ -208,7 +208,7 @@ body {
 	padding: 12px 16px;
 	align-items: center;
 	background: #d0d0d0;
-	border-bottom: 2px solid #999;
+	border-bottom: 1px solid #999;
 }
 .item-card-header img {
 	width: 60px;
