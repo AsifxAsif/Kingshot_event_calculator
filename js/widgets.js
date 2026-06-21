@@ -1,0 +1,715 @@
+// ============================================
+// WIDGETS - SSR HERO EXCLUSIVE GEAR
+// ============================================
+// Get all SSR heroes from Hero data
+function getSSRHeroes() {
+	if (!window.gameDB || !window.gameDB.Hero || !window.gameDB.Hero.Hero) {
+		console.warn("Hero data not loaded yet, returning empty array");
+		return [];
+	}
+	const heroes = window.gameDB.Hero.Hero.Heroes || [];
+	return heroes.filter(hero => hero.rarity === 'SSR');
+}
+
+function getWidgetsData() {
+	const data = window.gameDB.Widgets?.Widgets || [];
+	return data;
+}
+// ============================================
+// WIDGET INVENTORY SYSTEM
+// ============================================
+// Store hero-specific widget quantities
+let heroWidgetQuantities = {};
+// Load/save hero widgets from localStorage
+function loadHeroWidgetsFromStorage() {
+	const saved = localStorage.getItem("hero_widget_quantities");
+	if (saved) {
+		heroWidgetQuantities = JSON.parse(saved);
+	} else {
+		heroWidgetQuantities = {};
+	}
+}
+
+function saveHeroWidgetsToStorage() {
+	localStorage.setItem("hero_widget_quantities", JSON.stringify(heroWidgetQuantities));
+}
+
+function updateHeroWidgetInput(heroName, value) {
+	let cleanValue = String(value).replace(/-/g, '');
+	cleanValue = cleanValue.replace(/[^0-9.]/g, '');
+	let numValue = parseFloat(cleanValue) || 0;
+	if (numValue < 0) numValue = 0;
+	heroWidgetQuantities[heroName] = numValue;
+	saveHeroWidgetsToStorage();
+	refreshCalculations();
+}
+
+function validateHeroWidgetInput(input) {
+	let value = input.value.replace(/-/g, '');
+	value = value.replace(/[^0-9.]/g, '');
+	if (value === '' || isNaN(parseFloat(value))) {
+		input.value = '';
+	} else {
+		input.value = value;
+	}
+}
+
+function getHeroWidgetInventory(heroName) {
+	return heroWidgetQuantities[heroName] || 0;
+}
+// ============================================
+// WIDGET INVENTORY CARD UI
+// ============================================
+function getHeroImageFileName(heroName) {
+	const imageMap = {
+		'Amadeus': 'amadeus_widget.png',
+		'Helga': 'helga_widget.png',
+		'Jabel': 'jabel_widget.png',
+		'Saul': 'saul_widget.png',
+		'Hilde': 'hilde_widget.png',
+		'Marlin': 'marlin_widget.png',
+		'Zoe': 'zoe_widget.png',
+		'Eric': 'eric_widget.png',
+		'Jaeger': 'jaeger_widget.png',
+		'Petra': 'petra_widget.png',
+		'Alcar': 'alcar_widget.png',
+		'Margot': 'margot_widget.png',
+		'Rosa': 'rosa_widget.png',
+		'Long Fei': 'long_fei_widget.png',
+		'Thrud': 'thrud_widget.png',
+		'Vivian': 'vivian_widget.png',
+		'Sophia': 'sophia_widget.png',
+		'Triton': 'triton_widget.png',
+		'Yang': 'yang_widget.png',
+		'Ava': 'ava_widget.png',
+		'Charles': 'charles_widget.png',
+		'Wee & Woo': 'wee_woo_widget.png'
+	};
+	const fileName = imageMap[heroName] || heroName.toLowerCase().replace(/ /g, '_') + '.png';
+	return `assets/widget/${fileName}`;
+}
+
+function createWidgetInventoryCard() {
+	const ssrHeroes = getSSRHeroes();
+	let heroesHtml = '';
+	for (const hero of ssrHeroes) {
+		const widgetValue = heroWidgetQuantities[hero.name] || '';
+		const imgUrl = getHeroImageFileName(hero.name);
+		heroesHtml += `
+    		<div class="hero-shard-item">
+        		<img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img">
+        		<span class="hero-shard-name" title="${hero.name}">${hero.name}</span>
+        		<input type="text" style="text-align: center;" 
+               		id="hero_widget_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}" 
+               		class="hero-shard-input" 
+               		value="${widgetValue}" 
+               		placeholder="0"
+               		oninput="validateHeroWidgetInput(this)"
+               		onchange="updateHeroWidgetInput('${hero.name}', this.value)">
+    		</div>
+		`;
+	}
+	return `
+        <div class="speedup-buff-card" style="margin-bottom: 20px;">
+            <div class="speedup-buff-header">
+                <span>📦 SSR HERO WIDGET INVENTORY</span>
+            </div>
+            <div class="speedup-buff-body">
+                <div class="buff-row">
+                    <div class="buff-field">
+                        <label>⭐ SSR Heroes Only</label>
+                        <small>Enter your hero-specific widget counts here. Widgets are hero-specific only.</small>
+                    </div>
+                </div>
+                <div class="hero-shards-grid" id="heroWidgetsGrid">
+                    ${heroesHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
+// ============================================
+// WIDGET LEVEL FUNCTIONS
+// ============================================
+function getWidgetLevels(dataArray) {
+	if (!dataArray?.length) return [0];
+	const levels = new Set();
+	levels.add(0);
+	for (let i = 0; i < dataArray.length; i++) {
+		let lvl = dataArray[i].level ?? dataArray[i].current_lvl ?? dataArray[i].current;
+		if (lvl !== undefined && lvl !== 0) levels.add(lvl);
+	}
+	return Array.from(levels).sort((a, b) => parseFloat(a) - parseFloat(b));
+}
+
+function getWidgetTargetLevels(dataArray) {
+	if (!dataArray?.length) return [];
+	const levels = new Set();
+	for (const item of dataArray) {
+		let lvl = item.level ?? item.target_lvl ?? item.target;
+		if (lvl !== undefined && lvl !== 0) levels.add(lvl);
+	}
+	return Array.from(levels).sort((a, b) => parseFloat(a) - parseFloat(b));
+}
+
+function getWidgetUpgradeSteps(dataArray, fromLevel, toLevel) {
+	const steps = [];
+	const fromStr = String(fromLevel);
+	const toStr = String(toLevel);
+	if (fromStr === '0') {
+		for (const item of dataArray) {
+			let lvl = item.level ?? item.target_lvl ?? item.target;
+			if (lvl !== undefined && lvl !== 0) {
+				steps.push(item);
+				if (String(lvl) === toStr) break;
+			}
+		}
+		return steps;
+	}
+	let start = -1,
+		end = -1;
+	for (let i = 0; i < dataArray.length; i++) {
+		let lvl = dataArray[i].level ?? dataArray[i].target_lvl ?? dataArray[i].target;
+		if (lvl !== undefined && lvl !== 0 && String(lvl) === fromStr) start = i;
+		if (lvl !== undefined && lvl !== 0 && String(lvl) === toStr) end = i;
+	}
+	if (start !== -1 && end !== -1 && start < end) {
+		for (let i = start + 1; i <= end; i++) steps.push(dataArray[i]);
+		return steps;
+	}
+	return steps;
+}
+
+function getWidgetNextLevel(dataArray, fromLevel) {
+	const allLevels = getWidgetTargetLevels(dataArray);
+	const currentNum = parseFloat(fromLevel);
+	for (const lvl of allLevels) {
+		if (parseFloat(lvl) > currentNum) {
+			return lvl;
+		}
+	}
+	return null;
+}
+// ============================================
+// WIDGET CARD UI
+// ============================================
+function createWidgetCard(heroName, dataArray) {
+	if (!dataArray?.length) return '';
+	const fromLevels = getWidgetLevels(dataArray);
+	const toLevels = getWidgetTargetLevels(dataArray);
+	const safeId = `widgets_${heroName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
+	const imgUrl = getHeroImageFileName(heroName);
+	// Build current level dropdown with placeholder
+	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
+	for (let i = 0; i < fromLevels.length; i++) {
+		currOpts += `<option value="${fromLevels[i]}">${fromLevels[i]}</option>`;
+	}
+	// Add the highest level as an option if not already in the list
+	if (highestLevel && !fromLevels.includes(highestLevel)) {
+		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
+	}
+	// Build target dropdown with placeholder
+	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
+	const initialCurrentVal = fromLevels[0] || 0;
+	const initialCurrentNum = parseFloat(initialCurrentVal);
+	let hasHigherLevels = false;
+	for (let i = 0; i < toLevels.length; i++) {
+		const targetNum = parseFloat(toLevels[i]);
+		if (targetNum > initialCurrentNum) {
+			targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
+			hasHigherLevels = true;
+		}
+	}
+	if (!hasHigherLevels && highestLevel) {
+		targOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
+	}
+	return `<div class="item-card" data-type="widgets" data-hero="${heroName}" data-id="${safeId}">
+        <div class="item-card-header">
+            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;">
+            <span>${heroName}'s Exclusive Widget</span>
+        </div>
+        <div class="item-card-body">
+            <div class="level-controls">
+                <select id="curr_${safeId}" onchange="onWidgetCurrentSelect('${safeId}')">${currOpts}</select>
+                <select id="targ_${safeId}" onchange="onWidgetTargetChange('${safeId}')">${targOpts}</select>
+            </div>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onWidgetUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade</label>
+            </div>
+            <div id="status_${safeId}" class="status-pane">⚙️ Select current & target level</div>
+        </div>
+    </div>`;
+}
+// ============================================
+// CALCULATIONS
+// ============================================
+function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked) {
+	let actualFrom = from;
+	let actualTo = to;
+	const toLevels = getWidgetTargetLevels(dataArray);
+	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
+	if (from === 'max') {
+		actualFrom = highestLevel;
+	}
+	if (to === 'max') {
+		actualTo = highestLevel;
+	}
+	if (String(actualFrom) === String(actualTo)) {
+		return null;
+	}
+	const steps = getWidgetUpgradeSteps(dataArray, actualFrom, actualTo);
+	if (!steps.length) return null;
+	let stepPoints = 0;
+	const costTotals = {};
+	let widgetsNeeded = 0;
+	for (const step of steps) {
+		if (step.widgets) {
+			const widgetCost = parseCost(step.widgets);
+			widgetsNeeded += widgetCost;
+			stepPoints += widgetCost * SCORE_RULES.widgets;
+		}
+		const keys = ['bread', 'wood', 'stone', 'iron', 'gold', 'truegold', 'tempered_truegold', 'truegold_dust', 'forgehammer', 'widgets', 'mithril', 'satin', 'gilded_threads', 'artisans_vision', 'charm_guide', 'charm_design', 'pet_food', 'growth_manual', 'nutrient_potion', 'promotion_medallion'];
+		for (const k of keys) {
+			if (step[k] !== undefined) {
+				const norm = k === 'forgehammer' ? 'forge_hammer' : k;
+				costTotals[norm] = (costTotals[norm] || 0) + parseCost(step[k]);
+			}
+		}
+	}
+	// Only hero-specific widgets can be used
+	const heroWidgetsAvailable = getHeroWidgetInventory(heroName);
+	// Check if enough hero-specific widgets
+	if (heroWidgetsAvailable >= widgetsNeeded) {
+		// Enough widgets
+		costTotals[`${heroName}_widgets`] = widgetsNeeded;
+		// Remove the general widgets entry since we're using hero-specific
+		delete costTotals.widgets;
+	} else if (heroWidgetsAvailable > 0) {
+		// Partial - only use what's available
+		const partialWidgets = heroWidgetsAvailable;
+		costTotals[`${heroName}_widgets`] = partialWidgets;
+		costTotals._partial = true;
+		costTotals._shortage = widgetsNeeded - partialWidgets;
+		// Remove the general widgets entry
+		delete costTotals.widgets;
+	} else {
+		// No widgets available
+		costTotals._noWidgets = true;
+		costTotals._shortage = widgetsNeeded;
+		delete costTotals.widgets;
+	}
+	return {
+		stepPoints,
+		costTotals,
+		stepsCount: steps.length,
+		widgetsNeeded,
+		heroWidgetsAvailable,
+		actualTo: actualTo,
+		actualFrom: actualFrom
+	};
+}
+// ============================================
+// REFRESH CALCULATIONS
+// ============================================
+function refreshCalculations() {
+	let vault = getCurrentVault();
+	const totalLocked = {};
+	for (const [_, ld] of lockedUpgrades.entries()) {
+		for (const [res, amt] of Object.entries(ld.costTotals)) {
+			// Skip internal flags
+			if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+			totalLocked[res] = (totalLocked[res] || 0) + amt;
+		}
+	}
+	let totalScore = 0;
+	const cards = document.querySelectorAll('.item-card[data-type="widgets"]');
+	const dataArray = getWidgetsData();
+	for (const card of cards) {
+		const heroName = card.dataset.hero;
+		const safeId = card.dataset.id;
+		const curr = document.getElementById(`curr_${safeId}`);
+		const targ = document.getElementById(`targ_${safeId}`);
+		const status = document.getElementById(`status_${safeId}`);
+		const activeCb = document.getElementById(`active_${safeId}`);
+		if (!curr || !targ || !status) continue;
+		const from = curr.value;
+		const to = targ.value;
+		const isLocked = lockedUpgrades.has(safeId);
+		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
+		const toLevels = getWidgetTargetLevels(dataArray);
+		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
+		// Check if no levels are selected
+		if (!from || from === '' || !to || to === '') {
+			status.className = "status-pane";
+			status.innerHTML = `⚙️ Select current & target level`;
+			if (activeCb) {
+				activeCb.checked = false;
+				activeCb.disabled = true;
+			}
+			continue;
+		}
+		// Check if current level is already the highest
+		const isAtMax = highestLevel && String(from) === String(highestLevel);
+		if (isAtMax) {
+			status.className = "status-pane status-ok";
+			status.innerHTML = `🏆 <strong>WIDGET MAXED!</strong><br>Already at highest level (${highestLevel})`;
+			if (activeCb) {
+				activeCb.checked = false;
+				activeCb.disabled = true;
+			}
+			continue;
+		}
+		if (String(from) === String(to)) {
+			status.className = "status-pane";
+			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
+			if (activeCb) {
+				activeCb.checked = false;
+				activeCb.disabled = true;
+			}
+			continue;
+		}
+		if (isLocked) {
+			const locked = lockedUpgrades.get(safeId);
+			const {
+				stepPoints,
+				costTotals,
+				stepsCount
+			} = locked;
+			let costHtml = '';
+			for (const [res, amt] of Object.entries(costTotals)) {
+				if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+				let remaining;
+				if (res === `${heroName}_widgets`) {
+					remaining = getHeroWidgetInventory(heroName) - (totalLocked[res] || 0) - amt;
+				} else {
+					remaining = (vault[res] || 0) - (totalLocked[res] || 0) - amt;
+				}
+				let disp = res.replace(/_/g, ' ');
+				if (res === `${heroName}_widgets`) {
+					disp = `${heroName} Widgets`;
+				}
+				const img = res === `${heroName}_widgets` ? getHeroImageFileName(heroName) : getImageFileName(res);
+				const req = formatNumber(amt);
+				if (remaining < 0) {
+					const short = formatNumber(-remaining);
+					costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="${res === `${heroName}_widgets` ? 'height:20px;width:20px;object-fit:contain;' : ''}"> ${disp}: ${req} <span class="text-deficit">(${short} short)</span></div>`;
+				} else {
+					const left = formatNumber(remaining);
+					costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="${res === `${heroName}_widgets` ? 'height:20px;width:20px;object-fit:contain;' : ''}"> ${disp}: ${req} <span class="text-remaining">(${left} remaining)</span></div>`;
+				}
+			}
+			const hasCosts = Object.keys(costTotals).filter(k => k !== '_partial' && k !== '_shortage' && k !== '_noWidgets').length > 0;
+			if (!hasCosts) costHtml = '<span>✨ No resources required</span>';
+			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
+			const partialNote = costTotals._partial ? `<div class="resource-tag text-warning">⚠️ Partial upgrade - ${costTotals._shortage} more ${heroName} widgets needed</div>` : '';
+			const noWidgetsNote = costTotals._noWidgets ? `<div class="resource-tag text-warning">⚠️ No ${heroName} widgets available! Need ${costTotals._shortage}</div>` : '';
+			status.className = "status-pane status-ok";
+			status.innerHTML = `<strong>✓ ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div>${partialNote}${noWidgetsNote}`;
+			totalScore += stepPoints;
+			if (activeCb) activeCb.disabled = false;
+			continue;
+		}
+		const otherLocked = {};
+		for (const [oid, ld] of lockedUpgrades.entries()) {
+			if (oid !== safeId) {
+				for (const [res, amt] of Object.entries(ld.costTotals)) {
+					if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+					otherLocked[res] = (otherLocked[res] || 0) + amt;
+				}
+			}
+		}
+		const costs = calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked);
+		if (!costs) {
+			status.className = "status-pane status-error";
+			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
+			continue;
+		}
+		const {
+			stepPoints,
+			costTotals,
+			stepsCount,
+			widgetsNeeded,
+			heroWidgetsAvailable,
+			actualTo
+		} = costs;
+		let canAfford = true;
+		for (const [res, amt] of Object.entries(costTotals)) {
+			if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+			if (res === `${heroName}_widgets`) {
+				const available = getHeroWidgetInventory(heroName);
+				if (available < (otherLocked[res] || 0) + amt) {
+					canAfford = false;
+					break;
+				}
+			} else {
+				if ((vault[res] || 0) < (otherLocked[res] || 0) + amt) {
+					canAfford = false;
+					break;
+				}
+			}
+		}
+		const hasEnoughWidgets = heroWidgetsAvailable >= widgetsNeeded;
+		const hasSomeWidgets = heroWidgetsAvailable > 0;
+		let costHtml = '';
+		// Show hero-specific widgets (only show if there's something to show)
+		const widgetDisplay = costTotals[`${heroName}_widgets`] || 0;
+		if (widgetDisplay > 0) {
+			const disp = `${heroName} Widgets`;
+			const img = getHeroImageFileName(heroName);
+			const remaining = heroWidgetsAvailable - widgetDisplay - (otherLocked[`${heroName}_widgets`] || 0);
+			if (remaining < 0) {
+				costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="height:20px;width:20px;object-fit:contain;"> ${disp}: ${formatNumber(widgetDisplay)} <span class="text-deficit">(${formatNumber(-remaining)} short)</span></div>`;
+			} else {
+				costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="height:20px;width:20px;object-fit:contain;"> ${disp}: ${formatNumber(widgetDisplay)} <span class="text-remaining">(${formatNumber(remaining)} remaining)</span></div>`;
+			}
+		}
+		// Show other resources
+		for (const [res, amt] of Object.entries(costTotals)) {
+			if (res === '_partial' || res === '_shortage' || res === '_noWidgets' || res === `${heroName}_widgets`) continue;
+			const lockedAmt = otherLocked[res] || 0;
+			const remaining = (vault[res] || 0) - lockedAmt - amt;
+			const disp = res.replace(/_/g, ' ');
+			const img = getImageFileName(res);
+			const req = formatNumber(amt);
+			if (remaining < 0) {
+				const short = formatNumber(-remaining);
+				costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';"> ${disp}: ${req} <span class="text-deficit">(${short} short)</span></div>`;
+			} else {
+				const left = formatNumber(remaining);
+				costHtml += `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';"> ${disp}: ${req} <span class="text-remaining">(${left} remaining)</span></div>`;
+			}
+		}
+		if (!costHtml) costHtml = '<span>✨ No resources required</span>';
+		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
+		// Only show one widget shortage message
+		let widgetNote = '';
+		if (!hasEnoughWidgets && hasSomeWidgets) {
+			widgetNote = `<div class="resource-tag text-warning">⚠️ Need ${widgetsNeeded} widgets, only have ${heroWidgetsAvailable} (${widgetsNeeded - heroWidgetsAvailable} short)</div>`;
+		} else if (!hasSomeWidgets) {
+			widgetNote = `<div class="resource-tag text-warning">⚠️ No ${heroName} widgets available! Need ${widgetsNeeded} widgets.</div>`;
+		}
+		if (activeCb) {
+			if (!canAfford || !hasEnoughWidgets) {
+				activeCb.disabled = true;
+				activeCb.parentElement.style.opacity = '0.5';
+			} else {
+				activeCb.disabled = false;
+				activeCb.parentElement.style.opacity = '1';
+			}
+		}
+		if (canAfford && hasEnoughWidgets) {
+			status.className = "status-pane";
+			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div><br><span class="text-remaining">✓ Click "Upgrade" to lock</span>`;
+		} else {
+			status.className = "status-pane status-error";
+			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}</div>${widgetNote}`;
+		}
+	}
+	const scoreDisplay = document.getElementById('globalScoreDisplay');
+	if (scoreDisplay) {
+		scoreDisplay.innerText = totalScore.toLocaleString();
+		if (typeof saveCurrentPageScore === 'function') {
+			saveCurrentPageScore(totalScore);
+		}
+	}
+}
+// ============================================
+// EVENT HANDLERS
+// ============================================
+function onWidgetCurrentSelect(safeId) {
+	const curr = document.getElementById(`curr_${safeId}`);
+	const targ = document.getElementById(`targ_${safeId}`);
+	if (!curr || !targ) return;
+	const from = curr.value;
+	const dataArray = getWidgetsData();
+	// If "Current Level" placeholder is selected, do nothing
+	if (!from || from === '') {
+		const toLevels = getWidgetTargetLevels(dataArray);
+		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
+		if (toLevels.length > 0) {
+			targOpts += `<option value="${toLevels[0]}">${toLevels[0]}</option>`;
+		}
+		targ.innerHTML = targOpts;
+		if (lockedUpgrades.has(safeId)) {
+			lockedUpgrades.delete(safeId);
+			const cb = document.getElementById(`active_${safeId}`);
+			if (cb) cb.checked = false;
+		}
+		refreshCalculations();
+		return;
+	}
+	const currentNum = parseFloat(from);
+	const toLevels = getWidgetTargetLevels(dataArray);
+	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
+	const next = getWidgetNextLevel(dataArray, from);
+	// Dynamically rebuild target dropdown - only show levels above current
+	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
+	let hasHigherLevels = false;
+	for (let i = 0; i < toLevels.length; i++) {
+		const targetNum = parseFloat(toLevels[i]);
+		if (targetNum > currentNum) {
+			dynamicTargOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
+			hasHigherLevels = true;
+		}
+	}
+	if (!hasHigherLevels && highestLevel) {
+		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
+	}
+	targ.innerHTML = dynamicTargOpts;
+	// Auto-select the next logical level if it exists
+	if (next) {
+		let found = false;
+		for (let i = 0; i < targ.options.length; i++) {
+			if (String(targ.options[i].value) === String(next)) {
+				targ.selectedIndex = i;
+				found = true;
+				break;
+			}
+		}
+		if (!found && targ.options.length > 1) {
+			targ.selectedIndex = 1;
+		}
+	} else if (targ.options.length > 1) {
+		targ.selectedIndex = 1;
+	}
+	if (lockedUpgrades.has(safeId)) {
+		lockedUpgrades.delete(safeId);
+		const cb = document.getElementById(`active_${safeId}`);
+		if (cb) cb.checked = false;
+	}
+	refreshCalculations();
+}
+
+function onWidgetTargetChange(safeId) {
+	if (lockedUpgrades.has(safeId)) {
+		lockedUpgrades.delete(safeId);
+		const cb = document.getElementById(`active_${safeId}`);
+		if (cb) cb.checked = false;
+	}
+	refreshCalculations();
+}
+
+function onWidgetUpgradeCheckboxChange(safeId, isChecked) {
+	const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
+	if (!card) return;
+	const heroName = card.dataset.hero;
+	if (isChecked) {
+		const curr = document.getElementById(`curr_${safeId}`);
+		const targ = document.getElementById(`targ_${safeId}`);
+		if (!curr || !targ) return;
+		const from = curr.value;
+		const to = targ.value;
+		if (!from || from === '' || !to || to === '' || String(from) === String(to)) {
+			const cb = document.getElementById(`active_${safeId}`);
+			if (cb) cb.checked = false;
+			return;
+		}
+		const vault = getCurrentVault();
+		let otherLocked = {};
+		for (const [oid, ld] of lockedUpgrades.entries()) {
+			if (oid !== safeId) {
+				for (const [res, amt] of Object.entries(ld.costTotals)) {
+					if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+					otherLocked[res] = (otherLocked[res] || 0) + amt;
+				}
+			}
+		}
+		const dataArray = getWidgetsData();
+		const costs = calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked);
+		if (!costs) {
+			const cb = document.getElementById(`active_${safeId}`);
+			if (cb) cb.checked = false;
+			refreshCalculations();
+			return;
+		}
+		let canAfford = true;
+		for (const [res, amt] of Object.entries(costs.costTotals)) {
+			if (res === '_partial' || res === '_shortage' || res === '_noWidgets') continue;
+			if (res === `${heroName}_widgets`) {
+				const available = getHeroWidgetInventory(heroName);
+				if (available < (otherLocked[res] || 0) + amt) {
+					canAfford = false;
+					break;
+				}
+			} else {
+				if ((vault[res] || 0) < (otherLocked[res] || 0) + amt) {
+					canAfford = false;
+					break;
+				}
+			}
+		}
+		const heroWidgetsAvailable = getHeroWidgetInventory(heroName);
+		const hasEnoughWidgets = heroWidgetsAvailable >= costs.widgetsNeeded;
+		if (!canAfford || !hasEnoughWidgets) {
+			const cb = document.getElementById(`active_${safeId}`);
+			if (cb) cb.checked = false;
+			refreshCalculations();
+			return;
+		}
+		const displayTo = to === 'max' ? 'max' : (costs.actualTo || to);
+		lockedUpgrades.set(safeId, {
+			costTotals: JSON.parse(JSON.stringify(costs.costTotals)),
+			stepPoints: costs.stepPoints,
+			stepsCount: costs.stepsCount,
+			heroName: heroName,
+			toLevel: displayTo
+		});
+	} else {
+		lockedUpgrades.delete(safeId);
+	}
+	refreshCalculations();
+}
+// ============================================
+// LOAD WIDGETS
+// ============================================
+function loadWidgets() {
+	const inventoryContainer = document.getElementById('widgetInventoryContainer');
+	const widgetsGridContainer = document.getElementById('widgetsGrid');
+	if (!inventoryContainer || !widgetsGridContainer) return;
+	loadHeroWidgetsFromStorage();
+	inventoryContainer.innerHTML = '';
+	widgetsGridContainer.innerHTML = '';
+	// Build inventory card
+	inventoryContainer.innerHTML = createWidgetInventoryCard();
+	// Build widget cards for each SSR hero
+	const ssrHeroes = getSSRHeroes();
+	const dataArray = getWidgetsData();
+	let widgetsHtml = '';
+	for (const hero of ssrHeroes) {
+		widgetsHtml += createWidgetCard(hero.name, dataArray);
+	}
+	widgetsGridContainer.innerHTML = widgetsHtml;
+	// Restore locked upgrades states
+	for (const [safeId, data] of lockedUpgrades.entries()) {
+		if (safeId.startsWith('widgets_')) {
+			const cb = document.getElementById(`active_${safeId}`);
+			if (cb) cb.checked = true;
+			if (data.toLevel) {
+				const targSelect = document.getElementById(`targ_${safeId}`);
+				if (targSelect) {
+					for (let i = 0; i < targSelect.options.length; i++) {
+						if (targSelect.options[i].value === String(data.toLevel)) {
+							targSelect.selectedIndex = i;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	refreshCalculations();
+}
+// ============================================
+// EXPORTS
+// ============================================
+window.loadHeroWidgetsFromStorage = loadHeroWidgetsFromStorage;
+window.saveHeroWidgetsToStorage = saveHeroWidgetsToStorage;
+window.updateHeroWidgetInput = updateHeroWidgetInput;
+window.getHeroWidgetInventory = getHeroWidgetInventory;
+window.loadWidgets = loadWidgets;
+window.validateHeroWidgetInput = validateHeroWidgetInput;
+window.refreshCalculations = refreshCalculations;
+window.onWidgetCurrentSelect = onWidgetCurrentSelect;
+window.onWidgetTargetChange = onWidgetTargetChange;
+window.onWidgetUpgradeCheckboxChange = onWidgetUpgradeCheckboxChange;
