@@ -690,15 +690,15 @@ function loadWarAcademy() {
 	const categoryGroups = {
 		'INFANTRY': {
 			techs: ['Truegold Battalion (Infantry)', 'Truegold Blades', 'Truegold Shields', 'Truegold Legionaries (Infantry)', 'Truegold Mauls', 'Truegold Plating', 'Truegold Infantry', 'Truegold Infantry Healing', 'Truegold Infantry Training', 'Truegold Infantry Aid'],
-			icon: 'assets/infantry.png'
+			icon: 'assets/Infantry.png'
 		},
 		'CAVALRY': {
 			techs: ['Truegold Battalion (Cavalry)', 'Truegold Charge', 'Truegold Farriery', 'Truegold Legionaries (Cavalry)', 'Truegold Lances', 'Truegold Platecraft', 'Truegold Cavalry', 'Truegold Cavalry Healing', 'Truegold Cavalry Training', 'Truegold Cavalry Aid'],
-			icon: 'assets/cavalry.png'
+			icon: 'assets/Cavalry.png'
 		},
 		'ARCHER': {
 			techs: ['Truegold Battalion (Archer)', 'Truegold Bows', 'Truegold Bracers', 'Truegold Legionaries (Archer)', 'Truegold Arrows', 'Truegold Vests', 'Truegold Archer', 'Truegold Archer Healing', 'Truegold Archer Training', 'Truegold Archer Aid'],
-			icon: 'assets/archer.png'
+			icon: 'assets/Archer.png'
 		}
 	};
 	// Build group cards

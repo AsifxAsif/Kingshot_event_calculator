@@ -38,16 +38,16 @@ function validateNumberInput(input) {
 // ============================================
 function getTroopImageFileName(troopType) {
 	const imageMap = {
-		'Infantry': 'infantry.png',
-		'Cavalry': 'cavalry.png',
-		'Archer': 'archer.png'
+		'Infantry': 'Infantry.png',
+		'Cavalry': 'Cavalry.png',
+		'Archer': 'Archer.png'
 	};
 	// Extract base type from "Infantry Tiers" -> "Infantry"
 	let baseType = troopType;
 	if (troopType.includes('Infantry')) baseType = 'Infantry';
 	else if (troopType.includes('Cavalry')) baseType = 'Cavalry';
 	else if (troopType.includes('Archer')) baseType = 'Archer';
-	return `assets/${imageMap[baseType] || 'infantry.png'}`;
+	return `assets/${imageMap[baseType] || 'Infantry.png'}`;
 }
 // ============================================
 // CREATE INDIVIDUAL TROOP CARDS (for use inside group)

@@ -275,14 +275,14 @@ function createIndividualCharmCard(charmName, charmNumber, dataArray) {
 function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 	// Map group name to icon path
 	const iconMap = {
-		'Helmet': 'assets/cavalry.png',
-		'Watch': 'assets/cavalry.png',
-		'Armor': 'assets/infantry.png',
-		'Pant': 'assets/infantry.png',
-		'Belt': 'assets/archer.png',
-		'Boot': 'assets/archer.png'
+		'Helmet': 'assets/Cavalry.png',
+		'Watch': 'assets/Cavalry.png',
+		'Armor': 'assets/Infantry.png',
+		'Pant': 'assets/Infantry.png',
+		'Belt': 'assets/Archer.png',
+		'Boot': 'assets/Archer.png'
 	};
-	const iconPath = iconMap[groupName] || 'assets/infantry.png';
+	const iconPath = iconMap[groupName] || 'assets/Infantry.png';
 	let charmsHtml = '';
 	for (let i = 0; i < charmNames.length; i++) {
 		charmsHtml += createIndividualCharmCard(charmNames[i], i + 1, dataArray);
