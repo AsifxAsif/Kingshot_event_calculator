@@ -2,11 +2,9 @@
 // COMBINED: FORGEHAMMER + HERO GEAR
 // 1 Card Per Group - All Items Combined
 // ============================================
-
 // ============================================
 // SECTION 1: FORGEHAMMER (1 Combined Card)
 // ============================================
-
 function getForgehammerData() {
 	return window.gameDB.Forgehammer?.Mastery || [];
 }
@@ -46,7 +44,8 @@ function getForgehammerUpgradeSteps(dataArray, fromLevel, toLevel) {
 		}
 		return steps;
 	}
-	let start = -1, end = -1;
+	let start = -1,
+		end = -1;
 	for (let i = 0; i < dataArray.length; i++) {
 		let lvl = dataArray[i].level ?? dataArray[i].target_lvl ?? dataArray[i].target;
 		if (lvl !== undefined && lvl !== 0 && String(lvl) === fromStr) start = i;
@@ -76,7 +75,6 @@ function createForgehammerCombinedCard(dataArray) {
 	const toLevels = getForgehammerTargetLevels(dataArray);
 	const safeId = 'forgehammer_mastery';
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
-	
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	if (fromLevels.includes(0) || fromLevels.includes('0')) {
 		currOpts += `<option value="0">0</option>`;
@@ -89,7 +87,6 @@ function createForgehammerCombinedCard(dataArray) {
 	if (highestLevel && !fromLevels.includes(highestLevel)) {
 		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
 		targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
@@ -97,7 +94,6 @@ function createForgehammerCombinedCard(dataArray) {
 	if (highestLevel && !toLevels.includes(highestLevel)) {
 		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	return `<div class="item-card" data-type="forgehammer" data-name="Mastery Forging" data-id="${safeId}">
 		<div class="item-card-body" style="padding: 12px;">
 			<div class="level-controls">
@@ -120,13 +116,10 @@ function calculateForgehammerCosts(dataArray, from, to, vault, otherLocked) {
 	if (from === 'max') actualFrom = highestLevel;
 	if (to === 'max') actualTo = highestLevel;
 	if (String(actualFrom) === String(actualTo)) return null;
-	
 	const steps = getForgehammerUpgradeSteps(dataArray, actualFrom, actualTo);
 	if (!steps.length) return null;
-	
 	let stepPoints = 0;
 	const costTotals = {};
-	
 	for (const step of steps) {
 		if (step.forgehammer) stepPoints += step.forgehammer * SCORE_RULES.forge_hammer;
 		if (step.mythic_gear) {
@@ -140,7 +133,6 @@ function calculateForgehammerCosts(dataArray, from, to, vault, otherLocked) {
 			}
 		}
 	}
-	
 	return {
 		stepPoints,
 		costTotals,
@@ -158,7 +150,6 @@ function onForgehammerCurrentSelect(safeId) {
 	const dataArray = getForgehammerData();
 	const toLevels = getForgehammerTargetLevels(dataArray);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-	
 	if (!from || from === '') {
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		for (let i = 0; i < toLevels.length; i++) {
@@ -176,10 +167,8 @@ function onForgehammerCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-	
 	const currentNum = parseFloat(from);
 	const next = getForgehammerNextLevel(dataArray, from);
-	
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
 	for (let i = 0; i < toLevels.length; i++) {
@@ -193,7 +182,6 @@ function onForgehammerCurrentSelect(safeId) {
 		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
-	
 	if (next) {
 		let found = false;
 		for (let i = 0; i < targ.options.length; i++) {
@@ -209,7 +197,6 @@ function onForgehammerCurrentSelect(safeId) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
-	
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);
@@ -232,7 +219,8 @@ function onForgehammerUpgradeCheckboxChange(safeId, isChecked) {
 		const curr = document.getElementById(`curr_${safeId}`);
 		const targ = document.getElementById(`targ_${safeId}`);
 		if (!curr || !targ) return;
-		const from = curr.value, to = targ.value;
+		const from = curr.value,
+			to = targ.value;
 		if (!from || from === '' || !to || to === '' || String(from) === String(to)) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = false;
@@ -277,12 +265,9 @@ function onForgehammerUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-
-
 // ============================================
 // SECTION 2: HERO GEAR (1 Combined Card - Dynamic Image)
 // ============================================
-
 function getHeroGearData() {
 	return window.gameDB.Hero_Gear?.["Hero Gear"] || window.gameDB.Hero_Gear || [];
 }
@@ -322,7 +307,8 @@ function getHeroGearUpgradeSteps(dataArray, fromLevel, toLevel) {
 		}
 		return steps;
 	}
-	let start = -1, end = -1;
+	let start = -1,
+		end = -1;
 	for (let i = 0; i < dataArray.length; i++) {
 		let lvl = dataArray[i].level ?? dataArray[i].target_lvl ?? dataArray[i].target;
 		if (lvl !== undefined && lvl !== 0 && String(lvl) === fromStr) start = i;
@@ -395,7 +381,6 @@ function createHeroGearCombinedCard(dataArray) {
 	const toLevels = getHeroGearTargetLevels(dataArray);
 	const safeId = 'herogear_mastery';
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
-	
 	let currOpts = '<option value="" disabled selected hidden>Current Level</option>';
 	if (fromLevels.includes(0) || fromLevels.includes('0')) {
 		currOpts += `<option value="0">0</option>`;
@@ -408,7 +393,6 @@ function createHeroGearCombinedCard(dataArray) {
 	if (highestLevel && !fromLevels.includes(highestLevel)) {
 		currOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	for (let i = 0; i < toLevels.length; i++) {
 		targOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
@@ -416,7 +400,6 @@ function createHeroGearCombinedCard(dataArray) {
 	if (highestLevel && !toLevels.includes(highestLevel)) {
 		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
-	
 	return `<div class="item-card" data-type="herogear" data-name="Hero Gear" data-id="${safeId}">
 		<div class="item-card-body" style="padding: 12px;">
 			<div class="level-controls">
@@ -439,13 +422,10 @@ function calculateHeroGearCosts(dataArray, from, to, vault, otherLocked) {
 	if (from === 'max') actualFrom = highestLevel;
 	if (to === 'max') actualTo = highestLevel;
 	if (String(actualFrom) === String(actualTo)) return null;
-	
 	const steps = getHeroGearUpgradeSteps(dataArray, actualFrom, actualTo);
 	if (!steps.length) return null;
-	
 	let stepPoints = 0;
 	const costTotals = {};
-	
 	for (const step of steps) {
 		if (step.mithril) stepPoints += step.mithril * SCORE_RULES.mithril;
 		if (step.mythic_gear) {
@@ -459,7 +439,6 @@ function calculateHeroGearCosts(dataArray, from, to, vault, otherLocked) {
 			}
 		}
 	}
-	
 	return {
 		stepPoints,
 		costTotals,
@@ -477,9 +456,7 @@ function onHeroGearCurrentSelect(safeId) {
 	const dataArray = getHeroGearData();
 	const toLevels = getHeroGearTargetLevels(dataArray);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-	
 	updateHeroGearImage(from);
-	
 	if (!from || from === '') {
 		let targOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		for (let i = 0; i < toLevels.length; i++) {
@@ -497,10 +474,8 @@ function onHeroGearCurrentSelect(safeId) {
 		refreshCalculations();
 		return;
 	}
-	
 	const currentNum = parseFloat(from);
 	const next = getHeroGearNextLevel(dataArray, from);
-	
 	let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 	let hasHigherLevels = false;
 	for (let i = 0; i < toLevels.length; i++) {
@@ -514,7 +489,6 @@ function onHeroGearCurrentSelect(safeId) {
 		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel}</option>`;
 	}
 	targ.innerHTML = dynamicTargOpts;
-	
 	if (next) {
 		let found = false;
 		for (let i = 0; i < targ.options.length; i++) {
@@ -530,7 +504,6 @@ function onHeroGearCurrentSelect(safeId) {
 	} else if (targ.options.length > 1) {
 		targ.selectedIndex = 1;
 	}
-	
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);
@@ -599,12 +572,9 @@ function onHeroGearUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-
-
 // ============================================
 // COMBINED REFRESH CALCULATIONS
 // ============================================
-
 function refreshCalculations() {
 	let vault = getCurrentVault();
 	const totalLocked = {};
@@ -613,10 +583,8 @@ function refreshCalculations() {
 			totalLocked[res] = (totalLocked[res] || 0) + amt;
 		}
 	}
-	
 	let forgehammerScore = 0;
 	let heroGearScore = 0;
-	
 	// ----- FORGEHAMMER CALCULATIONS -----
 	const forgehammerCards = document.querySelectorAll('.item-card[data-type="forgehammer"]');
 	const forgehammerData = getForgehammerData();
@@ -627,11 +595,10 @@ function refreshCalculations() {
 		const status = document.getElementById(`status_${safeId}`);
 		const activeCb = document.getElementById(`active_${safeId}`);
 		if (!curr || !targ || !status) continue;
-		
-		const from = curr.value, to = targ.value;
+		const from = curr.value,
+			to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Select current & target level`;
@@ -641,7 +608,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		const toLevels = getForgehammerTargetLevels(forgehammerData);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
@@ -654,7 +620,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		if (String(from) === String(to)) {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
@@ -664,10 +629,13 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		if (isLocked) {
 			const locked = lockedUpgrades.get(safeId);
-			const { stepPoints, costTotals, stepsCount } = locked;
+			const {
+				stepPoints,
+				costTotals,
+				stepsCount
+			} = locked;
 			let costHtml = '';
 			for (const [res, amt] of Object.entries(costTotals)) {
 				const remaining = (vault[res] || 0) - (totalLocked[res] || 0);
@@ -690,21 +658,22 @@ function refreshCalculations() {
 			if (activeCb) activeCb.disabled = false;
 			continue;
 		}
-		
 		const otherLocked = {};
 		for (const [oid, ld] of lockedUpgrades.entries())
 			if (oid !== safeId) {
 				for (const [res, amt] of Object.entries(ld.costTotals)) otherLocked[res] = (otherLocked[res] || 0) + amt;
 			}
-		
 		const costs = calculateForgehammerCosts(forgehammerData, from, to, vault, otherLocked);
 		if (!costs) {
 			status.className = "status-pane status-error";
 			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
-		
-		const { stepPoints, costTotals, stepsCount } = costs;
+		const {
+			stepPoints,
+			costTotals,
+			stepsCount
+		} = costs;
 		let canAfford = true;
 		for (const [res, amt] of Object.entries(costTotals)) {
 			if ((vault[res] || 0) < (totalLocked[res] || 0) + amt) {
@@ -712,7 +681,6 @@ function refreshCalculations() {
 				break;
 			}
 		}
-		
 		let costHtml = '';
 		for (const [res, amt] of Object.entries(costTotals)) {
 			const lockedAmt = totalLocked[res] || 0;
@@ -729,9 +697,7 @@ function refreshCalculations() {
 			}
 		}
 		if (!Object.keys(costTotals).length) costHtml = '<span>✨ No resources required</span>';
-		
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
-		
 		if (activeCb) {
 			if (!canAfford) {
 				activeCb.disabled = true;
@@ -741,7 +707,6 @@ function refreshCalculations() {
 				activeCb.parentElement.style.opacity = '1';
 			}
 		}
-		
 		if (canAfford) {
 			status.className = "status-pane";
 			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div><br><span class="text-remaining">✓ Click "Upgrade" to lock</span>`;
@@ -750,7 +715,6 @@ function refreshCalculations() {
 			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}</div>`;
 		}
 	}
-	
 	// ----- HERO GEAR CALCULATIONS -----
 	const heroGearCards = document.querySelectorAll('.item-card[data-type="herogear"]');
 	const heroGearData = getHeroGearData();
@@ -761,13 +725,11 @@ function refreshCalculations() {
 		const status = document.getElementById(`status_${safeId}`);
 		const activeCb = document.getElementById(`active_${safeId}`);
 		if (!curr || !targ || !status) continue;
-		
-		const from = curr.value, to = targ.value;
+		const from = curr.value,
+			to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		
 		updateHeroGearImage(from);
-		
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Select current & target level`;
@@ -777,7 +739,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		const toLevels = getHeroGearTargetLevels(heroGearData);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
@@ -790,7 +751,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		if (String(from) === String(to)) {
 			status.className = "status-pane";
 			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
@@ -800,10 +760,13 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		
 		if (isLocked) {
 			const locked = lockedUpgrades.get(safeId);
-			const { stepPoints, costTotals, stepsCount } = locked;
+			const {
+				stepPoints,
+				costTotals,
+				stepsCount
+			} = locked;
 			let costHtml = '';
 			for (const [res, amt] of Object.entries(costTotals)) {
 				const remaining = (vault[res] || 0) - (totalLocked[res] || 0);
@@ -826,21 +789,22 @@ function refreshCalculations() {
 			if (activeCb) activeCb.disabled = false;
 			continue;
 		}
-		
 		const otherLocked = {};
 		for (const [oid, ld] of lockedUpgrades.entries())
 			if (oid !== safeId) {
 				for (const [res, amt] of Object.entries(ld.costTotals)) otherLocked[res] = (otherLocked[res] || 0) + amt;
 			}
-		
 		const costs = calculateHeroGearCosts(heroGearData, from, to, vault, otherLocked);
 		if (!costs) {
 			status.className = "status-pane status-error";
 			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
-		
-		const { stepPoints, costTotals, stepsCount } = costs;
+		const {
+			stepPoints,
+			costTotals,
+			stepsCount
+		} = costs;
 		let canAfford = true;
 		for (const [res, amt] of Object.entries(costTotals)) {
 			if ((vault[res] || 0) < (totalLocked[res] || 0) + amt) {
@@ -848,7 +812,6 @@ function refreshCalculations() {
 				break;
 			}
 		}
-		
 		let costHtml = '';
 		for (const [res, amt] of Object.entries(costTotals)) {
 			const lockedAmt = totalLocked[res] || 0;
@@ -865,9 +828,7 @@ function refreshCalculations() {
 			}
 		}
 		if (!Object.keys(costTotals).length) costHtml = '<span>✨ No resources required</span>';
-		
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
-		
 		if (activeCb) {
 			if (!canAfford) {
 				activeCb.disabled = true;
@@ -877,7 +838,6 @@ function refreshCalculations() {
 				activeCb.parentElement.style.opacity = '1';
 			}
 		}
-		
 		if (canAfford) {
 			status.className = "status-pane";
 			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div><br><span class="text-remaining">✓ Click "Upgrade" to lock</span>`;
@@ -886,7 +846,6 @@ function refreshCalculations() {
 			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}</div>`;
 		}
 	}
-	
 	// Update combined score
 	const totalScore = forgehammerScore + heroGearScore;
 	const scoreDisplay = document.getElementById('globalScoreDisplay');
@@ -897,12 +856,9 @@ function refreshCalculations() {
 		}
 	}
 }
-
-
 // ============================================
 // LOAD COMBINED PAGE
 // ============================================
-
 function loadCombinedPage() {
 	// Load Forgehammer
 	const forgehammerContainer = document.getElementById('forgehammerContainer');
@@ -910,7 +866,6 @@ function loadCombinedPage() {
 		forgehammerContainer.innerHTML = '';
 		const dataArray = getForgehammerData();
 		forgehammerContainer.innerHTML += createForgehammerCombinedCard(dataArray);
-		
 		for (const [safeId, data] of lockedUpgrades.entries()) {
 			if (safeId === 'forgehammer_mastery') {
 				const cb = document.getElementById(`active_${safeId}`);
@@ -933,14 +888,12 @@ function loadCombinedPage() {
 			}
 		}
 	}
-	
 	// Load Hero Gear
 	const heroGearContainer = document.getElementById('heroGearContainer');
 	if (heroGearContainer) {
 		heroGearContainer.innerHTML = '';
 		const dataArray = getHeroGearData();
 		heroGearContainer.innerHTML += createHeroGearCombinedCard(dataArray);
-		
 		for (const [safeId, data] of lockedUpgrades.entries()) {
 			if (safeId === 'herogear_mastery') {
 				const cb = document.getElementById(`active_${safeId}`);
@@ -967,17 +920,13 @@ function loadCombinedPage() {
 				}
 			}
 		}
-		
 		const currSelect = document.getElementById('curr_herogear_mastery');
 		if (currSelect && currSelect.value) {
 			updateHeroGearImage(currSelect.value);
 		}
 	}
-	
 	refreshCalculations();
 }
-
-
 // ============================================
 // EXPORTS
 // ============================================
