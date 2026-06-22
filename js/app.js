@@ -98,6 +98,9 @@ const RESOURCE_ITEMS = [{
 }, {
 	id: "common_taming_mark",
 	placeholder: "30"
+}, {
+	id: "mythic_gear",
+	placeholder: "10"
 }];
 const SCORE_RULES = {
 	truegold: 2e3,
@@ -337,6 +340,7 @@ function getImageFileName(resourceId) {
 		rare_general_shard: "rare_general_shard.png",
 		epic_general_shard: "epic_general_shard.png",
 		mythic_general_shard: "mythic_general_shard.png",
+		mythic_gear: "mythic-gear.png",
 		hero_roulette: "hero_roulette.png",
 		general_emblem: "general_emblem.png",
 		master_manuscript: "master_manuscript.png",

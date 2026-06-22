@@ -9,7 +9,7 @@ function getGovGearImageFileName(gearName, levelName) {
 		'Armor': 'infantry_gear_1',
 		'Pant': 'infantry_gear_2',
 		'Belt': 'archery_gear_1',
-		'Boot': 'archery_gear_2'
+		'Weapon': 'archery_gear_2'
 	};
 	const prefix = gearMap[gearName] || gearName.toLowerCase().replace(/ /g, '_');
 	// Parse the level name to extract color, tier, and stars
@@ -244,7 +244,7 @@ function createGovGearCard(name, dataArray) {
 		targOpts += `<option value="${highestLevel}">${highestLevel}</option>`;
 	}
 	return `<div class="item-card" data-type="govgear" data-name="${name}" data-id="${safeId}">
-        <div class="item-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
                 <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}">
@@ -627,7 +627,7 @@ function loadGovGear() {
 	const container = document.getElementById('govGearGrid');
 	if (!container) return;
 	container.innerHTML = '';
-	const parents = ['Helmet', 'Watch', 'Armor', 'Pant', 'Belt', 'Boot'];
+	const parents = ['Helmet', 'Watch', 'Armor', 'Pant', 'Belt', 'Weapon'];
 	const dataArray = getGovGearData();
 	for (const parent of parents) {
 		container.innerHTML += createGovGearCard(parent, dataArray);

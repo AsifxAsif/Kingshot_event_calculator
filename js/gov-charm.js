@@ -8,11 +8,11 @@ function getGovCharmImageFileName(charmName, levelName) {
 		'Armor': 'infantry',
 		'Pant': 'infantry',
 		'Belt': 'archery',
-		'Boot': 'archery'
+		'Weapon': 'archery'
 	};
 	// Extract base type from full charm name
 	let baseType = 'infantry'; // fallback
-	const match = charmName.match(/^(Helmet|Watch|Armor|Pant|Belt|Boot)/);
+	const match = charmName.match(/^(Helmet|Watch|Armor|Pant|Belt|Weapon)/);
 	if (match) {
 		baseType = match[1];
 	}
@@ -280,7 +280,7 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 		'Armor': 'assets/Infantry.png',
 		'Pant': 'assets/Infantry.png',
 		'Belt': 'assets/Archer.png',
-		'Boot': 'assets/Archer.png'
+		'Weapon': 'assets/Archer.png'
 	};
 	const iconPath = iconMap[groupName] || 'assets/Infantry.png';
 	let charmsHtml = '';
@@ -292,7 +292,6 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
             <div class="item-card-header" style="background: #c8c8c8; border-bottom: 1px solid #888; display: flex; align-items: center; gap: 10px;">
                 <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'">
                 <span style="font-size: 1.1rem;">${groupName} Charms</span>
-                <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: auto;">${charmNames.length} charms</span>
             </div>
             <div class="item-card-body" style="padding: 12px;">
                 ${charmsHtml}
@@ -672,8 +671,8 @@ function loadGovCharm() {
 		type: 'Belt',
 		charms: ['Belt Charm #1', 'Belt Charm #2', 'Belt Charm #3']
 	}, {
-		type: 'Boot',
-		charms: ['Boot Charm #1', 'Boot Charm #2', 'Boot Charm #3']
+		type: 'Weapon',
+		charms: ['Weapon Charm #1', 'Weapon Charm #2', 'Weapon Charm #3']
 	}];
 	// Create group cards
 	for (const group of charmGroups) {
