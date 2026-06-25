@@ -32,15 +32,26 @@ function validateNumberInput(input) {
 }
 
 function getTroopImageFileName(troopType) {
-	const imageMap = {
-		'Infantry': 'Infantry.png',
-		'Cavalry': 'Cavalry.png',
-		'Archer': 'Archer.png'
+	// Try sprite first
+	const spriteMap = {
+		'Infantry': 'sprite-resources-Infantry',
+		'Cavalry': 'sprite-resources-Cavalry',
+		'Archer': 'sprite-resources-Archer'
 	};
 	let baseType = troopType;
 	if (troopType.includes('Infantry')) baseType = 'Infantry';
 	else if (troopType.includes('Cavalry')) baseType = 'Cavalry';
 	else if (troopType.includes('Archer')) baseType = 'Archer';
+	const spriteClass = spriteMap[baseType];
+	if (spriteClass && document.querySelector('.sprite-resources')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
+	const imageMap = {
+		'Infantry': 'Infantry.png',
+		'Cavalry': 'Cavalry.png',
+		'Archer': 'Archer.png'
+	};
 	return `assets/${imageMap[baseType] || 'Infantry.png'}`;
 }
 
@@ -52,9 +63,16 @@ function createTroopIndividualCard(troopType) {
 		tierOptions += `<option value="${tier}">${label}</option>`;
 	}
 	const imgUrl = getTroopImageFileName(troopType);
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:40px;width:40px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">`;
+	}
 	return `<div class="item-card troop-card" data-type="troops" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
+            ${headerHtml}
             <span style="font-size: 0.85rem;">${troopType}</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">
@@ -102,9 +120,16 @@ function createPromotionIndividualCard(troopType) {
 		}
 	}
 	const imgUrl = getTroopImageFileName(troopType);
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:40px;width:40px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">`;
+	}
 	return `<div class="item-card troop-card" data-type="promotion" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
+            ${headerHtml}
             <span style="font-size: 0.85rem;">${troopType} Promotion</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">
@@ -298,7 +323,6 @@ function refreshTroopsCalculations() {
 	let runningLocked = {};
 	let totalTroopPoints = 0;
 	let totalSpeedupPoints = 0;
-	// Collect ALL locked upgrades first
 	const allLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -307,7 +331,6 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
-	// Training Cards
 	const cards = document.querySelectorAll('.troop-card[data-type="troops"]');
 	for (const card of cards) {
 		const troopType = card.dataset.name;
@@ -331,10 +354,8 @@ function refreshTroopsCalculations() {
 			const troopPoints = getTroopPointsForLevel(troopType, level);
 			stepPoints = quantity * troopPoints;
 			costTotals = getTroopResourceCosts(troopType, level, quantity) || {};
-			// CRITICAL FIX: Calculate other locked (excluding this upgrade if locked)
 			const otherLocked = {};
 			if (isLocked) {
-				// If locked, exclude this upgrade from total
 				for (const [res, amt] of Object.entries(allLocked)) {
 					const currentAmt = costTotals[res] || 0;
 					if (!res.startsWith('_') && amt - currentAmt > 0) {
@@ -342,7 +363,6 @@ function refreshTroopsCalculations() {
 					}
 				}
 			} else {
-				// If not locked, use all locked
 				for (const [res, amt] of Object.entries(allLocked)) {
 					if (!res.startsWith('_')) {
 						otherLocked[res] = amt;
@@ -421,7 +441,6 @@ function refreshTroopsCalculations() {
 				speedCb.parentElement.title = '';
 			}
 		}
-		// Calculate other locked for display
 		const displayOtherLocked = {};
 		const isCurrentlyLocked = lockedUpgrades.has(safeId);
 		if (isCurrentlyLocked && costTotals) {
@@ -439,7 +458,6 @@ function refreshTroopsCalculations() {
 			}
 		}
 		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked);
-		// Update running locked for subsequent cards
 		if (level > 0 && quantity > 0 && activeCb?.checked) {
 			for (const [res, amt] of Object.entries(costTotals)) {
 				if (!res.startsWith('_')) {
@@ -448,7 +466,6 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
-	// Promotion Cards
 	const promoCards = document.querySelectorAll('.troop-card[data-type="promotion"]');
 	for (const card of promoCards) {
 		const troopType = card.dataset.name;
@@ -490,7 +507,6 @@ function refreshTroopsCalculations() {
 			pointsPerUnit = Math.max(0, targetPoints - currentPoints);
 			stepPoints = quantity * pointsPerUnit;
 			costTotals = getPromotionResourceCosts(troopType, fromLevel, toLevel, quantity) || {};
-			// CRITICAL FIX: Calculate other locked (excluding this upgrade if locked)
 			const otherLocked = {};
 			if (isLocked) {
 				for (const [res, amt] of Object.entries(allLocked)) {
@@ -555,7 +571,6 @@ function refreshTroopsCalculations() {
 		} else {
 			if (lockedUpgrades.has(upgradeKey)) lockedUpgrades.delete(upgradeKey);
 		}
-		// ✅ FIXED: Use fromLevel and toLevel instead of level
 		if (activeCb) {
 			const isDisabled = !canAfford || fromLevel === 0 || toLevel === 0 || quantity === 0 || toLevel <= fromLevel;
 			activeCb.disabled = isDisabled;
@@ -582,7 +597,6 @@ function refreshTroopsCalculations() {
 				speedCb.parentElement.title = '';
 			}
 		}
-		// Calculate other locked for display
 		const displayOtherLocked = {};
 		const isCurrentlyLocked = lockedUpgrades.has(safeId);
 		if (isCurrentlyLocked && costTotals) {
@@ -760,7 +774,6 @@ function loadTroops() {
 	if (promotionHtml) {
 		container.innerHTML += createTroopGroupCard('PROMOTION', promotionHtml);
 	}
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -845,7 +858,6 @@ function loadTroops() {
 			}
 		}
 	}
-	// Force 2 column layout
 	if (window._troopsResizeHandler) {
 		window.removeEventListener('resize', window._troopsResizeHandler);
 	}

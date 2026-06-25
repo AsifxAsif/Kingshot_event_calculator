@@ -2,6 +2,47 @@
 // GOV GEAR - FULLY FIXED (Star symbols working, double deduction fixed)
 // ============================================
 function getGovGearImageFileName(gearName, levelName) {
+	// Try sprite first
+	const spriteMap = {
+		'Helmet': 'sprite-gears-cavalry_gear_1',
+		'Watch': 'sprite-gears-cavalry_gear_2',
+		'Armor': 'sprite-gears-infantry_gear_1',
+		'Pant': 'sprite-gears-infantry_gear_2',
+		'Belt': 'sprite-gears-archery_gear_1',
+		'Weapon': 'sprite-gears-archery_gear_2'
+	};
+	// Determine color, tier, and stars from levelName
+	let color = 'green';
+	let tier = '0';
+	let stars = '0';
+	if (levelName && String(levelName).trim() !== '' && String(levelName).trim() !== '0') {
+		const levelStr = String(levelName).trim();
+		const lowerLevel = levelStr.toLowerCase();
+		if (lowerLevel.includes('green')) color = 'green';
+		else if (lowerLevel.includes('blue')) color = 'blue';
+		else if (lowerLevel.includes('purple')) color = 'purple';
+		else if (lowerLevel.includes('gold')) color = 'gold';
+		else if (lowerLevel.includes('red')) color = 'red';
+		const tierMatch = levelStr.match(/T([0-9])/i);
+		if (tierMatch) tier = tierMatch[1];
+		stars = String((levelStr.match(/⭐/g) || []).length);
+	}
+	const spriteClass = spriteMap[gearName];
+	if (spriteClass && document.querySelector('.sprite-gears')) {
+		// Return the specific sprite class for this gear
+		const gearType = gearName.toLowerCase();
+		let gearTypeMap = {
+			'helmet': 'cavalry_gear_1',
+			'watch': 'cavalry_gear_2',
+			'armor': 'infantry_gear_1',
+			'pant': 'infantry_gear_2',
+			'belt': 'archery_gear_1',
+			'weapon': 'archery_gear_2'
+		};
+		const baseType = gearTypeMap[gearName.toLowerCase()] || gearName.toLowerCase().replace(/ /g, '_');
+		return `sprite-gears-${baseType}_${color}_t${tier}_s${stars}`;
+	}
+	// Fallback to individual images
 	const gearMap = {
 		'Helmet': 'cavalry_gear_1',
 		'Watch': 'cavalry_gear_2',
@@ -11,9 +52,6 @@ function getGovGearImageFileName(gearName, levelName) {
 		'Weapon': 'archery_gear_2'
 	};
 	const prefix = gearMap[gearName] || gearName.toLowerCase().replace(/ /g, '_');
-	let color = 'green';
-	let tier = '0';
-	let stars = '0';
 	if (levelName && String(levelName).trim() !== '' && String(levelName).trim() !== '0') {
 		const levelStr = String(levelName).trim();
 		const lowerLevel = levelStr.toLowerCase();
@@ -192,11 +230,51 @@ function getGovGearNextLevel(dataArray, fromLevel) {
 function updateGovGearImages(safeId, gearName, currentLevel, targetLevel) {
 	const currentImg = document.getElementById(`gearImgCurrent_${safeId}`);
 	if (currentImg) {
-		currentImg.src = getGovGearImageFileName(gearName, currentLevel || 'Green');
+		const imgUrl = getGovGearImageFileName(gearName, currentLevel || 'Green');
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		if (isSprite) {
+			currentImg.style.display = 'none';
+			// Create sprite div if it doesn't exist
+			let spriteDiv = currentImg.parentElement.querySelector(`.sprite.${imgUrl}`);
+			if (!spriteDiv) {
+				spriteDiv = document.createElement('div');
+				spriteDiv.className = `sprite ${imgUrl}`;
+				spriteDiv.style.height = '50px';
+				spriteDiv.style.width = '50px';
+				spriteDiv.style.flexShrink = '0';
+				currentImg.parentElement.appendChild(spriteDiv);
+			}
+			spriteDiv.style.display = 'block';
+		} else {
+			currentImg.style.display = 'block';
+			currentImg.src = imgUrl;
+			// Remove any sprite div
+			const spriteDiv = currentImg.parentElement.querySelector(`.sprite`);
+			if (spriteDiv) spriteDiv.style.display = 'none';
+		}
 	}
 	const targetImg = document.getElementById(`gearImgTarget_${safeId}`);
 	if (targetImg) {
-		targetImg.src = getGovGearImageFileName(gearName, targetLevel || 'Green');
+		const imgUrl = getGovGearImageFileName(gearName, targetLevel || 'Green');
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		if (isSprite) {
+			targetImg.style.display = 'none';
+			let spriteDiv = targetImg.parentElement.querySelector(`.sprite.${imgUrl}`);
+			if (!spriteDiv) {
+				spriteDiv = document.createElement('div');
+				spriteDiv.className = `sprite ${imgUrl}`;
+				spriteDiv.style.height = '50px';
+				spriteDiv.style.width = '50px';
+				spriteDiv.style.flexShrink = '0';
+				targetImg.parentElement.appendChild(spriteDiv);
+			}
+			spriteDiv.style.display = 'block';
+		} else {
+			targetImg.style.display = 'block';
+			targetImg.src = imgUrl;
+			const spriteDiv = targetImg.parentElement.querySelector(`.sprite`);
+			if (spriteDiv) spriteDiv.style.display = 'none';
+		}
 	}
 }
 
@@ -212,16 +290,30 @@ function createGovGearCard(name, dataArray) {
 	const sortedTo = [...toLevels].sort((a, b) => getGearLevelOrder(a, dataArray) - getGearLevelOrder(b, dataArray));
 	const currOpts = buildLevelOptions(sortedFrom, 'Current Level', highestLevel, '');
 	const targOpts = buildLevelOptions(sortedTo, 'Target Level', highestLevel, '');
+	const isCurrentSprite = defaultCurrentImg && defaultCurrentImg.startsWith('sprite-');
+	const isTargetSprite = defaultTargetImg && defaultTargetImg.startsWith('sprite-');
+	let currentImgHtml;
+	if (isCurrentSprite) {
+		currentImgHtml = `<div class="sprite ${defaultCurrentImg}" style="height:50px;width:50px;flex-shrink:0;"></div>`;
+	} else {
+		currentImgHtml = `<img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}" alt="Current ${name}">`;
+	}
+	let targetImgHtml;
+	if (isTargetSprite) {
+		targetImgHtml = `<div class="sprite ${defaultTargetImg}" style="height:50px;width:50px;flex-shrink:0;"></div>`;
+	} else {
+		targetImgHtml = `<img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgTarget_${safeId}" alt="Target ${name}">`;
+	}
 	return `<div class="item-card" data-type="govgear" data-name="${name}" data-id="${safeId}">
         <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
-                <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}" alt="Current ${name}">
+                ${currentImgHtml}
             </div>
             <span style="font-weight: 700; font-size: 0.9rem;">${name}</span>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
-                <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgTarget_${safeId}" alt="Target ${name}">
+                ${targetImgHtml}
             </div>
         </div>
         <div class="item-card-body">
@@ -276,7 +368,6 @@ function calculateGovGearCosts(dataArray, from, to, vault, otherLocked) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -300,7 +391,6 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		// CRITICAL FIX: Update images whenever from/to changes
 		updateGovGearImages(safeId, name, from, to);
 		const toLevels = getGovGearTargetLevels(dataArray);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
@@ -339,7 +429,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -412,7 +501,6 @@ function onGovGearCurrentSelect(safeId) {
 	const gearName = card ? card.dataset.name : '';
 	const dataArray = getGovGearData();
 	const to = targ.value;
-	// Update images immediately
 	updateGovGearImages(safeId, gearName, from, to);
 	if (!from || from === '') {
 		const toLevels = getGovGearTargetLevels(dataArray);
@@ -488,7 +576,6 @@ function onGovGearTargetChange(safeId) {
 	const gearName = card ? card.dataset.name : '';
 	const from = curr ? curr.value : '';
 	const to = targ ? targ.value : '';
-	// Update images immediately
 	updateGovGearImages(safeId, gearName, from, to);
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
@@ -569,7 +656,6 @@ function loadGovGear() {
 	for (const parent of parents) {
 		container.innerHTML += createGovGearCard(parent, dataArray);
 	}
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {

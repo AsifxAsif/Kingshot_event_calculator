@@ -52,6 +52,36 @@ function getHeroWidgetInventory(heroName) {
 }
 
 function getHeroImageFileName(heroName) {
+	// Try sprite first
+	const spriteMap = {
+		'Amadeus': 'sprite-widgets-amadeus_widget',
+		'Helga': 'sprite-widgets-helga_widget',
+		'Jabel': 'sprite-widgets-jabel_widget',
+		'Saul': 'sprite-widgets-saul_widget',
+		'Hilde': 'sprite-widgets-hilde_widget',
+		'Marlin': 'sprite-widgets-marlin_widget',
+		'Zoe': 'sprite-widgets-zoe_widget',
+		'Eric': 'sprite-widgets-eric_widget',
+		'Jaeger': 'sprite-widgets-jaeger_widget',
+		'Petra': 'sprite-widgets-petra_widget',
+		'Alcar': 'sprite-widgets-alcar_widget',
+		'Margot': 'sprite-widgets-margot_widget',
+		'Rosa': 'sprite-widgets-rosa_widget',
+		'Long Fei': 'sprite-widgets-long_fei_widget',
+		'Thrud': 'sprite-widgets-thrud_widget',
+		'Vivian': 'sprite-widgets-vivian_widget',
+		'Sophia': 'sprite-widgets-sophia_widget',
+		'Triton': 'sprite-widgets-triton_widget',
+		'Yang': 'sprite-widgets-yang_widget',
+		'Ava': 'sprite-widgets-ava_widget',
+		'Charles': 'sprite-widgets-charles_widget',
+		'Wee & Woo': 'sprite-widgets-wee_woo_widget'
+	};
+	const spriteClass = spriteMap[heroName];
+	if (spriteClass && document.querySelector('.sprite-widgets')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const imageMap = {
 		'Amadeus': 'amadeus_widget.png',
 		'Helga': 'helga_widget.png',
@@ -86,9 +116,16 @@ function createWidgetInventoryCard() {
 	for (const hero of ssrHeroes) {
 		const widgetValue = heroWidgetQuantities[hero.name] || '';
 		const imgUrl = getHeroImageFileName(hero.name);
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		let imgHtml;
+		if (isSprite) {
+			imgHtml = `<div class="sprite ${imgUrl}" style="height:36px;width:36px;flex-shrink:0;"></div>`;
+		} else {
+			imgHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">`;
+		}
 		heroesHtml += `
             <div class="hero-shard-item">
-                <img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
+                ${imgHtml}
                 <span class="hero-shard-name" title="${hero.name}">${hero.name}</span>
                 <input type="text" style="text-align: center;" 
                     id="hero_widget_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}" 
@@ -189,9 +226,16 @@ function createWidgetCard(heroName, dataArray) {
 	const imgUrl = getHeroImageFileName(heroName);
 	const currOpts = buildLevelOptions(fromLevels, 'Current Level', highestLevel, '');
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:60px;width:60px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${heroName}">`;
+	}
 	return `<div class="item-card" data-type="widgets" data-hero="${heroName}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${heroName}">
+            ${headerHtml}
             <span>${heroName}'s Exclusive Widget</span>
         </div>
         <div class="item-card-body">
@@ -241,7 +285,6 @@ function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked)
 	} else if (heroWidgetsAvailable > 0) {
 		const partialWidgets = heroWidgetsAvailable;
 		costTotals[`${heroName}_widgets`] = partialWidgets;
-		// Use a separate flag object instead of polluting costTotals
 		costTotals._widgetStatus = {
 			partial: true,
 			shortage: widgetsNeeded - partialWidgets,
@@ -274,7 +317,6 @@ function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked)
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -335,7 +377,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -569,7 +610,6 @@ function loadWidgets() {
 		widgetsHtml += createWidgetCard(hero.name, dataArray);
 	}
 	widgetsGridContainer.innerHTML = widgetsHtml;
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {

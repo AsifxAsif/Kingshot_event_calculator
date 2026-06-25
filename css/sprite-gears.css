@@ -1,0 +1,1746 @@
+/* CSS Sprite Map */
+.sprite {
+	background-image: url('assets/sprites/sprite-gears.png');
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+.sprite-archery_gear_1_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -20px;
+}
+.sprite-archery_gear_1_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -20px;
+}
+.sprite-archery_gear_1_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -20px;
+}
+.sprite-archery_gear_1_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -20px;
+}
+.sprite-archery_gear_1_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -20px;
+}
+.sprite-archery_gear_1_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -20px;
+}
+.sprite-archery_gear_1_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -20px;
+}
+.sprite-archery_gear_1_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -20px;
+}
+.sprite-archery_gear_1_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -20px;
+}
+.sprite-archery_gear_1_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -20px;
+}
+.sprite-archery_gear_1_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -20px;
+}
+.sprite-archery_gear_1_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -20px;
+}
+.sprite-archery_gear_1_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -20px;
+}
+.sprite-archery_gear_1_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -20px;
+}
+.sprite-archery_gear_1_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -20px;
+}
+.sprite-archery_gear_1_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -20px;
+}
+.sprite-archery_gear_1_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -20px;
+}
+.sprite-archery_gear_1_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -20px;
+}
+.sprite-archery_gear_1_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -20px;
+}
+.sprite-archery_gear_1_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -424px;
+}
+.sprite-archery_gear_1_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -424px;
+}
+.sprite-archery_gear_1_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -424px;
+}
+.sprite-archery_gear_1_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -424px;
+}
+.sprite-archery_gear_1_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -424px;
+}
+.sprite-archery_gear_1_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -424px;
+}
+.sprite-archery_gear_1_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -424px;
+}
+.sprite-archery_gear_1_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -424px;
+}
+.sprite-archery_gear_1_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -424px;
+}
+.sprite-archery_gear_1_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -424px;
+}
+.sprite-archery_gear_1_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -424px;
+}
+.sprite-archery_gear_1_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -424px;
+}
+.sprite-archery_gear_1_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -424px;
+}
+.sprite-archery_gear_1_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -424px;
+}
+.sprite-archery_gear_1_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -424px;
+}
+.sprite-archery_gear_1_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -424px;
+}
+.sprite-archery_gear_1_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -424px;
+}
+.sprite-archery_gear_1_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -424px;
+}
+.sprite-archery_gear_1_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -424px;
+}
+.sprite-archery_gear_2_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -828px;
+}
+.sprite-archery_gear_2_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -828px;
+}
+.sprite-archery_gear_2_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -828px;
+}
+.sprite-archery_gear_2_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -828px;
+}
+.sprite-archery_gear_2_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -828px;
+}
+.sprite-archery_gear_2_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -828px;
+}
+.sprite-archery_gear_2_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -828px;
+}
+.sprite-archery_gear_2_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -828px;
+}
+.sprite-archery_gear_2_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -828px;
+}
+.sprite-archery_gear_2_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -828px;
+}
+.sprite-archery_gear_2_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -828px;
+}
+.sprite-archery_gear_2_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -828px;
+}
+.sprite-archery_gear_2_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -828px;
+}
+.sprite-archery_gear_2_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -828px;
+}
+.sprite-archery_gear_2_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -828px;
+}
+.sprite-archery_gear_2_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -828px;
+}
+.sprite-archery_gear_2_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -828px;
+}
+.sprite-archery_gear_2_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -828px;
+}
+.sprite-archery_gear_2_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -828px;
+}
+.sprite-archery_gear_2_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -1232px;
+}
+.sprite-archery_gear_2_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -1232px;
+}
+.sprite-archery_gear_2_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -1232px;
+}
+.sprite-archery_gear_2_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -1232px;
+}
+.sprite-archery_gear_2_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -1232px;
+}
+.sprite-archery_gear_2_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -1232px;
+}
+.sprite-archery_gear_2_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -1232px;
+}
+.sprite-archery_gear_2_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -1232px;
+}
+.sprite-archery_gear_2_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -1232px;
+}
+.sprite-archery_gear_2_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -1232px;
+}
+.sprite-archery_gear_2_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -1232px;
+}
+.sprite-archery_gear_1_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -1232px;
+}
+.sprite-archery_gear_1_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -1232px;
+}
+.sprite-archery_gear_1_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -1232px;
+}
+.sprite-archery_gear_1_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -1232px;
+}
+.sprite-archery_gear_1_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -1232px;
+}
+.sprite-archery_gear_1_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -1232px;
+}
+.sprite-archery_gear_1_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -1232px;
+}
+.sprite-archery_gear_1_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -1232px;
+}
+.sprite-archery_gear_1_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -1636px;
+}
+.sprite-archery_gear_1_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -1636px;
+}
+.sprite-archery_gear_1_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -1636px;
+}
+.sprite-archery_gear_1_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -1636px;
+}
+.sprite-archery_gear_1_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -1636px;
+}
+.sprite-archery_gear_1_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -1636px;
+}
+.sprite-archery_gear_1_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -1636px;
+}
+.sprite-archery_gear_1_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -1636px;
+}
+.sprite-archery_gear_1_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -1636px;
+}
+.sprite-archery_gear_1_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -1636px;
+}
+.sprite-archery_gear_1_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -1636px;
+}
+.sprite-archery_gear_1_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -1636px;
+}
+.sprite-archery_gear_2_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -1636px;
+}
+.sprite-archery_gear_2_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -1636px;
+}
+.sprite-archery_gear_2_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -1636px;
+}
+.sprite-cavalry_gear_1_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -1636px;
+}
+.sprite-cavalry_gear_1_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -1636px;
+}
+.sprite-cavalry_gear_1_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -1636px;
+}
+.sprite-cavalry_gear_1_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -1636px;
+}
+.sprite-cavalry_gear_1_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -2040px;
+}
+.sprite-cavalry_gear_1_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -2040px;
+}
+.sprite-archery_gear_2_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -2040px;
+}
+.sprite-archery_gear_2_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -2040px;
+}
+.sprite-archery_gear_2_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -2040px;
+}
+.sprite-archery_gear_2_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -2040px;
+}
+.sprite-archery_gear_2_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -2040px;
+}
+.sprite-archery_gear_2_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -2040px;
+}
+.sprite-archery_gear_2_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -2040px;
+}
+.sprite-archery_gear_2_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -2040px;
+}
+.sprite-archery_gear_2_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -2040px;
+}
+.sprite-archery_gear_2_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -2040px;
+}
+.sprite-archery_gear_2_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -2040px;
+}
+.sprite-archery_gear_2_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -2040px;
+}
+.sprite-archery_gear_2_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -2040px;
+}
+.sprite-archery_gear_2_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -2040px;
+}
+.sprite-archery_gear_2_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -2040px;
+}
+.sprite-archery_gear_2_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -2040px;
+}
+.sprite-archery_gear_2_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -2040px;
+}
+.sprite-archery_gear_2_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -2444px;
+}
+.sprite-archery_gear_2_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -2444px;
+}
+.sprite-archery_gear_2_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -2444px;
+}
+.sprite-archery_gear_2_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -2444px;
+}
+.sprite-archery_gear_2_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -2444px;
+}
+.sprite-archery_gear_2_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -2444px;
+}
+.sprite-archery_gear_2_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -2444px;
+}
+.sprite-archery_gear_2_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -2444px;
+}
+.sprite-cavalry_gear_1_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -2444px;
+}
+.sprite-cavalry_gear_1_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -2444px;
+}
+.sprite-cavalry_gear_1_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -2444px;
+}
+.sprite-cavalry_gear_1_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -2444px;
+}
+.sprite-cavalry_gear_1_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -2444px;
+}
+.sprite-cavalry_gear_1_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -2444px;
+}
+.sprite-cavalry_gear_1_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -2444px;
+}
+.sprite-cavalry_gear_1_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -2444px;
+}
+.sprite-cavalry_gear_1_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -2444px;
+}
+.sprite-cavalry_gear_1_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -2444px;
+}
+.sprite-cavalry_gear_1_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -2444px;
+}
+.sprite-cavalry_gear_1_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -2848px;
+}
+.sprite-cavalry_gear_1_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -2848px;
+}
+.sprite-cavalry_gear_1_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -2848px;
+}
+.sprite-cavalry_gear_1_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -2848px;
+}
+.sprite-cavalry_gear_1_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -2848px;
+}
+.sprite-cavalry_gear_1_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -2848px;
+}
+.sprite-cavalry_gear_1_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -2848px;
+}
+.sprite-cavalry_gear_1_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -2848px;
+}
+.sprite-cavalry_gear_1_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -2848px;
+}
+.sprite-cavalry_gear_1_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -2848px;
+}
+.sprite-cavalry_gear_1_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -2848px;
+}
+.sprite-cavalry_gear_1_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -2848px;
+}
+.sprite-cavalry_gear_1_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -3252px;
+}
+.sprite-cavalry_gear_1_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -3252px;
+}
+.sprite-cavalry_gear_2_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -3252px;
+}
+.sprite-cavalry_gear_2_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -3252px;
+}
+.sprite-cavalry_gear_2_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -3252px;
+}
+.sprite-cavalry_gear_2_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -3252px;
+}
+.sprite-cavalry_gear_2_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -3252px;
+}
+.sprite-cavalry_gear_2_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -3252px;
+}
+.sprite-cavalry_gear_2_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -3252px;
+}
+.sprite-cavalry_gear_2_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -3656px;
+}
+.sprite-cavalry_gear_2_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -3656px;
+}
+.sprite-cavalry_gear_2_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -3656px;
+}
+.sprite-cavalry_gear_2_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -3656px;
+}
+.sprite-cavalry_gear_2_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -3656px;
+}
+.sprite-cavalry_gear_2_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -3656px;
+}
+.sprite-cavalry_gear_2_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -3656px;
+}
+.sprite-cavalry_gear_2_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -3656px;
+}
+.sprite-cavalry_gear_2_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -3656px;
+}
+.sprite-cavalry_gear_2_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -3656px;
+}
+.sprite-cavalry_gear_2_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -3656px;
+}
+.sprite-cavalry_gear_2_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -3656px;
+}
+.sprite-cavalry_gear_2_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -3656px;
+}
+.sprite-cavalry_gear_2_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -3656px;
+}
+.sprite-cavalry_gear_2_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -3656px;
+}
+.sprite-cavalry_gear_2_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -3656px;
+}
+.sprite-cavalry_gear_2_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -3656px;
+}
+.sprite-cavalry_gear_2_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -3656px;
+}
+.sprite-cavalry_gear_2_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -3656px;
+}
+.sprite-cavalry_gear_2_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -4060px;
+}
+.sprite-cavalry_gear_2_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -4060px;
+}
+.sprite-cavalry_gear_2_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -4060px;
+}
+.sprite-cavalry_gear_2_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -4060px;
+}
+.sprite-cavalry_gear_2_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -4060px;
+}
+.sprite-cavalry_gear_2_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -4060px;
+}
+.sprite-cavalry_gear_2_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -4060px;
+}
+.sprite-cavalry_gear_2_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -4060px;
+}
+.sprite-cavalry_gear_2_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -4060px;
+}
+.sprite-cavalry_gear_2_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -4060px;
+}
+.sprite-cavalry_gear_2_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -4060px;
+}
+.sprite-cavalry_gear_2_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -4464px;
+}
+.sprite-cavalry_gear_2_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -4464px;
+}
+.sprite-cavalry_gear_2_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -4464px;
+}
+.sprite-cavalry_gear_2_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -4464px;
+}
+.sprite-cavalry_gear_2_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -4464px;
+}
+.sprite-cavalry_gear_2_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -4464px;
+}
+.sprite-cavalry_gear_2_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -4464px;
+}
+.sprite-cavalry_gear_2_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -4464px;
+}
+.sprite-cavalry_gear_1_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -4464px;
+}
+.sprite-cavalry_gear_1_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -4464px;
+}
+.sprite-cavalry_gear_1_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -4464px;
+}
+.sprite-cavalry_gear_1_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -4464px;
+}
+.sprite-cavalry_gear_1_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -4464px;
+}
+.sprite-cavalry_gear_1_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -4464px;
+}
+.sprite-cavalry_gear_1_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -4464px;
+}
+.sprite-cavalry_gear_1_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -4464px;
+}
+.sprite-cavalry_gear_1_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -4464px;
+}
+.sprite-cavalry_gear_1_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -4464px;
+}
+.sprite-infantry_gear_1_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -4464px;
+}
+.sprite-infantry_gear_1_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -4868px;
+}
+.sprite-infantry_gear_1_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -4868px;
+}
+.sprite-infantry_gear_1_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -4868px;
+}
+.sprite-infantry_gear_1_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -4868px;
+}
+.sprite-infantry_gear_1_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -4868px;
+}
+.sprite-infantry_gear_1_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -4868px;
+}
+.sprite-infantry_gear_1_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -4868px;
+}
+.sprite-infantry_gear_1_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -4868px;
+}
+.sprite-infantry_gear_1_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -4868px;
+}
+.sprite-infantry_gear_1_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -4868px;
+}
+.sprite-infantry_gear_1_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -4868px;
+}
+.sprite-infantry_gear_1_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -4868px;
+}
+.sprite-infantry_gear_1_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -4868px;
+}
+.sprite-infantry_gear_1_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -4868px;
+}
+.sprite-infantry_gear_1_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -4868px;
+}
+.sprite-infantry_gear_1_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -4868px;
+}
+.sprite-infantry_gear_1_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -4868px;
+}
+.sprite-infantry_gear_1_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -4868px;
+}
+.sprite-infantry_gear_1_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -4868px;
+}
+.sprite-infantry_gear_1_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -5272px;
+}
+.sprite-infantry_gear_1_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -5272px;
+}
+.sprite-infantry_gear_1_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -5272px;
+}
+.sprite-cavalry_gear_2_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -5272px;
+}
+.sprite-cavalry_gear_2_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -5272px;
+}
+.sprite-cavalry_gear_2_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -5272px;
+}
+.sprite-cavalry_gear_2_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -5272px;
+}
+.sprite-infantry_gear_1_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -5272px;
+}
+.sprite-infantry_gear_1_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -5272px;
+}
+.sprite-infantry_gear_1_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -5272px;
+}
+.sprite-infantry_gear_2_blue_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -5272px;
+}
+.sprite-cavalry_gear_2_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -5272px;
+}
+.sprite-infantry_gear_1_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -5272px;
+}
+.sprite-infantry_gear_1_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -5272px;
+}
+.sprite-infantry_gear_1_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -5272px;
+}
+.sprite-infantry_gear_1_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -5272px;
+}
+.sprite-infantry_gear_1_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -5272px;
+}
+.sprite-infantry_gear_1_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -5272px;
+}
+.sprite-infantry_gear_1_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -5272px;
+}
+.sprite-infantry_gear_2_gold_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -5676px;
+}
+.sprite-infantry_gear_1_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -5676px;
+}
+.sprite-infantry_gear_2_gold_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -5676px;
+}
+.sprite-infantry_gear_1_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -5676px;
+}
+.sprite-infantry_gear_2_gold_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -5676px;
+}
+.sprite-infantry_gear_1_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -5676px;
+}
+.sprite-infantry_gear_1_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -5676px;
+}
+.sprite-infantry_gear_1_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -5676px;
+}
+.sprite-infantry_gear_1_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -5676px;
+}
+.sprite-infantry_gear_1_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -5676px;
+}
+.sprite-infantry_gear_1_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -5676px;
+}
+.sprite-infantry_gear_1_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -5676px;
+}
+.sprite-infantry_gear_1_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -5676px;
+}
+.sprite-infantry_gear_1_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -5676px;
+}
+.sprite-infantry_gear_1_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -5676px;
+}
+.sprite-infantry_gear_1_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -5676px;
+}
+.sprite-infantry_gear_1_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -5676px;
+}
+.sprite-infantry_gear_1_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -5676px;
+}
+.sprite-infantry_gear_1_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -5676px;
+}
+.sprite-infantry_gear_1_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -6080px;
+}
+.sprite-infantry_gear_1_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -6080px;
+}
+.sprite-infantry_gear_1_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -6080px;
+}
+.sprite-infantry_gear_1_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -6080px;
+}
+.sprite-infantry_gear_1_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -6080px;
+}
+.sprite-infantry_gear_1_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -6080px;
+}
+.sprite-infantry_gear_1_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -6080px;
+}
+.sprite-infantry_gear_1_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -6080px;
+}
+.sprite-infantry_gear_1_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -6080px;
+}
+.sprite-infantry_gear_2_red_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -6080px;
+}
+.sprite-infantry_gear_2_red_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -6080px;
+}
+.sprite-infantry_gear_2_red_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -6080px;
+}
+.sprite-infantry_gear_2_red_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -6080px;
+}
+.sprite-infantry_gear_2_red_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -6080px;
+}
+.sprite-infantry_gear_2_red_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -6080px;
+}
+.sprite-infantry_gear_2_red_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -6080px;
+}
+.sprite-infantry_gear_2_red_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -6080px;
+}
+.sprite-infantry_gear_2_red_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -6080px;
+}
+.sprite-infantry_gear_2_red_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -6080px;
+}
+.sprite-infantry_gear_2_red_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -6484px;
+}
+.sprite-infantry_gear_2_red_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -6484px;
+}
+.sprite-infantry_gear_2_red_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -6484px;
+}
+.sprite-infantry_gear_2_purple_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -6484px;
+}
+.sprite-infantry_gear_2_purple_t1_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -6484px;
+}
+.sprite-infantry_gear_2_purple_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -6484px;
+}
+.sprite-infantry_gear_2_purple_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -6484px;
+}
+.sprite-infantry_gear_2_purple_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -6484px;
+}
+.sprite-infantry_gear_2_purple_t0_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -6484px;
+}
+.sprite-infantry_gear_2_gold_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -6484px;
+}
+.sprite-infantry_gear_2_gold_t3_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -6484px;
+}
+.sprite-infantry_gear_2_red_t5_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -6484px;
+}
+.sprite-infantry_gear_2_red_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -6484px;
+}
+.sprite-infantry_gear_2_gold_t3_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -6484px;
+}
+.sprite-infantry_gear_2_gold_t3_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -6484px;
+}
+.sprite-infantry_gear_2_gold_t2_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -6484px;
+}
+.sprite-infantry_gear_2_gold_t2_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -6484px;
+}
+.sprite-infantry_gear_2_gold_t2_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -6484px;
+}
+.sprite-infantry_gear_2_gold_t2_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -6484px;
+}
+.sprite-infantry_gear_2_gold_t1_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -6888px;
+}
+.sprite-infantry_gear_2_green_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -6888px;
+}
+.sprite-infantry_gear_2_purple_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -6888px;
+}
+.sprite-infantry_gear_2_gold_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -6888px;
+}
+.sprite-infantry_gear_2_blue_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -6888px;
+}
+.sprite-infantry_gear_2_blue_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -6888px;
+}
+.sprite-infantry_gear_2_blue_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2444px -6888px;
+}
+.sprite-infantry_gear_2_red_t6_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2848px -6888px;
+}
+.sprite-infantry_gear_2_red_t6_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -3252px -6888px;
+}
+.sprite-infantry_gear_2_red_t6_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3656px -6888px;
+}
+.sprite-infantry_gear_2_red_t6_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -4060px -6888px;
+}
+.sprite-infantry_gear_2_red_t5_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -4464px -6888px;
+}
+.sprite-infantry_gear_2_red_t5_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -4868px -6888px;
+}
+.sprite-infantry_gear_2_gold_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -5272px -6888px;
+}
+.sprite-infantry_gear_2_gold_t0_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -5676px -6888px;
+}
+.sprite-infantry_gear_2_gold_t1_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -6080px -6888px;
+}
+.sprite-infantry_gear_2_purple_t1_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6484px -6888px;
+}
+.sprite-infantry_gear_2_red_t0_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -6888px -6888px;
+}
+.sprite-infantry_gear_2_green_t0_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -7292px -6888px;
+}
+.sprite-infantry_gear_2_red_t5_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -20px -7292px;
+}
+.sprite-infantry_gear_2_red_t4_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -424px -7292px;
+}
+.sprite-infantry_gear_2_red_t4_s2 {
+	width: 384px;
+	height: 384px;
+	background-position: -828px -7292px;
+}
+.sprite-infantry_gear_2_red_t4_s1 {
+	width: 384px;
+	height: 384px;
+	background-position: -1232px -7292px;
+}
+.sprite-infantry_gear_2_red_t4_s0 {
+	width: 384px;
+	height: 384px;
+	background-position: -1636px -7292px;
+}
+.sprite-infantry_gear_2_red_t3_s3 {
+	width: 384px;
+	height: 384px;
+	background-position: -2040px -7292px;
+}

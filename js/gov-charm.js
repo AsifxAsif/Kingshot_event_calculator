@@ -2,6 +2,7 @@
 // GOV CHARM - FULLY FIXED (Clean dropdowns + Group Set All)
 // ============================================
 function getGovCharmImageFileName(charmName, levelName) {
+	// Try sprite first
 	const typeMap = {
 		'Helmet': 'cavalry',
 		'Watch': 'cavalry',
@@ -29,6 +30,12 @@ function getGovCharmImageFileName(charmName, levelName) {
 			}
 		}
 	}
+	// Check if sprite exists
+	const spriteClass = `sprite-charms-${type}_lvl${level}`;
+	if (document.querySelector('.sprite-charms')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const fileName = `${type}_lvl${level}.png`;
 	return `assets/gov_charms/${fileName}`;
 }
@@ -195,11 +202,49 @@ function getGovCharmNextLevel(dataArray, fromLevel) {
 function updateGovCharmImages(safeId, charmName, currentLevel, targetLevel) {
 	const currentImg = document.getElementById(`charmImgCurrent_${safeId}`);
 	if (currentImg) {
-		currentImg.src = getGovCharmImageFileName(charmName, currentLevel || '1');
+		const imgUrl = getGovCharmImageFileName(charmName, currentLevel || '1');
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		if (isSprite) {
+			currentImg.style.display = 'none';
+			let spriteDiv = currentImg.parentElement.querySelector(`.sprite.${imgUrl}`);
+			if (!spriteDiv) {
+				spriteDiv = document.createElement('div');
+				spriteDiv.className = `sprite ${imgUrl}`;
+				spriteDiv.style.height = '50px';
+				spriteDiv.style.width = '50px';
+				spriteDiv.style.flexShrink = '0';
+				currentImg.parentElement.appendChild(spriteDiv);
+			}
+			spriteDiv.style.display = 'block';
+		} else {
+			currentImg.style.display = 'block';
+			currentImg.src = imgUrl;
+			const spriteDiv = currentImg.parentElement.querySelector(`.sprite`);
+			if (spriteDiv) spriteDiv.style.display = 'none';
+		}
 	}
 	const targetImg = document.getElementById(`charmImgTarget_${safeId}`);
 	if (targetImg) {
-		targetImg.src = getGovCharmImageFileName(charmName, targetLevel || '1');
+		const imgUrl = getGovCharmImageFileName(charmName, targetLevel || '1');
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		if (isSprite) {
+			targetImg.style.display = 'none';
+			let spriteDiv = targetImg.parentElement.querySelector(`.sprite.${imgUrl}`);
+			if (!spriteDiv) {
+				spriteDiv = document.createElement('div');
+				spriteDiv.className = `sprite ${imgUrl}`;
+				spriteDiv.style.height = '50px';
+				spriteDiv.style.width = '50px';
+				spriteDiv.style.flexShrink = '0';
+				targetImg.parentElement.appendChild(spriteDiv);
+			}
+			spriteDiv.style.display = 'block';
+		} else {
+			targetImg.style.display = 'block';
+			targetImg.src = imgUrl;
+			const spriteDiv = targetImg.parentElement.querySelector(`.sprite`);
+			if (spriteDiv) spriteDiv.style.display = 'none';
+		}
 	}
 }
 // ============================================
@@ -212,7 +257,6 @@ function buildCleanLevelOptions(levels, placeholder, highestLevel, selectedValue
 		const display = String(level);
 		const isMax = String(level) === String(highestLevel);
 		const selected = String(level) === String(selectedValue) ? 'selected' : '';
-		// CRITICAL FIX: Display just the number without "Level " prefix
 		const cleanDisplay = display.replace(/^Level\s*/i, '');
 		opts += `<option value="${display}" ${selected}>${cleanDisplay}${isMax ? ' (Max)' : ''}</option>`;
 	}
@@ -233,19 +277,32 @@ function createIndividualCharmCard(charmName, charmNumber, dataArray) {
 	const defaultTargetImg = getGovCharmImageFileName(charmName, '1');
 	const sortedFrom = [...fromLevels].sort((a, b) => getCharmLevelOrder(a, dataArray) - getCharmLevelOrder(b, dataArray));
 	const sortedTo = [...toLevels].sort((a, b) => getCharmLevelOrder(a, dataArray) - getCharmLevelOrder(b, dataArray));
-	// Use clean level options (just numbers)
 	const currOpts = buildCleanLevelOptions(sortedFrom, 'Current', highestLevel, '');
 	const targOpts = buildCleanLevelOptions(sortedTo, 'Target', highestLevel, '');
+	const isCurrentSprite = defaultCurrentImg && defaultCurrentImg.startsWith('sprite-');
+	const isTargetSprite = defaultTargetImg && defaultTargetImg.startsWith('sprite-');
+	let currentImgHtml;
+	if (isCurrentSprite) {
+		currentImgHtml = `<div class="sprite ${defaultCurrentImg}" style="height:50px;width:50px;flex-shrink:0;"></div>`;
+	} else {
+		currentImgHtml = `<img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgCurrent_${safeId}" alt="Current ${charmName}">`;
+	}
+	let targetImgHtml;
+	if (isTargetSprite) {
+		targetImgHtml = `<div class="sprite ${defaultTargetImg}" style="height:50px;width:50px;flex-shrink:0;"></div>`;
+	} else {
+		targetImgHtml = `<img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgTarget_${safeId}" alt="Target ${charmName}">`;
+	}
 	return `
         <div class="item-card" data-type="govcharm" data-name="${charmName}" data-charm-number="${charmNumber}" data-id="${safeId}" style="margin-bottom: 10px;">
             <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center; padding: 8px 12px; background: var(--surface-dark);">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
-                    <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgCurrent_${safeId}" alt="Current ${charmName}">
+                    ${currentImgHtml}
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
-                    <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgTarget_${safeId}" alt="Target ${charmName}">
+                    ${targetImgHtml}
                 </div>
             </div>
             <div class="item-card-body" style="padding: 8px 12px;">
@@ -270,20 +327,16 @@ function setGroupCurrentLevel(groupType, value) {
 	const cards = document.querySelectorAll(`.item-card[data-type="govcharm"]`);
 	const cleanValue = String(value).trim();
 	if (!cleanValue) return;
-	// Find the numeric part (e.g., "3" from "3" or "Level 3")
 	let numericLevel = cleanValue.replace(/^Level\s*/i, '');
 	for (const card of cards) {
-		// Only apply to cards in this group
 		const cardName = card.dataset.name;
 		if (!cardName.includes(groupType)) continue;
 		const safeId = card.dataset.id;
 		const currSelect = document.getElementById(`curr_${safeId}`);
 		if (!currSelect) continue;
-		// Find if the value exists in options
 		let valueExists = false;
 		for (let i = 0; i < currSelect.options.length; i++) {
 			const optionValue = currSelect.options[i].value;
-			// Check if the numeric part matches
 			const optionNumeric = String(optionValue).replace(/^Level\s*/i, '');
 			if (optionNumeric === numericLevel || optionValue === numericLevel) {
 				currSelect.selectedIndex = i;
@@ -291,9 +344,7 @@ function setGroupCurrentLevel(groupType, value) {
 				break;
 			}
 		}
-		// If value doesn't exist, try to find closest match
 		if (!valueExists && currSelect.options.length > 1) {
-			// Try to find exact number match
 			for (let i = 0; i < currSelect.options.length; i++) {
 				const optionValue = currSelect.options[i].value;
 				if (String(optionValue) === numericLevel) {
@@ -303,7 +354,6 @@ function setGroupCurrentLevel(groupType, value) {
 				}
 			}
 		}
-		// Trigger change event
 		if (currSelect) {
 			currSelect.dispatchEvent(new Event('change', {
 				bubbles: true
@@ -317,7 +367,6 @@ function setGroupTargetLevel(groupType, value) {
 	const cards = document.querySelectorAll(`.item-card[data-type="govcharm"]`);
 	const cleanValue = String(value).trim();
 	if (!cleanValue) return;
-	// Find the numeric part (e.g., "3" from "3" or "Level 3")
 	let numericLevel = cleanValue.replace(/^Level\s*/i, '');
 	for (const card of cards) {
 		const cardName = card.dataset.name;
@@ -325,7 +374,6 @@ function setGroupTargetLevel(groupType, value) {
 		const safeId = card.dataset.id;
 		const targSelect = document.getElementById(`targ_${safeId}`);
 		if (!targSelect) continue;
-		// Find if the value exists in options
 		let valueExists = false;
 		for (let i = 0; i < targSelect.options.length; i++) {
 			const optionValue = targSelect.options[i].value;
@@ -337,7 +385,6 @@ function setGroupTargetLevel(groupType, value) {
 			}
 		}
 		if (!valueExists && targSelect.options.length > 1) {
-			// Try to find exact number match
 			for (let i = 0; i < targSelect.options.length; i++) {
 				const optionValue = targSelect.options[i].value;
 				if (String(optionValue) === numericLevel) {
@@ -370,7 +417,6 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 	for (let i = 0; i < charmNames.length; i++) {
 		charmsHtml += createIndividualCharmCard(charmNames[i], i + 1, dataArray);
 	}
-	// Build safe group name for input IDs
 	const groupSafeId = groupName.toLowerCase();
 	return `
         <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
@@ -379,7 +425,6 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
                 <span style="font-size: 1.1rem;">${groupName} Charms</span>
             </div>
             <div class="item-card-body" style="padding: 12px;">
-                <!-- NEW: Group Set All Controls -->
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px; border: 1px solid #d0d0d0;">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Set All Current:</span>
@@ -434,7 +479,6 @@ function calculateGovCharmCosts(dataArray, from, to, vault, otherLocked) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -457,7 +501,6 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		// Update images when levels change
 		updateGovCharmImages(safeId, card.dataset.name, from, to);
 		const toLevels = getGovCharmTargetLevels(dataArray);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
@@ -496,7 +539,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -569,7 +611,6 @@ function onGovCharmCurrentSelect(safeId) {
 	const charmName = card ? card.dataset.name : '';
 	const dataArray = getGovCharmData();
 	const to = targ.value;
-	// Update images immediately
 	updateGovCharmImages(safeId, charmName, from, to);
 	if (!from || from === '') {
 		const toLevels = getGovCharmTargetLevels(dataArray);
@@ -647,7 +688,6 @@ function onGovCharmTargetChange(safeId) {
 	const charmName = card ? card.dataset.name : '';
 	const from = curr ? curr.value : '';
 	const to = targ ? targ.value : '';
-	// Update images immediately
 	updateGovCharmImages(safeId, charmName, from, to);
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
@@ -746,7 +786,6 @@ function loadGovCharm() {
 	for (const group of charmGroups) {
 		container.innerHTML += createGovCharmGroupCard(group.type, group.charms, dataArray);
 	}
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {

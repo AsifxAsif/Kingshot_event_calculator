@@ -2,6 +2,25 @@
 // BUILDINGS - FIXED (Double resource deduction bug fixed)
 // ============================================
 function getBuildingImageFileName(buildingName) {
+	// Try sprite first
+	const spriteMap = {
+		'Town Center': 'sprite-building-town_center',
+		'Barracks': 'sprite-building-barracks',
+		'Stable': 'sprite-building-stable',
+		'Range': 'sprite-building-range',
+		'Command Center': 'sprite-building-command_center',
+		'War Academy': 'sprite-building-war_academy',
+		'Embassy': 'sprite-building-embassy',
+		'Academy': 'sprite-building-academy',
+		'Infirmary': 'sprite-building-infirmary',
+		'Store House': 'sprite-building-store_house'
+	};
+	const spriteClass = spriteMap[buildingName];
+	// Return sprite class if available, otherwise fallback to image path
+	if (spriteClass && document.querySelector('.sprite-building')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const imageMap = {
 		'Town Center': 'town_center.png',
 		'Barracks': 'barracks.png',
@@ -170,9 +189,17 @@ function createBuildingCard(name, dataArray) {
 		targOpts += `<option value="${highestLevel}">${highestLevel} (Max)</option>`;
 	}
 	const imgUrl = getBuildingImageFileName(name);
+	// Check if it's a sprite class
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="width:50px;height:50px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">`;
+	}
 	return `<div class="item-card" data-type="building" data-name="${name}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
+            ${headerHtml}
             <span>${name}</span>
         </div>
         <div class="item-card-body">
@@ -261,7 +288,6 @@ function getBuffedTime(originalSeconds) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -338,7 +364,6 @@ function refreshCalculations() {
 				partialNote
 			} = locked;
 			if (speedCb && speedCb.checked !== locked.speedupWasChecked) speedCb.checked = locked.speedupWasChecked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -359,7 +384,6 @@ function refreshCalculations() {
 			continue;
 		}
 		const speedCheck = speedCb?.checked || false;
-		// For non-locked upgrades, totalLocked already excludes this upgrade
 		const otherLocked = {};
 		for (const [res, amt] of Object.entries(totalLocked)) {
 			if (!res.startsWith('_')) {
@@ -395,7 +419,6 @@ function refreshCalculations() {
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
-			// Toggle disabled class
 			if (!canAfford) {
 				activeCb.parentElement.classList.add('disabled');
 			} else {
@@ -408,7 +431,6 @@ function refreshCalculations() {
 			const canUseSpeedup = canAfford && hasSpeedups;
 			speedCb.disabled = !canUseSpeedup;
 			speedCb.parentElement.style.opacity = canUseSpeedup ? '1' : '0.5';
-			// Toggle disabled class
 			if (!canUseSpeedup) {
 				speedCb.parentElement.classList.add('disabled');
 				speedCb.parentElement.title = !hasSpeedups ? 'No building speedups in vault' : 'Insufficient resources';
@@ -433,7 +455,7 @@ function refreshCalculations() {
 		}
 	}
 }
-// Event handlers (unchanged, but they call the fixed refreshCalculations)
+// Event handlers
 function onBuildingCurrentSelect(safeId, name) {
 	const curr = document.getElementById(`curr_${safeId}`);
 	const targ = document.getElementById(`targ_${safeId}`);

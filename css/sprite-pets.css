@@ -1,0 +1,76 @@
+/* CSS Sprite Map */
+.sprite {
+	background-image: url('assets/sprites/sprite-pets.png');
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+.sprite-alpha_black_panther {
+	width: 300px;
+	height: 300px;
+	background-position: -0px -0px;
+}
+.sprite-cheetah {
+	width: 300px;
+	height: 300px;
+	background-position: -300px -0px;
+}
+.sprite-bison {
+	width: 300px;
+	height: 300px;
+	background-position: -600px -0px;
+}
+.sprite-lynx {
+	width: 300px;
+	height: 300px;
+	background-position: -900px -0px;
+}
+.sprite-mighty_bison {
+	width: 300px;
+	height: 300px;
+	background-position: -0px -300px;
+}
+.sprite-ironclad_war_elephant {
+	width: 300px;
+	height: 300px;
+	background-position: -300px -300px;
+}
+.sprite-lion {
+	width: 300px;
+	height: 300px;
+	background-position: -600px -300px;
+}
+.sprite-great_moose {
+	width: 300px;
+	height: 300px;
+	background-position: -900px -300px;
+}
+.sprite-giant_rhino {
+	width: 300px;
+	height: 300px;
+	background-position: -0px -600px;
+}
+.sprite-grizzly_bear {
+	width: 300px;
+	height: 300px;
+	background-position: -300px -600px;
+}
+.sprite-ironclad_war_bear {
+	width: 300px;
+	height: 300px;
+	background-position: -600px -600px;
+}
+.sprite-grey_wolf {
+	width: 300px;
+	height: 300px;
+	background-position: -900px -600px;
+}
+.sprite-regal_white_lion {
+	width: 300px;
+	height: 300px;
+	background-position: -0px -900px;
+}
+.sprite-moose {
+	width: 300px;
+	height: 300px;
+	background-position: -300px -900px;
+}

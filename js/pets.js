@@ -2,6 +2,28 @@
 // PETS - FIXED (Double deduction fixed)
 // ============================================
 function getPetImageFileName(petName) {
+	// Try sprite first
+	const spriteMap = {
+		'Grey Wolf': 'sprite-pets-grey_wolf',
+		'Lynx': 'sprite-pets-lynx',
+		'Bison': 'sprite-pets-bison',
+		'Cheetah': 'sprite-pets-cheetah',
+		'Moose': 'sprite-pets-moose',
+		'Grizzly Bear': 'sprite-pets-grizzly_bear',
+		'Lion': 'sprite-pets-lion',
+		'Giant Rhino': 'sprite-pets-giant_rhino',
+		'Mighty Bison': 'sprite-pets-mighty_bison',
+		'Alpha Black Panther': 'sprite-pets-alpha_black_panther',
+		'Great Moose': 'sprite-pets-great_moose',
+		'Ironclad War Elephant': 'sprite-pets-ironclad_war_elephant',
+		'Regal White Lion': 'sprite-pets-regal_white_lion',
+		'Ironclad War Bear': 'sprite-pets-ironclad_war_bear'
+	};
+	const spriteClass = spriteMap[petName];
+	if (spriteClass && document.querySelector('.sprite-pets')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const fileName = petName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_') + '.png';
 	return `assets/pet/${fileName}`;
 }
@@ -176,9 +198,16 @@ function createPetCard(pet) {
 	const maxLvl = getMaxLevel(dataArray);
 	const currOpts = buildLevelOptions(fromLevels, 'Current Level', maxLvl, '');
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', maxLvl, '');
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:60px;width:60px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" alt="${pet.name}">`;
+	}
 	return `<div class="item-card" data-type="pet" data-name="${pet.name}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${pet.name}">
+            ${headerHtml}
             <span>${pet.name}</span>
         </div>
         <div class="item-card-body">
@@ -233,7 +262,6 @@ function calculatePetCosts(pet, from, to, vault, otherLocked) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -295,7 +323,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -518,7 +545,6 @@ function loadPets() {
 	for (const pet of pets) {
 		container.innerHTML += createPetCard(pet);
 	}
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {

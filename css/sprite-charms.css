@@ -1,0 +1,336 @@
+/* CSS Sprite Map */
+.sprite {
+	background-image: url('assets/sprites/sprite-charms.png');
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+.sprite-archery_lvl1 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -0px;
+}
+.sprite-archery_lvl3 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -0px;
+}
+.sprite-cavalry_lvl1 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -0px;
+}
+.sprite-archery_lvl9 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -0px;
+}
+.sprite-archery_lvl8 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -0px;
+}
+.sprite-archery_lvl6 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -0px;
+}
+.sprite-cavalry_lvl14 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -0px;
+}
+.sprite-archery_lvl2 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -0px;
+}
+.sprite-archery_lvl18 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -0px;
+}
+.sprite-archery_lvl14 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -384px;
+}
+.sprite-cavalry_lvl7 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -384px;
+}
+.sprite-cavalry_lvl15 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -384px;
+}
+.sprite-cavalry_lvl13 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -384px;
+}
+.sprite-cavalry_lvl3 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -384px;
+}
+.sprite-cavalry_lvl21 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -384px;
+}
+.sprite-cavalry_lvl16 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -384px;
+}
+.sprite-cavalry_lvl19 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -384px;
+}
+.sprite-infantry_lvl1 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -384px;
+}
+.sprite-infantry_lvl3 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -768px;
+}
+.sprite-infantry_lvl2 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -768px;
+}
+.sprite-infantry_lvl6 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -768px;
+}
+.sprite-infantry_lvl5 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -768px;
+}
+.sprite-infantry_lvl11 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -768px;
+}
+.sprite-infantry_lvl7 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -768px;
+}
+.sprite-infantry_lvl10 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -768px;
+}
+.sprite-infantry_lvl9 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -768px;
+}
+.sprite-infantry_lvl12 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -768px;
+}
+.sprite-infantry_lvl8 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -1152px;
+}
+.sprite-infantry_lvl13 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -1152px;
+}
+.sprite-infantry_lvl15 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -1152px;
+}
+.sprite-infantry_lvl14 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -1152px;
+}
+.sprite-infantry_lvl16 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -1152px;
+}
+.sprite-infantry_lvl17 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -1152px;
+}
+.sprite-infantry_lvl18 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -1152px;
+}
+.sprite-infantry_lvl21 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -1152px;
+}
+.sprite-infantry_lvl22 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -1152px;
+}
+.sprite-infantry_lvl19 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -1536px;
+}
+.sprite-infantry_lvl20 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -1536px;
+}
+.sprite-cavalry_lvl11 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -1536px;
+}
+.sprite-archery_lvl4 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -1536px;
+}
+.sprite-cavalry_lvl10 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -1536px;
+}
+.sprite-archery_lvl7 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -1536px;
+}
+.sprite-archery_lvl5 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -1536px;
+}
+.sprite-archery_lvl22 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -1536px;
+}
+.sprite-archery_lvl21 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -1536px;
+}
+.sprite-archery_lvl20 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -1920px;
+}
+.sprite-archery_lvl19 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -1920px;
+}
+.sprite-archery_lvl17 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -1920px;
+}
+.sprite-archery_lvl16 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -1920px;
+}
+.sprite-archery_lvl15 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -1920px;
+}
+.sprite-archery_lvl13 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -1920px;
+}
+.sprite-archery_lvl12 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -1920px;
+}
+.sprite-archery_lvl11 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -1920px;
+}
+.sprite-archery_lvl10 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -1920px;
+}
+.sprite-cavalry_lvl2 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -2304px;
+}
+.sprite-cavalry_lvl17 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -2304px;
+}
+.sprite-cavalry_lvl12 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -2304px;
+}
+.sprite-cavalry_lvl18 {
+	width: 384px;
+	height: 384px;
+	background-position: -1152px -2304px;
+}
+.sprite-cavalry_lvl6 {
+	width: 384px;
+	height: 384px;
+	background-position: -1536px -2304px;
+}
+.sprite-cavalry_lvl8 {
+	width: 384px;
+	height: 384px;
+	background-position: -1920px -2304px;
+}
+.sprite-cavalry_lvl4 {
+	width: 384px;
+	height: 384px;
+	background-position: -2304px -2304px;
+}
+.sprite-cavalry_lvl5 {
+	width: 384px;
+	height: 384px;
+	background-position: -2688px -2304px;
+}
+.sprite-cavalry_lvl9 {
+	width: 384px;
+	height: 384px;
+	background-position: -3072px -2304px;
+}
+.sprite-cavalry_lvl22 {
+	width: 384px;
+	height: 384px;
+	background-position: -0px -2688px;
+}
+.sprite-cavalry_lvl20 {
+	width: 384px;
+	height: 384px;
+	background-position: -384px -2688px;
+}
+.sprite-infantry_lvl4 {
+	width: 384px;
+	height: 384px;
+	background-position: -768px -2688px;
+}

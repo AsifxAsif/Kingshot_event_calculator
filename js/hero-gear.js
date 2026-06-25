@@ -355,12 +355,39 @@ function getHeroGearNextLevel(dataArray, fromLevel) {
 function updateHeroGearImage(level) {
 	const imgElement = document.getElementById('heroGearHeaderImage');
 	if (!imgElement) return;
+	// Try sprite first
 	const levelNum = parseFloat(level);
+	let spriteClass;
+	if (levelNum >= 100) {
+		spriteClass = 'sprite-hero-gear-red';
+	} else {
+		spriteClass = 'sprite-hero-gear-mythic';
+	}
+	if (document.querySelector('.sprite-hero-gear')) {
+		// Use sprite
+		imgElement.style.display = 'none';
+		let spriteDiv = imgElement.parentElement.querySelector(`.sprite.${spriteClass}`);
+		if (!spriteDiv) {
+			spriteDiv = document.createElement('div');
+			spriteDiv.className = `sprite ${spriteClass}`;
+			spriteDiv.style.height = '40px';
+			spriteDiv.style.width = '40px';
+			spriteDiv.style.flexShrink = '0';
+			imgElement.parentElement.insertBefore(spriteDiv, imgElement);
+		}
+		spriteDiv.style.display = 'block';
+		return;
+	}
+	// Fallback to individual images
+	imgElement.style.display = 'block';
 	if (levelNum >= 100) {
 		imgElement.src = 'assets/hero-gear-red.png';
 	} else {
 		imgElement.src = 'assets/hero-gear-mythic.png';
 	}
+	// Remove any sprite div
+	const spriteDiv = imgElement.parentElement.querySelector(`.sprite`);
+	if (spriteDiv) spriteDiv.style.display = 'none';
 }
 
 function createHeroGearCombinedCard(dataArray) {
@@ -546,7 +573,6 @@ function onHeroGearUpgradeCheckboxChange(safeId, isChecked) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -608,7 +634,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -714,7 +739,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -784,7 +808,6 @@ function loadCombinedPage() {
 		forgehammerContainer.innerHTML = '';
 		const dataArray = getForgehammerData();
 		forgehammerContainer.innerHTML += createForgehammerCombinedCard(dataArray);
-		// Restore selections
 		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 		const preset = allPresets[presetName];
 		if (preset && preset.selections) {
@@ -829,7 +852,6 @@ function loadCombinedPage() {
 		heroGearContainer.innerHTML = '';
 		const dataArray = getHeroGearData();
 		heroGearContainer.innerHTML += createHeroGearCombinedCard(dataArray);
-		// Restore selections
 		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 		const preset = allPresets[presetName];
 		if (preset && preset.selections) {

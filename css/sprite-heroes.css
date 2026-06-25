@@ -1,0 +1,176 @@
+/* CSS Sprite Map */
+.sprite {
+	background-image: url('assets/sprites/sprite-heroes.png');
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+.sprite-alcar {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -0px;
+}
+.sprite-hilde {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -0px;
+}
+.sprite-seth {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -0px;
+}
+.sprite-quinn {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -0px;
+}
+.sprite-triton {
+	width: 600px;
+	height: 600px;
+	background-position: -2400px -0px;
+}
+.sprite-vivian {
+	width: 600px;
+	height: 600px;
+	background-position: -3000px -0px;
+}
+.sprite-rosa {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -600px;
+}
+.sprite-marlin {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -600px;
+}
+.sprite-edwin {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -600px;
+}
+.sprite-amadeus {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -600px;
+}
+.sprite-eric {
+	width: 600px;
+	height: 600px;
+	background-position: -2400px -600px;
+}
+.sprite-amane {
+	width: 600px;
+	height: 600px;
+	background-position: -3000px -600px;
+}
+.sprite-zoe {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -1200px;
+}
+.sprite-gordon {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -1200px;
+}
+.sprite-helga {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -1200px;
+}
+.sprite-ava {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -1200px;
+}
+.sprite-jaeger {
+	width: 600px;
+	height: 600px;
+	background-position: -2400px -1200px;
+}
+.sprite-forrest {
+	width: 600px;
+	height: 600px;
+	background-position: -3000px -1200px;
+}
+.sprite-yang {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -1800px;
+}
+.sprite-jabel {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -1800px;
+}
+.sprite-howard {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -1800px;
+}
+.sprite-charles {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -1800px;
+}
+.sprite-wee_woo {
+	width: 600px;
+	height: 600px;
+	background-position: -2400px -1800px;
+}
+.sprite-olive {
+	width: 600px;
+	height: 600px;
+	background-position: -3000px -1800px;
+}
+.sprite-thrud {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -2400px;
+}
+.sprite-sophia {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -2400px;
+}
+.sprite-saul {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -2400px;
+}
+.sprite-petra {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -2400px;
+}
+.sprite-yeonwoo {
+	width: 600px;
+	height: 600px;
+	background-position: -2400px -2400px;
+}
+.sprite-fahd {
+	width: 600px;
+	height: 600px;
+	background-position: -3000px -2400px;
+}
+.sprite-diana {
+	width: 600px;
+	height: 600px;
+	background-position: -0px -3000px;
+}
+.sprite-chenko {
+	width: 600px;
+	height: 600px;
+	background-position: -600px -3000px;
+}
+.sprite-margot {
+	width: 600px;
+	height: 600px;
+	background-position: -1200px -3000px;
+}
+.sprite-long_fei {
+	width: 600px;
+	height: 600px;
+	background-position: -1800px -3000px;
+}

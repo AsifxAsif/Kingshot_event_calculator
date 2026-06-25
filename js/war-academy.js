@@ -2,6 +2,44 @@
 // WAR ACADEMY - FULLY FIXED (Resources show, Max level works)
 // ============================================
 function getWarAcademyImageFileName(researchName) {
+	// Try sprite first
+	const spriteMap = {
+		'Truegold Battalion (Infantry)': 'sprite-war-academy-truegold_battalion_infantry',
+		'Truegold Blades': 'sprite-war-academy-truegold_blades',
+		'Truegold Shields': 'sprite-war-academy-truegold_shields',
+		'Truegold Legionaries (Infantry)': 'sprite-war-academy-truegold_legionaries_infantry',
+		'Truegold Mauls': 'sprite-war-academy-truegold_mauls',
+		'Truegold Plating': 'sprite-war-academy-truegold_plating',
+		'Truegold Infantry': 'sprite-war-academy-truegold_infantry',
+		'Truegold Infantry Healing': 'sprite-war-academy-truegold_infantry_healing',
+		'Truegold Infantry Training': 'sprite-war-academy-truegold_infantry_training',
+		'Truegold Infantry Aid': 'sprite-war-academy-truegold_infantry_aid',
+		'Truegold Battalion (Cavalry)': 'sprite-war-academy-truegold_battalion_cavalry',
+		'Truegold Charge': 'sprite-war-academy-truegold_charge',
+		'Truegold Farriery': 'sprite-war-academy-truegold_farriery',
+		'Truegold Legionaries (Cavalry)': 'sprite-war-academy-truegold_legionaries_cavalry',
+		'Truegold Lances': 'sprite-war-academy-truegold_lances',
+		'Truegold Platecraft': 'sprite-war-academy-truegold_platecraft',
+		'Truegold Cavalry': 'sprite-war-academy-truegold_cavalry',
+		'Truegold Cavalry Healing': 'sprite-war-academy-truegold_cavalry_healing',
+		'Truegold Cavalry Training': 'sprite-war-academy-truegold_cavalry_training',
+		'Truegold Cavalry Aid': 'sprite-war-academy-truegold_cavalry_aid',
+		'Truegold Battalion (Archer)': 'sprite-war-academy-truegold_battalion_archer',
+		'Truegold Bows': 'sprite-war-academy-truegold_bows',
+		'Truegold Bracers': 'sprite-war-academy-truegold_bracers',
+		'Truegold Legionaries (Archer)': 'sprite-war-academy-truegold_legionaries_archer',
+		'Truegold Arrows': 'sprite-war-academy-truegold_arrows',
+		'Truegold Vests': 'sprite-war-academy-truegold_vests',
+		'Truegold Archer': 'sprite-war-academy-truegold_archer',
+		'Truegold Archer Healing': 'sprite-war-academy-truegold_archer_healing',
+		'Truegold Archer Training': 'sprite-war-academy-truegold_archer_training',
+		'Truegold Archer Aid': 'sprite-war-academy-truegold_archer_aid'
+	};
+	const spriteClass = spriteMap[researchName];
+	if (spriteClass && document.querySelector('.sprite-war-academy')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const imageMap = {
 		'Truegold Battalion (Infantry)': 'truegold_battalion_infantry.png',
 		'Truegold Blades': 'truegold_blades.png',
@@ -166,12 +204,18 @@ function createAcademyIndividualCard(item, dataArray) {
 	const safeId = `academy_${item.displayName.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
 	const imgUrl = getWarAcademyImageFileName(item.displayName);
-	// CRITICAL FIX: Use buildLevelOptions which properly handles "Max" detection
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:60px;width:60px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" alt="${item.displayName}" style="height: 60px; width: 60px; object-fit: contain;">`;
+	}
 	const currOpts = buildLevelOptions(fromLevels, 'Current Level', highestLevel, '');
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${item.displayName}" style="height: 60px; width: 60px; object-fit: contain;">
+            ${headerHtml}
             <span style="font-size: 0.85rem;">${item.displayName}</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">
@@ -283,7 +327,6 @@ function calculateAcademyCosts(dataArray, from, to, speedCheck, vault, otherLock
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -320,14 +363,12 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		// Get the specific research data
 		const academyItems = getWarAcademyData();
 		const item = academyItems.find(i => `academy_${i.displayName.replace(/[^a-zA-Z0-9]/g, '_')}` === safeId);
 		if (!item) continue;
 		const dataArray = item.data;
 		const toLevels = getAcademyTargetLevels(dataArray);
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-		// CRITICAL FIX: Properly detect max level
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
 		if (isAtMax) {
 			status.className = "status-pane status-ok";
@@ -364,7 +405,6 @@ function refreshCalculations() {
 				partialNote
 			} = locked;
 			if (speedCb && speedCb.checked !== locked.speedupWasChecked) speedCb.checked = locked.speedupWasChecked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -383,7 +423,6 @@ function refreshCalculations() {
 			continue;
 		}
 		const speedCheck = speedCb?.checked || false;
-		// For non-locked upgrades, totalLocked already excludes this upgrade
 		const otherLocked = {};
 		for (const [res, amt] of Object.entries(totalLocked)) {
 			if (!res.startsWith('_')) {
@@ -482,7 +521,6 @@ function onAcademyCurrentSelect(safeId, name) {
 		refreshCalculations();
 		return;
 	}
-	// CRITICAL FIX: Check if current level is max
 	if (from === highestLevel) {
 		let maxTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
 		maxTargOpts += `<option value="${highestLevel}" selected>${highestLevel} (Max)</option>`;
@@ -511,7 +549,6 @@ function onAcademyCurrentSelect(safeId, name) {
 			hasHigherLevels = true;
 		}
 	}
-	// CRITICAL FIX: Always show Max option if not already in list
 	if (!hasHigherLevels && highestLevel) {
 		dynamicTargOpts += `<option value="${highestLevel}" selected>${highestLevel} (Max)</option>`;
 	} else if (highestLevel && !toLevels.includes(highestLevel)) {
@@ -699,7 +736,6 @@ function loadWarAcademy() {
 			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
 		}
 	}
-	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {

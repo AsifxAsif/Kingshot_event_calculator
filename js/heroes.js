@@ -89,6 +89,48 @@ function updateGenerationFilter() {
 // HERO SPECIFIC SHARDS CARD UI
 // ============================================
 function getHeroImageFileName(heroName) {
+	// Try sprite first
+	const spriteMap = {
+		'Edwin': 'sprite-heroes-edwin',
+		'Forrest': 'sprite-heroes-forrest',
+		'Olive': 'sprite-heroes-olive',
+		'Seth': 'sprite-heroes-seth',
+		'Amane': 'sprite-heroes-amane',
+		'Chenko': 'sprite-heroes-chenko',
+		'Diana': 'sprite-heroes-diana',
+		'Fahd': 'sprite-heroes-fahd',
+		'Gordon': 'sprite-heroes-gordon',
+		'Howard': 'sprite-heroes-howard',
+		'Quinn': 'sprite-heroes-quinn',
+		'Yeonwoo': 'sprite-heroes-yeonwoo',
+		'Amadeus': 'sprite-heroes-amadeus',
+		'Helga': 'sprite-heroes-helga',
+		'Jabel': 'sprite-heroes-jabel',
+		'Saul': 'sprite-heroes-saul',
+		'Hilde': 'sprite-heroes-hilde',
+		'Marlin': 'sprite-heroes-marlin',
+		'Zoe': 'sprite-heroes-zoe',
+		'Eric': 'sprite-heroes-eric',
+		'Jaeger': 'sprite-heroes-jaeger',
+		'Petra': 'sprite-heroes-petra',
+		'Alcar': 'sprite-heroes-alcar',
+		'Margot': 'sprite-heroes-margot',
+		'Rosa': 'sprite-heroes-rosa',
+		'Long Fei': 'sprite-heroes-long_fei',
+		'Thrud': 'sprite-heroes-thrud',
+		'Vivian': 'sprite-heroes-vivian',
+		'Sophia': 'sprite-heroes-sophia',
+		'Triton': 'sprite-heroes-triton',
+		'Yang': 'sprite-heroes-yang',
+		'Ava': 'sprite-heroes-ava',
+		'Charles': 'sprite-heroes-charles',
+		'Wee & Woo': 'sprite-heroes-wee_woo'
+	};
+	const spriteClass = spriteMap[heroName];
+	if (spriteClass && document.querySelector('.sprite-heroes')) {
+		return spriteClass;
+	}
+	// Fallback to individual images
 	const imageMap = {
 		'Edwin': 'edwin.png',
 		'Forrest': 'forrest.png',
@@ -140,9 +182,16 @@ function createHeroShardsInventoryCard() {
 	for (const hero of heroesList) {
 		const shardValue = heroSpecificShards[hero.name] || '';
 		const imgUrl = getHeroImageFileName(hero.name);
+		const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+		let imgHtml;
+		if (isSprite) {
+			imgHtml = `<div class="sprite ${imgUrl}" style="height:36px;width:36px;flex-shrink:0;"></div>`;
+		} else {
+			imgHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">`;
+		}
 		heroesHtml += `
             <div class="hero-shard-item">
-                <img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
+                ${imgHtml}
                 <span class="hero-shard-name" title="${hero.name}">${hero.name}</span>
                 <input type="text" style="text-align: center;" 
                     id="hero_shard_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}" 
@@ -398,7 +447,6 @@ function handleHeroPetalClick(event, safeId, type, flowerId, clickedIndex, click
 		const cb = document.getElementById(`active_${safeId}`);
 		if (cb) cb.checked = false;
 	}
-	// CRITICAL FIX: Save flower states to localStorage
 	saveHeroFlowerStates();
 	updateHeroFlowerVisuals(safeId);
 	refreshCalculations();
@@ -464,9 +512,17 @@ function createHeroCard(hero, shardData) {
 	const safeId = `hero_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
 	const currentFlowerSlot = generateFlowerContainerMarkup(safeId, 'curr');
 	const targetFlowerSlot = generateFlowerContainerMarkup(safeId, 'targ');
+	const imgUrl = getHeroImageFileName(hero.name);
+	const isSprite = imgUrl && imgUrl.startsWith('sprite-');
+	let headerHtml;
+	if (isSprite) {
+		headerHtml = `<div class="sprite ${imgUrl}" style="height:60px;width:60px;flex-shrink:0;"></div>`;
+	} else {
+		headerHtml = `<img src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${hero.name}">`;
+	}
 	return `<div class="item-card" data-type="hero" data-name="${hero.name}" data-rarity="${hero.rarity}" data-generation="${hero.generation}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${getHeroImageFileName(hero.name)}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${hero.name}">
+            ${headerHtml}
             <span>${hero.name}'s Star Level (Gen ${hero.generation})</span>
         </div>
         <div class="item-card-body">
@@ -592,7 +648,6 @@ function getAchievableTargetLevel(hero, shardData, from, vault, otherLocked, her
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -723,7 +778,6 @@ function refreshCalculations() {
 				costTotals,
 				stepsCount
 			} = locked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;

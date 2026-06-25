@@ -159,6 +159,135 @@ const SCORE_RULES = {
 	pet_advancement_score: 50
 };
 // ============================================
+// SPRITE SYSTEM - IMAGE FILE MAPPING
+// ============================================
+// Check if sprite CSS is loaded
+function isSpriteLoaded(spriteName) {
+	const sheets = document.styleSheets;
+	for (const sheet of sheets) {
+		try {
+			if (sheet.href && sheet.href.includes(spriteName)) {
+				return true;
+			}
+		} catch (e) {
+			/* cross-origin */ }
+	}
+	// Also check if any element has the sprite class
+	const testEl = document.querySelector(`.${spriteName}`);
+	if (testEl) {
+		const style = getComputedStyle(testEl);
+		return style.backgroundImage && style.backgroundImage !== 'none';
+	}
+	return false;
+}
+// Get sprite class name for resource
+function getSpriteClass(resourceId, category = 'resources') {
+	const spriteMap = {
+		// Resources
+		'bread': 'sprite-resources-Bread',
+		'wood': 'sprite-resources-Wood',
+		'stone': 'sprite-resources-Stone',
+		'iron': 'sprite-resources-Iron',
+		'gold': 'sprite-resources-Gold',
+		'truegold': 'sprite-resources-truegold',
+		'tempered_truegold': 'sprite-resources-tempered_truegold',
+		'truegold_dust': 'sprite-resources-truegold_dust',
+		'forge_hammer': 'sprite-resources-forge_hammer',
+		'widgets': 'sprite-resources-widgets',
+		'mithril': 'sprite-resources-mithril',
+		'satin': 'sprite-resources-satin',
+		'gilded_threads': 'sprite-resources-gilded_threads',
+		'artisans_vision': 'sprite-resources-artisans_vision',
+		'charm_guide': 'sprite-resources-charm_guide',
+		'charm_design': 'sprite-resources-charm_design',
+		'pet_food': 'sprite-resources-pet_food',
+		'growth_manual': 'sprite-resources-growth_manual',
+		'nutrient_potion': 'sprite-resources-nutrient_potion',
+		'promotion_medallion': 'sprite-resources-promotion_medallion',
+		'building_speedup': 'sprite-resources-building_speedup',
+		'research_speedup': 'sprite-resources-research_speedup',
+		'training_speedup': 'sprite-resources-training_speedup',
+		'general_speedup': 'sprite-resources-general_speedup',
+		'rare_general_shard': 'sprite-resources-rare_general_shard',
+		'epic_general_shard': 'sprite-resources-epic_general_shard',
+		'mythic_general_shard': 'sprite-resources-mythic_general_shard',
+		'mythic_gear': 'sprite-resources-mythic-gear',
+		'hero_roulette': 'sprite-resources-hero_roulette',
+		'general_emblem': 'sprite-resources-general_emblem',
+		'master_manuscript': 'sprite-resources-master_manuscript',
+		'advanced_taming_mark': 'sprite-resources-advanced_taming_mark',
+		'common_taming_mark': 'sprite-resources-common_taming_mark',
+		'hero_xp': 'sprite-resources-hero_xp',
+		'stamina': 'sprite-resources-stamina',
+		'master_speedup': 'sprite-resources-master_speedup'
+	};
+	// Map troop types to sprite classes
+	if (category === 'troops') {
+		const troopMap = {
+			'Infantry': 'sprite-resources-Infantry',
+			'Cavalry': 'sprite-resources-Cavalry',
+			'Archer': 'sprite-resources-Archer'
+		};
+		if (troopMap[resourceId]) return troopMap[resourceId];
+	}
+	return spriteMap[resourceId] || null;
+}
+// ============================================
+// IMAGE FILE NAME MAPPING (Fallback for non-sprite images)
+// ============================================
+function getImageFileName(resourceId) {
+	// First try sprite
+	const spriteClass = getSpriteClass(resourceId);
+	if (spriteClass && document.querySelector(`.${spriteClass.split(' ')[0]}`)) {
+		return spriteClass;
+	}
+	// Fallback to individual images
+	const imageMap = {
+		bread: "Bread.png",
+		wood: "Wood.png",
+		stone: "Stone.png",
+		iron: "Iron.png",
+		gold: "Gold.png",
+		truegold: "truegold.png",
+		tempered_truegold: "tempered_truegold.png",
+		truegold_dust: "truegold_dust.png",
+		forge_hammer: "forge_hammer.png",
+		widgets: "widgets.png",
+		mithril: "mithril.png",
+		satin: "satin.png",
+		gilded_threads: "gilded_threads.png",
+		artisans_vision: "artisans_vision.png",
+		charm_guide: "charm_guide.png",
+		charm_design: "charm_design.png",
+		pet_food: "pet_food.png",
+		growth_manual: "growth_manual.png",
+		nutrient_potion: "nutrient_potion.png",
+		promotion_medallion: "promotion_medallion.png",
+		building_speedup: "building_speedup.png",
+		research_speedup: "research_speedup.png",
+		training_speedup: "training_speedup.png",
+		general_speedup: "general_speedup.png",
+		rare_general_shard: "rare_general_shard.png",
+		epic_general_shard: "epic_general_shard.png",
+		mythic_general_shard: "mythic_general_shard.png",
+		mythic_gear: "mythic-gear.png",
+		hero_roulette: "hero_roulette.png",
+		general_emblem: "general_emblem.png",
+		master_manuscript: "master_manuscript.png",
+		advanced_taming_mark: "advanced_taming_mark.png",
+		common_taming_mark: "common_taming_mark.png",
+		hero_xp: "hero_xp.png",
+		stamina: "stamina.png",
+		master_speedup: "master_speedup.png"
+	};
+	return `assets/${imageMap[resourceId] || resourceId + ".png"}`;
+}
+// Helper to create sprite element
+function createSpriteElement(spriteClass, size = 36, alt = '') {
+	if (!spriteClass) return `<img src="assets/placeholder.png" alt="${alt}" style="width:${size}px;height:${size}px;">`;
+	return `<div class="sprite ${spriteClass}" style="width:${size}px;height:${size}px;flex-shrink:0;"></div>`;
+}
+// ============================================
 // RESOURCE DISPLAY WITH IMPROVED GROUPING
 // ============================================
 function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
@@ -222,8 +351,16 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		const req = isSpeed ? `${amt} min` : formatNumber(amt);
 		const statusClass = remaining < 0 ? 'text-deficit' : 'text-remaining';
 		const statusText = remaining < 0 ? `${formatNumber(-remaining)} short` : `${formatNumber(remaining)} remaining`;
+		// Check if it's a sprite class
+		const isSprite = img && img.startsWith('sprite-');
 		const imgStyle = isHeroResource(res) ? 'height:20px;width:20px;object-fit:contain;border-radius:4px;' : '';
-		const tag = `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}"> ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
+		let imgHtml;
+		if (isSprite) {
+			imgHtml = `<div class="sprite ${img}" style="height:20px;width:20px;flex-shrink:0;"></div>`;
+		} else {
+			imgHtml = `<img src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}">`;
+		}
+		const tag = `<div class="resource-tag">${imgHtml} ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
 		// Categorize
 		if (category === 'hero') {
 			heroResources += tag;
@@ -405,13 +542,11 @@ function showModal(options) {
 				confirmBtn?.click();
 			}
 		});
-		// FIX: Always focus the input after a short delay
 		setTimeout(() => {
 			input.focus();
 			input.select();
 		}, 50);
 	}
-	// Store for cleanup
 	modal._resolve = resolveFn;
 	return promise;
 }
@@ -502,7 +637,6 @@ function closePresetMenuOutside(event) {
 	}
 }
 async function createNewPreset() {
-	// Check if modal is already open
 	if (document.querySelector('.app-modal-overlay')) {
 		return;
 	}
@@ -514,11 +648,8 @@ async function createNewPreset() {
 			inputValue: '',
 			confirmText: 'Create',
 			cancelText: 'Cancel',
-			onConfirm: function(value) {
-				// This is called when confirm is clicked
-			}
+			onConfirm: function(value) {}
 		});
-		// If value is undefined or null, user cancelled
 		if (value === undefined || value === null) {
 			return;
 		}
@@ -534,12 +665,10 @@ async function createNewPreset() {
 				confirmText: 'Overwrite',
 				cancelText: 'Cancel',
 				isDanger: true,
-				onConfirm: function() {
-					// This is called when confirm is clicked
-				}
+				onConfirm: function() {}
 			});
 			if (overwrite === undefined || overwrite === null) {
-				return; // User cancelled
+				return;
 			}
 			saveCurrentToPreset(trimmedValue);
 			return;
@@ -599,22 +728,16 @@ function saveCurrentToPreset(presetName) {
 		return !item.safeId.startsWith(page + '_');
 	});
 	presetData.lockedUpgrades = [...otherPageLockedUpgrades, ...currentPageLockedUpgrades];
-	// ============================================
-	// CRITICAL: Save ALL selects including current and target
-	// ============================================
 	document.querySelectorAll("select").forEach(select => {
 		if (select.id) {
-			// Save ALL selects - including curr_ and targ_
 			presetData.selections[select.id] = select.value;
 		}
 	});
-	// Save ALL checkboxes
 	document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
 		if (cb.id) {
 			presetData.selections[cb.id] = cb.checked;
 		}
 	});
-	// Save ALL text and number inputs
 	document.querySelectorAll('input[type="number"], input[type="text"]').forEach(inp => {
 		if (inp.id && !inp.id.includes('search')) {
 			presetData.selections[inp.id] = inp.value;
@@ -665,7 +788,6 @@ function saveCurrentToPreset(presetName) {
 // ============================================
 function getCurrentPageInfo() {
 	const path = window.location.pathname;
-	// ✅ Check more specific paths FIRST
 	if (path.includes('hero-gear')) return {
 		category: 'herogear',
 		display: 'Hero Gear'
@@ -715,9 +837,7 @@ function getCurrentPageInfo() {
 		display: 'Vault'
 	};
 }
-// ============================================
-// CONVENIENCE WRAPPERS (for backward compatibility)
-// ============================================
+
 function getCurrentPageCategory() {
 	return getCurrentPageInfo().category;
 }
@@ -763,12 +883,10 @@ async function deletePreset(presetName) {
 			confirmText: 'Delete',
 			cancelText: 'Cancel',
 			isDanger: true,
-			onConfirm: function() {
-				// This is called when confirm is clicked
-			}
+			onConfirm: function() {}
 		});
 		if (value === undefined || value === null) {
-			return; // User cancelled
+			return;
 		}
 		delete allPresets[presetName];
 		localStorage.setItem("governor_presets", JSON.stringify(allPresets));
@@ -804,12 +922,10 @@ async function resetWithConfirmation() {
 			confirmText: 'Reset All',
 			cancelText: 'Cancel',
 			isDanger: true,
-			onConfirm: function() {
-				// This is called when confirm is clicked
-			}
+			onConfirm: function() {}
 		});
 		if (value === undefined || value === null) {
-			return; // User cancelled
+			return;
 		}
 		if (typeof clearAllSelections === 'function') {
 			clearAllSelections();
@@ -843,31 +959,23 @@ function loadPresetsFromStorage() {
 }
 // ============================================
 // CRITICAL FIX: PAGE-SPECIFIC clearAllSelections
-// Resets ONLY the current page and updates the preset
 // ============================================
 window.clearAllSelections = function() {
 	const pageInfo = getCurrentPageInfo();
 	const category = pageInfo.category;
 	const prefix = category + '_';
-	// ============================================
-	// 1. Reset ALL input fields on the page
-	// ============================================
-	// Reset ALL text inputs (vault, shards, widgets, troop quantities, etc.)
+	// Reset ALL text inputs
 	document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
-		// Skip preset-related elements and search inputs
 		if (input.id && (input.id.includes('preset') || input.id.includes('search'))) {
 			return;
 		}
-		// Skip if it's a hidden field or button
 		if (input.type === 'hidden' || input.type === 'button' || input.type === 'submit') {
 			return;
 		}
-		// Clear the value
 		input.value = '';
 		input.dispatchEvent(new Event('input', {
 			bubbles: true
 		}));
-		// If it's a vault input, also clear localStorage
 		if (input.id && input.id.startsWith('vault_')) {
 			const resourceId = input.id.replace('vault_', '');
 			localStorage.removeItem(`vault_${resourceId}`);
@@ -876,7 +984,7 @@ window.clearAllSelections = function() {
 			}
 		}
 	});
-	// Reset ALL selects (dropdowns) on the page
+	// Reset ALL selects
 	document.querySelectorAll('select').forEach(select => {
 		if (select.id && select.id.includes('preset')) {
 			return;
@@ -886,7 +994,7 @@ window.clearAllSelections = function() {
 			bubbles: true
 		}));
 	});
-	// Reset ALL checkboxes on the page
+	// Reset ALL checkboxes
 	document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
 		if (cb.id && cb.id.includes('preset')) {
 			return;
@@ -896,9 +1004,7 @@ window.clearAllSelections = function() {
 			bubbles: true
 		}));
 	});
-	// ============================================
-	// 2. Clear locked upgrades ONLY for this category
-	// ============================================
+	// Clear locked upgrades ONLY for this category
 	const toRemove = [];
 	for (const [key] of lockedUpgrades) {
 		if (key.startsWith(prefix) || key.startsWith('promotion_') || key.startsWith('troops_')) {
@@ -908,11 +1014,8 @@ window.clearAllSelections = function() {
 	for (const key of toRemove) {
 		lockedUpgrades.delete(key);
 	}
-	// ============================================
-	// 3. Category-specific resets
-	// ============================================
+	// Category-specific resets
 	if (category === 'building') {
-		// Reset building speedup buffs
 		localStorage.setItem('globalBuildingBuffPercent', '0');
 		localStorage.setItem('globalPansMasterArtifact', '0');
 		localStorage.setItem('globalWolfPet', '0');
@@ -983,7 +1086,6 @@ window.clearAllSelections = function() {
 		});
 	}
 	if (category === 'hero') {
-		// Reset hero flower states
 		if (typeof heroFlowerStates !== 'undefined') {
 			Object.keys(heroFlowerStates).forEach(key => {
 				heroFlowerStates[key] = {
@@ -996,7 +1098,6 @@ window.clearAllSelections = function() {
 			});
 			if (typeof saveHeroFlowerStates === 'function') saveHeroFlowerStates();
 		}
-		// Reset hero shards
 		if (typeof heroSpecificShards !== 'undefined') {
 			Object.keys(heroSpecificShards).forEach(key => delete heroSpecificShards[key]);
 			localStorage.removeItem("hero_specific_shards");
@@ -1007,7 +1108,6 @@ window.clearAllSelections = function() {
 				}));
 			});
 		}
-		// Reset generation filter
 		if (typeof selectedMaxGeneration !== 'undefined') {
 			selectedMaxGeneration = 7;
 			localStorage.setItem("hero_max_generation", "7");
@@ -1034,43 +1134,33 @@ window.clearAllSelections = function() {
 		}
 	}
 	if (category === 'govcharm') {
-		// Reset charm group set inputs if they exist
 		document.querySelectorAll('input[id^="setCurrent_"], input[id^="setTarget_"]').forEach(input => {
 			input.value = '';
 		});
 	}
 	if (category === 'vault') {
-		// Clear all vault inputs from localStorage
 		RESOURCE_ITEMS.forEach(item => {
 			localStorage.removeItem(`vault_${item.id}`);
 		});
 	}
-	// ============================================
-	// 4. Clear ONLY this page's score from localStorage
-	// ============================================
+	// Clear ONLY this page's score
 	const pageKey = getCurrentPageKey();
 	if (pageKey) {
 		localStorage.setItem(pageKey, '0');
 	}
-	// ============================================
-	// 5. Update the score display for this page
-	// ============================================
+	// Update score display
 	const scoreDisplay = document.getElementById('globalScoreDisplay');
 	if (scoreDisplay) {
 		scoreDisplay.innerText = '0';
 	}
-	// ============================================
-	// 6. CRITICAL FIX: UPDATE THE PRESET DATA
-	// ============================================
+	// UPDATE THE PRESET DATA
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const presetData = allPresets[presetName];
 	if (presetData) {
-		// A. Remove ONLY selections that belong to this page
 		if (presetData.selections) {
 			const keysToRemove = [];
 			const categoryPattern = '_' + category + '_';
 			for (const key of Object.keys(presetData.selections)) {
-				// This matches: curr_academy_, targ_academy_, active_academy_, speed_academy_, etc.
 				if (key.includes(categoryPattern) || key.startsWith(category + '_')) {
 					keysToRemove.push(key);
 				}
@@ -1079,20 +1169,17 @@ window.clearAllSelections = function() {
 				delete presetData.selections[key];
 			}
 		}
-		// B. Clear vault data from preset
 		if (presetData.vault) {
 			const vaultKeys = Object.keys(presetData.vault);
 			for (const key of vaultKeys) {
 				delete presetData.vault[key];
 			}
 		}
-		// C. Clear locked upgrades for this page
 		if (presetData.lockedUpgrades) {
 			presetData.lockedUpgrades = presetData.lockedUpgrades.filter(item => {
 				return !item.safeId.startsWith(prefix) && !item.safeId.startsWith('promotion_') && !item.safeId.startsWith('troops_');
 			});
 		}
-		// D. Clear hero-specific data from preset
 		if (category === 'hero') {
 			if (presetData.heroFlowerStates) {
 				Object.keys(presetData.heroFlowerStates).forEach(key => delete presetData.heroFlowerStates[key]);
@@ -1106,13 +1193,10 @@ window.clearAllSelections = function() {
 				Object.keys(presetData.heroWidgetQuantities).forEach(key => delete presetData.heroWidgetQuantities[key]);
 			}
 		}
-		// E. Save the updated preset
 		allPresets[presetName] = presetData;
 		localStorage.setItem("governor_presets", JSON.stringify(allPresets));
 	}
-	// ============================================
-	// 7. Refresh ONLY this page's calculations
-	// ============================================
+	// Refresh calculations
 	if (category === 'troops') {
 		if (typeof refreshTroopsCalculations === 'function') {
 			refreshTroopsCalculations();
@@ -1122,15 +1206,9 @@ window.clearAllSelections = function() {
 			refreshCalculations();
 		}
 	}
-	// ============================================
-	// 8. Update global total score
-	// ============================================
 	if (typeof updateGlobalTotalScore === 'function') {
 		setTimeout(updateGlobalTotalScore, 50);
 	}
-	// ============================================
-	// 9. Trigger vault update event
-	// ============================================
 	window.dispatchEvent(new Event('vaultUpdate'));
 	showNotification(`All selections on this page have been reset.`, 'info');
 };
@@ -1142,22 +1220,18 @@ window.updateVaultResource = function(id, value) {
 	window.dispatchEvent(new Event('vaultUpdate'));
 };
 // ============================================
-// APPLY PRESET TO CURRENT PAGE (FIXED - Preserves target levels)
+// APPLY PRESET TO CURRENT PAGE
 // ============================================
 function applyPresetToCurrentPage(preset) {
 	if (!preset) return;
 	const pageInfo = getCurrentPageInfo();
 	const category = pageInfo.category;
-	// ============================================
-	// STEP 1: Restore ALL selections WITHOUT triggering change events
-	// ============================================
-	// Restore selects (dropdowns) - store values first
+	// Restore selections
 	const selectValues = {};
 	if (preset.selections) {
 		for (const [id, value] of Object.entries(preset.selections)) {
 			const element = document.getElementById(id);
 			if (element && element.tagName === "SELECT") {
-				// Check if the value exists in the select options
 				let valueExists = false;
 				for (let i = 0; i < element.options.length; i++) {
 					if (String(element.options[i].value) === String(value)) {
@@ -1171,7 +1245,6 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	}
-	// Restore checkbox values
 	const checkboxValues = {};
 	if (preset.selections) {
 		for (const [id, value] of Object.entries(preset.selections)) {
@@ -1181,7 +1254,6 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	}
-	// Restore text/number input values
 	const inputValues = {};
 	if (preset.selections) {
 		for (const [id, value] of Object.entries(preset.selections)) {
@@ -1191,16 +1263,12 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	}
-	// ============================================
-	// STEP 2: Apply current and target level values FIRST
-	// ============================================
-	// Get all current and target level selects
+	// Apply current and target level values FIRST
 	const currSelects = [];
 	const targSelects = [];
 	document.querySelectorAll("select").forEach(select => {
 		if (select.id && !select.id.includes("presetSelect")) {
 			if (select.id.startsWith('curr_') || select.id.startsWith('targ_')) {
-				// Store current/target selects
 				if (select.id.startsWith('curr_')) {
 					currSelects.push(select);
 				} else {
@@ -1209,7 +1277,7 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	});
-	// First, restore target level selects (so they don't get auto-updated)
+	// First restore target level selects
 	for (const select of targSelects) {
 		if (selectValues[select.id] !== undefined) {
 			select.value = selectValues[select.id];
@@ -1221,7 +1289,7 @@ function applyPresetToCurrentPage(preset) {
 			select.value = selectValues[select.id];
 		}
 	}
-	// Now restore all other selects (non-current/target)
+	// Now restore all other selects
 	document.querySelectorAll("select").forEach(select => {
 		if (select.id && !select.id.includes("presetSelect") && !select.id.startsWith('curr_') && !select.id.startsWith('targ_')) {
 			if (selectValues[select.id] !== undefined) {
@@ -1229,27 +1297,21 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	});
-	// ============================================
-	// STEP 3: Apply all checkbox values
-	// ============================================
+	// Apply checkbox values
 	for (const [id, checked] of Object.entries(checkboxValues)) {
 		const element = document.getElementById(id);
 		if (element) {
 			element.checked = checked;
 		}
 	}
-	// ============================================
-	// STEP 4: Apply all text/number input values
-	// ============================================
+	// Apply text/number input values
 	for (const [id, value] of Object.entries(inputValues)) {
 		const element = document.getElementById(id);
 		if (element) {
 			element.value = value;
 		}
 	}
-	// ============================================
-	// STEP 5: Restore vault
-	// ============================================
+	// Restore vault
 	for (const item of RESOURCE_ITEMS) {
 		const input = document.getElementById(`vault_${item.id}`);
 		if (input && preset.vault[item.id] !== undefined) {
@@ -1257,18 +1319,14 @@ function applyPresetToCurrentPage(preset) {
 			localStorage.setItem(`vault_${item.id}`, preset.vault[item.id]);
 		}
 	}
-	// ============================================
-	// STEP 6: Restore locked upgrades
-	// ============================================
+	// Restore locked upgrades
 	lockedUpgrades.clear();
 	if (preset.lockedUpgrades) {
 		for (const item of preset.lockedUpgrades) {
 			lockedUpgrades.set(item.safeId, item.data);
 		}
 	}
-	// ============================================
-	// STEP 7: Restore hero flower states
-	// ============================================
+	// Restore hero flower states
 	if (preset.heroFlowerStates && typeof heroFlowerStates !== 'undefined') {
 		for (const [safeId, state] of Object.entries(preset.heroFlowerStates)) {
 			if (heroFlowerStates[safeId]) {
@@ -1285,9 +1343,7 @@ function applyPresetToCurrentPage(preset) {
 			saveHeroFlowerStates();
 		}
 	}
-	// ============================================
-	// STEP 8: Restore hero shards
-	// ============================================
+	// Restore hero shards
 	if (preset.heroSpecificShards && typeof heroSpecificShards !== 'undefined') {
 		for (const [heroName, shards] of Object.entries(preset.heroSpecificShards)) {
 			heroSpecificShards[heroName] = shards;
@@ -1302,9 +1358,7 @@ function applyPresetToCurrentPage(preset) {
 			saveHeroShardsToStorage();
 		}
 	}
-	// ============================================
-	// STEP 9: Restore hero widget quantities
-	// ============================================
+	// Restore hero widget quantities
 	if (preset.heroWidgetQuantities && typeof heroWidgetQuantities !== 'undefined') {
 		for (const [heroName, qty] of Object.entries(preset.heroWidgetQuantities)) {
 			heroWidgetQuantities[heroName] = qty;
@@ -1319,9 +1373,7 @@ function applyPresetToCurrentPage(preset) {
 			saveHeroWidgetsToStorage();
 		}
 	}
-	// ============================================
-	// STEP 10: Restore buff inputs
-	// ============================================
+	// Restore buff inputs
 	const buffInputs = ['globalBuildingBuffPercent', 'globalPansMasterArtifact', 'globalWolfPet', 'globalKingPosition', 'globalSaulsResourceful', 'globalGroundWorksCheckbox', 'globalDoubleTimeCheckbox', 'globalTrainingBuffPercent', 'globalTrainingKingPosition', 'globalTrainingMobilizeCheckbox', 'globalTrainingKvKBonusCheckbox', 'globalResearchBuffPercent', 'globalResearchKingPosition', 'globalResearchFreshIdeasCheckbox'];
 	for (const id of buffInputs) {
 		if (preset.selections && preset.selections[id] !== undefined) {
@@ -1335,11 +1387,7 @@ function applyPresetToCurrentPage(preset) {
 			}
 		}
 	}
-	// ============================================
-	// STEP 11: Trigger change events ONLY for non-current/target selects
-	// ============================================
-	// Only trigger change events for selects that are NOT current or target
-	// (to prevent auto-update of target levels)
+	// Trigger change events ONLY for non-current/target selects
 	document.querySelectorAll("select").forEach(select => {
 		if (select.id && !select.id.includes("presetSelect") && !select.id.startsWith('curr_') && !select.id.startsWith('targ_')) {
 			select.dispatchEvent(new Event('change', {
@@ -1347,7 +1395,6 @@ function applyPresetToCurrentPage(preset) {
 			}));
 		}
 	});
-	// Trigger change events for checkboxes and inputs
 	document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
 		if (cb.id) {
 			cb.dispatchEvent(new Event('change', {
@@ -1362,9 +1409,7 @@ function applyPresetToCurrentPage(preset) {
 			}));
 		}
 	});
-	// ============================================
-	// STEP 12: Refresh all displays
-	// ============================================
+	// Refresh all displays
 	if (typeof refreshTroopsCalculations === "function") refreshTroopsCalculations();
 	if (typeof refreshCalculations === "function") refreshCalculations();
 	if (typeof renderBuildingsGrid === "function") renderBuildingsGrid();
@@ -1461,50 +1506,6 @@ function formatNumber(num) {
 	}
 	return num.toLocaleString();
 }
-// ============================================
-// FIXED: IMAGE FILE NAME MAPPING (added missing resources)
-// ============================================
-function getImageFileName(resourceId) {
-	const imageMap = {
-		bread: "Bread.png",
-		wood: "Wood.png",
-		stone: "Stone.png",
-		iron: "Iron.png",
-		gold: "Gold.png",
-		truegold: "truegold.png",
-		tempered_truegold: "tempered_truegold.png",
-		truegold_dust: "truegold_dust.png",
-		forge_hammer: "forge_hammer.png",
-		widgets: "widgets.png",
-		mithril: "mithril.png",
-		satin: "satin.png",
-		gilded_threads: "gilded_threads.png",
-		artisans_vision: "artisans_vision.png",
-		charm_guide: "charm_guide.png",
-		charm_design: "charm_design.png",
-		pet_food: "pet_food.png",
-		growth_manual: "growth_manual.png",
-		nutrient_potion: "nutrient_potion.png",
-		promotion_medallion: "promotion_medallion.png",
-		building_speedup: "building_speedup.png",
-		research_speedup: "research_speedup.png",
-		training_speedup: "training_speedup.png",
-		general_speedup: "general_speedup.png",
-		rare_general_shard: "rare_general_shard.png",
-		epic_general_shard: "epic_general_shard.png",
-		mythic_general_shard: "mythic_general_shard.png",
-		mythic_gear: "mythic-gear.png",
-		hero_roulette: "hero_roulette.png",
-		general_emblem: "general_emblem.png",
-		master_manuscript: "master_manuscript.png",
-		advanced_taming_mark: "advanced_taming_mark.png",
-		common_taming_mark: "common_taming_mark.png",
-		hero_xp: "hero_xp.png",
-		stamina: "stamina.png",
-		master_speedup: "master_speedup.png"
-	};
-	return `assets/${imageMap[resourceId] || resourceId + ".png"}`;
-}
 
 function getCurrentVault() {
 	let vault = {};
@@ -1566,7 +1567,7 @@ function showNotification(message, type = 'info') {
 	}, 3000);
 }
 // ============================================
-// INPUT VALIDATION - FIXED: Only apply to numeric fields
+// INPUT VALIDATION
 // ============================================
 function sanitizeNumericInput(input, allowEmpty = false) {
 	if (!input) return;
@@ -1580,7 +1581,6 @@ function sanitizeNumericInput(input, allowEmpty = false) {
 
 function attachInputValidation(input) {
 	if (!input) return;
-	// Only attach validation to numeric inputs
 	const isNumericField = input.id?.startsWith('vault_') || input.id?.includes('qty') || input.id?.includes('quantity') || input.id?.includes('troop') || input.placeholder?.toLowerCase().includes('quantity') || input.classList.contains('hero-shard-input') || input.type === 'number';
 	if (!isNumericField) return;
 	input.addEventListener('blur', function() {
@@ -1619,7 +1619,6 @@ function initializeInputValidation() {
 				if (node.nodeType === 1) {
 					if (node.tagName === 'INPUT') attachInputValidation(node);
 					node.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
-						// Only attach validation to numeric fields
 						const isNumericField = input.id?.startsWith('vault_') || input.id?.includes('qty') || input.id?.includes('quantity') || input.id?.includes('troop') || input.placeholder?.toLowerCase().includes('quantity') || input.classList.contains('hero-shard-input') || input.type === 'number';
 						if (isNumericField) attachInputValidation(input);
 					});
@@ -1981,7 +1980,7 @@ function createGenericCard(config) {
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	const header = customHeader || `
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
+            ${imgUrl ? `<div class="sprite ${imgUrl}" style="width:50px;height:50px;flex-shrink:0;"></div>` : ''}
             <span>${name}</span>
         </div>
     `;
@@ -2005,8 +2004,7 @@ function createGenericCard(config) {
     </div>`;
 }
 // ============================================
-// CRITICAL FIX: GENERIC REFRESH CALCULATIONS 
-// (Fixes double resource deduction bug)
+// GENERIC REFRESH CALCULATIONS
 // ============================================
 function genericRefreshCalculations(config) {
 	const {
@@ -2020,7 +2018,6 @@ function genericRefreshCalculations(config) {
 		getCategory = null
 	} = config;
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -2096,7 +2093,6 @@ function genericRefreshCalculations(config) {
 				partialNote
 			} = locked;
 			if (speedCb && speedCb.checked !== locked.speedupWasChecked) speedCb.checked = locked.speedupWasChecked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -2116,7 +2112,6 @@ function genericRefreshCalculations(config) {
 			continue;
 		}
 		const speedCheck = speedCb?.checked || false;
-		// For non-locked upgrades, totalLocked already excludes this upgrade
 		const otherLocked = {};
 		for (const [res, amt] of Object.entries(totalLocked)) {
 			if (!res.startsWith('_')) {
@@ -2205,6 +2200,8 @@ window.parseTimeToMinutesForVault = parseTimeToMinutesForVault;
 window.parseCost = parseCost;
 window.formatNumber = formatNumber;
 window.getImageFileName = getImageFileName;
+window.getSpriteClass = getSpriteClass;
+window.createSpriteElement = createSpriteElement;
 window.getCurrentVault = getCurrentVault;
 window.loadGameData = loadGameData;
 window.loadPointsFromData = loadPointsFromData;
