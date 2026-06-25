@@ -1,152 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-		<title>Strongest Governor - Heroes</title>
-		<link rel="stylesheet" href="style.css">
-	</head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Strongest Governor - Heroes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 
-	<body>
-		<div class="navbar">
-			<label class="hamburger" id="hamburgerIcon">
-				<input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
-				<svg viewBox="0 0 32 32">
-					<path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22">
-					</path>
-					<path class="line" d="M7 16 27 16"></path>
-				</svg>
-			</label>
-			<div class="nav-links" id="navLinks">
-				<a href="index.html" class="nav-link">📦 VAULT</a>
-				<a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
-				<a href="war-academy.html" class="nav-link">📜 WAR ACADEMY</a>
-				<a href="widgets.html" class="nav-link">✨ WIDGETS</a>
-				<a href="heroes.html" class="nav-link active">⭐ HEROES</a>
-				<a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
-				<a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
-				<a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
-				<a href="pets.html" class="nav-link">🐾 PETS</a>
-				<a href="troops.html" class="nav-link">⚔️ TROOPS</a>
-			</div>
-			<div class="scoreboard-total">
-				<div class="scoreboard">
-					<div class="lcd-label">HERO SCORE</div>
-					<div class="lcd-value" id="globalScoreDisplay">0</div>
-				</div>
-				<div class="scoreboard">
-					<div class="lcd-label">Strongest Governor</div>
-					<div class="lcd-value" id="globalTotalScoreDisplay">0</div>
-				</div>
-			</div>
-			<div class="preset-controls">
-				<!-- Preset Hamburger Menu Button (visible on mobile) -->
-				<button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
-					<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
-						<path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z" stroke-linejoin="round" stroke-linecap="round" data-path="box"></path>
-						<path d="M7 3L7 8L15 8" stroke-linejoin="round" stroke-linecap="round" data-path="line-top"></path>
-						<path d="M17 20L17 13L7 13L7 20" stroke-linejoin="round" stroke-linecap="round" data-path="line-bottom"></path>
-					</svg>
-				</button>
-				<!-- Preset Dropdown Menu (hidden on mobile, shown when hamburger clicked) -->
-				<div class="preset-dropdown" id="presetDropdown">
-					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
-					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
-					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
-					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
-					<button class="btn-reset" onclick="clearAllSelections()">⟳ Reset</button>
-				</div>
-			</div>
-		</div>
-		<div class="app-container">
-			<!-- INVENTORY CARD GOES HERE - OUTSIDE items-grid -->
-			<div id="heroInventoryContainer"></div>
-			<!-- HERO CARDS GO HERE -->
-			<div class="items-grid" id="heroesGrid"></div>
-		</div>
-		<script src="js/app.js"></script>
-		<script src="js/heroes.js"></script>
-		<script>
-			function updateVaultResource(id, value) {
-				localStorage.setItem(`vault_${id}`, value);
-				window.dispatchEvent(new Event('vaultUpdate'));
-			}
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading Hero Data...</p>
+        </div>
+    </div>
 
-			function clearAllSelections() {
-				// Reset generation filter to default (Gen 7)
-				if (typeof selectedMaxGeneration !== 'undefined') {
-					selectedMaxGeneration = 7;
-					localStorage.setItem("hero_max_generation", "7");
-					const genSelect = document.getElementById('heroGenerationSelect');
-					if (genSelect) genSelect.value = "7";
-				}
-				// Clear hero-specific shards
-				if (typeof heroSpecificShards !== 'undefined') {
-					Object.keys(heroSpecificShards).forEach(key => delete heroSpecificShards[key]);
-					localStorage.removeItem("hero_specific_shards");
-					document.querySelectorAll('.hero-shard-input').forEach(input => input.value = '');
-				}
-				// Reset only hero cards
-				document.querySelectorAll('.item-card[data-type="hero"]').forEach(card => {
-					const selects = card.querySelectorAll('select');
-					selects.forEach(s => s.selectedIndex = 0);
-					const checkboxes = card.querySelectorAll('input[type="checkbox"]');
-					checkboxes.forEach(cb => cb.checked = false);
-					const numberInputs = card.querySelectorAll('input[type="number"]');
-					numberInputs.forEach(inp => inp.value = '');
-				});
-				// Reset flower states
-				if (typeof heroFlowerStates !== 'undefined') {
-					Object.keys(heroFlowerStates).forEach(key => {
-						heroFlowerStates[key] = {
-							currentMaxIdx: -1,
-							targetMaxIdx: -1
-						};
-					});
-					Object.keys(heroFlowerStates).forEach(id => {
-						if (typeof updateHeroFlowerVisuals === 'function') updateHeroFlowerVisuals(id);
-					});
-				}
-				// Only remove hero-related locked upgrades
-				const toRemove = [];
-				for (const [key] of lockedUpgrades) {
-					if (key.startsWith('hero_')) {
-						toRemove.push(key);
-					}
-				}
-				for (const key of toRemove) {
-					lockedUpgrades.delete(key);
-				}
-				if (typeof refreshCalculations === 'function') refreshCalculations();
-				if (typeof updateGlobalTotalScore === 'function') {
-					setTimeout(updateGlobalTotalScore, 50);
-				}
-				window.dispatchEvent(new Event('vaultUpdate'));
-			}
-			window.updateVaultResource = updateVaultResource;
-			window.clearAllSelections = clearAllSelections;
-			window.addEventListener('DOMContentLoaded', async () => {
-				loadPresetsFromStorage();
-				initializeInputValidation();
-				await loadGameData();
-				setTimeout(() => {
-					if (typeof loadHeroes === 'function') {
-						loadHeroes();
-					}
-				}, 100);
-				setTimeout(() => {
-					if (currentPreset && allPresets[currentPreset]) {
-						applyPresetToCurrentPage(allPresets[currentPreset]);
-					}
-				}, 200);
-				window.addEventListener('vaultUpdate', () => {
-					if (typeof refreshCalculations === 'function') refreshCalculations();
-					if (typeof refreshTroopsCalculations === 'function') refreshTroopsCalculations();
-				});
-			});
+    <div class="navbar">
+        <label class="hamburger" id="hamburgerIcon">
+            <input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
+            <svg viewBox="0 0 32 32">
+                <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22">
+                </path>
+                <path class="line" d="M7 16 27 16"></path>
+            </svg>
+        </label>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link">📦 VAULT</a>
+            <a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
+            <a href="war-academy.html" class="nav-link">📜 WAR ACADEMY</a>
+            <a href="widgets.html" class="nav-link">✨ WIDGETS</a>
+            <a href="heroes.html" class="nav-link active" aria-current="page">⭐ HEROES</a>
+            <a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
+            <a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
+            <a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
+            <a href="pets.html" class="nav-link">🐾 PETS</a>
+            <a href="troops.html" class="nav-link">⚔️ TROOPS</a>
+        </div>
+        <div class="scoreboard-total">
+            <div class="scoreboard">
+                <div class="lcd-label">HERO SCORE</div>
+                <div class="lcd-value" id="globalScoreDisplay">0</div>
+            </div>
+            <div class="scoreboard">
+                <div class="lcd-label">Strongest Governor</div>
+                <div class="lcd-value" id="globalTotalScoreDisplay">0</div>
+            </div>
+        </div>
+        <div class="preset-controls">
+            <button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                    <path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"></path>
+                    <path d="M7 3L7 8L15 8"></path>
+                    <path d="M17 20L17 13L7 13L7 20"></path>
+                </svg>
+            </button>
+            <div class="preset-dropdown" id="presetDropdown">
+                <select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
+                <button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
+                <button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
+                <button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
+                <button class="btn-reset" onclick="resetWithConfirmation()">⟳ Reset</button>
+            </div>
+        </div>
+    </div>
 
-		</script>
-	</body>
+    <div class="app-container">
+        <div id="heroInventoryContainer"></div>
+        <div class="items-grid" id="heroesGrid"></div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/heroes.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            showLoading();
+            loadPresetsFromStorage();
+            initializeInputValidation();
+            await loadGameData();
+            setTimeout(() => {
+                if (typeof loadHeroes === 'function') {
+                    loadHeroes();
+                }
+            }, 100);
+            setTimeout(() => {
+                if (currentPreset && allPresets[currentPreset]) {
+                    applyPresetToCurrentPage(allPresets[currentPreset]);
+                }
+                hideLoading();
+            }, 150);
+            window.addEventListener('vaultUpdate', () => {
+                if (typeof refreshCalculations === 'function') refreshCalculations();
+            });
+        });
+    </script>
+</body>
 
 </html>
