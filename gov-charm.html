@@ -74,7 +74,7 @@
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
-				await loadGameData();
+				await loadGameData(["Gov_Charm", "Points"]);
 				if (typeof loadGovCharm === 'function') loadGovCharm();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {

@@ -88,7 +88,7 @@ function createWidgetInventoryCard() {
 		const imgUrl = getHeroImageFileName(hero.name);
 		heroesHtml += `
             <div class="hero-shard-item">
-                <img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
+                <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
                 <span class="hero-shard-name" title="${hero.name}">${hero.name}</span>
                 <input type="text" style="text-align: center;" 
                     id="hero_widget_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}" 
@@ -191,7 +191,7 @@ function createWidgetCard(heroName, dataArray) {
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	return `<div class="item-card" data-type="widgets" data-hero="${heroName}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${heroName}">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${heroName}">
             <span>${heroName}'s Exclusive Widget</span>
         </div>
         <div class="item-card-body">

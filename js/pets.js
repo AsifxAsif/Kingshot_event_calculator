@@ -178,7 +178,7 @@ function createPetCard(pet) {
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', maxLvl, '');
 	return `<div class="item-card" data-type="pet" data-name="${pet.name}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${pet.name}">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${pet.name}">
             <span>${pet.name}</span>
         </div>
         <div class="item-card-body">

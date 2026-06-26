@@ -216,12 +216,12 @@ function createGovGearCard(name, dataArray) {
         <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
-                <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}" alt="Current ${name}">
+                <img loading="lazy" decoding="async" src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgCurrent_${safeId}" alt="Current ${name}">
             </div>
             <span style="font-weight: 700; font-size: 0.9rem;">${name}</span>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
-                <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgTarget_${safeId}" alt="Target ${name}">
+                <img loading="lazy" decoding="async" src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="gearImgTarget_${safeId}" alt="Target ${name}">
             </div>
         </div>
         <div class="item-card-body">

@@ -394,6 +394,8 @@ body {
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-extruded-lg);
 	transition: all var(--transition-normal);
+	content-visibility: auto;
+	contain-intrinsic-size: 280px;
 }
 .item-card:hover {
 	box-shadow: var(--shadow-extruded);

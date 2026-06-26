@@ -108,7 +108,7 @@
 				loadPresetsFromStorage();
 				initializeInputValidation();
 				loadTrainingSpeedupBuffs();
-				await loadGameData();
+				await loadGameData(["Troops", "Points"]);
 				if (typeof loadTroops === 'function') loadTroops();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {

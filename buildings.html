@@ -144,7 +144,7 @@
 				loadPresetsFromStorage();
 				initializeInputValidation();
 				loadBuildingSpeedupBuffs();
-				await loadGameData();
+				await loadGameData(["Buildings", "Points"]);
 				if (typeof loadBuildings === 'function') loadBuildings();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {

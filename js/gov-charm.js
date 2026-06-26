@@ -241,11 +241,11 @@ function createIndividualCharmCard(charmName, charmNumber, dataArray) {
             <div class="item-card-header" style="display: flex; justify-content: space-evenly; align-items: center; padding: 8px 12px; background: var(--surface-dark);">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.7rem; color: var(--text-muted);">Current</span>
-                    <img src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgCurrent_${safeId}" alt="Current ${charmName}">
+                    <img loading="lazy" decoding="async" src="${defaultCurrentImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgCurrent_${safeId}" alt="Current ${charmName}">
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.7rem; color: var(--text-muted);">Target</span>
-                    <img src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgTarget_${safeId}" alt="Target ${charmName}">
+                    <img loading="lazy" decoding="async" src="${defaultTargetImg}" onerror="this.style.display='none';" style="height: 50px; width: 50px; object-fit: contain;" id="charmImgTarget_${safeId}" alt="Target ${charmName}">
                 </div>
             </div>
             <div class="item-card-body" style="padding: 8px 12px;">
@@ -375,7 +375,7 @@ function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 	return `
         <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
             <div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'" alt="${groupName}">
+                <img loading="lazy" decoding="async" src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'" alt="${groupName}">
                 <span style="font-size: 1.1rem;">${groupName} Charms</span>
             </div>
             <div class="item-card-body" style="padding: 12px;">

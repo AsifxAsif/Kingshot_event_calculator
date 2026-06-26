@@ -171,7 +171,7 @@ function createAcademyIndividualCard(item, dataArray) {
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${item.displayName}" style="height: 60px; width: 60px; object-fit: contain;">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${item.displayName}" style="height: 60px; width: 60px; object-fit: contain;">
             <span style="font-size: 0.85rem;">${item.displayName}</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">
@@ -200,7 +200,7 @@ function createAcademyGroupCard(categoryName, items, iconPath) {
 	return `
         <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
             <div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
-                <img src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'" alt="${categoryName}">
+                <img loading="lazy" decoding="async" src="${iconPath}" style="height: 32px; width: 32px; object-fit: contain;" onerror="this.style.display='none'" alt="${categoryName}">
                 <span style="font-size: 1.1rem;">${categoryName} RESEARCH</span>
                 <span style="font-size: 0.7rem; color: var(--text-muted); margin-left: auto;">${items.length} technologies</span>
             </div>

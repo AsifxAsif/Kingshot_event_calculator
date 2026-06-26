@@ -75,7 +75,7 @@
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
-				await loadGameData();
+				await loadGameData(["Widgets", "Points"]);
 				setTimeout(() => {
 					if (typeof loadWidgets === 'function') {
 						loadWidgets();

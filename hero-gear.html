@@ -68,7 +68,7 @@
 			<div class="items-grid hero-gear-grid">
 				<div class="item-card" style="border: 1px solid #999;">
 					<div class="item-card-header" id="heroGearHeader" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
-						<img id="heroGearHeaderImage" src="assets/hero-gear-mythic.png" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Hero Gear">
+						<img loading="lazy" decoding="async" id="heroGearHeaderImage" src="assets/hero-gear-mythic.png" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Hero Gear">
 						<span style="font-size: 1rem;">HERO GEAR</span>
 					</div>
 					<div class="item-card-body" style="padding: 12px;">
@@ -77,7 +77,7 @@
 				</div>
 				<div class="item-card" style="border: 1px solid #999;">
 					<div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
-						<img src="assets/forge_hammer.png" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Forgehammer">
+						<img loading="lazy" decoding="async" src="assets/forge_hammer.png" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Forgehammer">
 						<span style="font-size: 1rem;">🔨 FORGEHAMMER</span>
 					</div>
 					<div class="item-card-body" style="padding: 12px;">
@@ -93,7 +93,7 @@
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
-				await loadGameData();
+				await loadGameData(["Hero_Gear", "Points"]);
 				if (typeof loadCombinedPage === 'function') loadCombinedPage();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {

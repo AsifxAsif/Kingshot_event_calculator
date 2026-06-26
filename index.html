@@ -6,6 +6,16 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=yes">
 		<title>Strongest Governor - Vault</title>
 		<link rel="stylesheet" href="style.css">
+		<link rel="preload" as="image" href="assets/Bread.png">
+		<link rel="preload" as="image" href="assets/Wood.png">
+		<link rel="preload" as="image" href="assets/Stone.png">
+		<link rel="preload" as="image" href="assets/Iron.png">
+		<link rel="preload" as="image" href="assets/Gold.png">
+		<link rel="preload" as="image" href="assets/truegold.png">
+		<link rel="preload" as="image" href="assets/tempered_truegold.png">
+		<link rel="preload" as="image" href="assets/truegold_dust.png">
+		<link rel="preload" as="image" href="assets/forge_hammer.png">
+		<link rel="preload" as="image" href="assets/widgets.png">
 	</head>
 
 	<body>
@@ -77,7 +87,7 @@
 					const img = getImageFileName(item.id);
 					container.innerHTML += `<div class="vault-item">
                     <div class="vault-label">
-                        <img src="${img}" onerror="this.style.display='none';" alt="${item.id}">
+                        <img loading="lazy" decoding="async" src="${img}" onerror="this.style.display='none';" alt="${item.id}">
                         <label>${item.id.replace(/_/g, " ")}</label>
                     </div>
                     <input type="text" id="vault_${item.id}" value="${saved}" placeholder="e.g., ${item.placeholder}" oninput="validateVaultInput(this); updateVaultResource('${item.id}', this.value)" onblur="validateVaultInput(this); updateGlobalTotalScore()">
@@ -99,15 +109,13 @@
 					input.value = value;
 				}
 			}
-			// CRITICAL FIX: Use centralized clearAllSelections from app.js
-			// No duplicate function needed here
 			window.validateVaultInput = validateVaultInput;
 			window.addEventListener("DOMContentLoaded", async () => {
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
 				buildVaultUI();
-				await loadGameData();
+				await loadGameData(["Points"]);
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {
 						applyPresetToCurrentPage(allPresets[currentPreset]);

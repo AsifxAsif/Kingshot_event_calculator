@@ -172,7 +172,7 @@ function createBuildingCard(name, dataArray) {
 	const imgUrl = getBuildingImageFileName(name);
 	return `<div class="item-card" data-type="building" data-name="${name}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
             <span>${name}</span>
         </div>
         <div class="item-card-body">

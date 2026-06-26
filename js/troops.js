@@ -54,7 +54,7 @@ function createTroopIndividualCard(troopType) {
 	const imgUrl = getTroopImageFileName(troopType);
 	return `<div class="item-card troop-card" data-type="troops" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
             <span style="font-size: 0.85rem;">${troopType}</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">
@@ -104,7 +104,7 @@ function createPromotionIndividualCard(troopType) {
 	const imgUrl = getTroopImageFileName(troopType);
 	return `<div class="item-card troop-card" data-type="promotion" data-name="${troopType}" data-id="${safeId}" style="margin-bottom: 10px;">
         <div class="item-card-header" style="padding: 8px 12px; background: var(--surface-dark);">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${troopType}" style="height: 40px; width: 40px; object-fit: contain;">
             <span style="font-size: 0.85rem;">${troopType} Promotion</span>
         </div>
         <div class="item-card-body" style="padding: 8px 12px;">

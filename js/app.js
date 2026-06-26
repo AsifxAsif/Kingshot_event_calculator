@@ -223,7 +223,7 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		const statusClass = remaining < 0 ? 'text-deficit' : 'text-remaining';
 		const statusText = remaining < 0 ? `${formatNumber(-remaining)} short` : `${formatNumber(remaining)} remaining`;
 		const imgStyle = isHeroResource(res) ? 'height:20px;width:20px;object-fit:contain;border-radius:4px;' : '';
-		const tag = `<div class="resource-tag"><img src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}"> ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
+		const tag = `<div class="resource-tag"><img loading="lazy" decoding="async" src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}"> ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
 		// Categorize
 		if (category === 'hero') {
 			heroResources += tag;
@@ -1533,17 +1533,20 @@ function getCurrentPageKey() {
 // ============================================
 // GLOBAL DATA LOADING
 // ============================================
-async function loadGameData() {
-	const files = ["Buildings", "Forgehammer", "Gov_Charm", "Gov_Gear", "Hero", "Hero_Gear", "Pet", "Troops", "War_Academy", "Widgets", "Points"];
-	const results = await Promise.allSettled(files.map(f => fetch(`data/${f}.json`).then(r => r.json())));
+async function loadGameData(filesToLoad = null) {
+	// If no specific files requested, load minimal set
+	if (!filesToLoad) {
+		// For vault page, we only need Points.json for scoring
+		filesToLoad = ["Points"];
+	}
+	const results = await Promise.allSettled(filesToLoad.map(f => fetch(`data/${f}.json`).then(r => r.json())));
 	results.forEach((result, i) => {
-		const fileName = files[i];
+		const fileName = filesToLoad[i];
 		if (result.status === 'fulfilled') {
 			gameDB[fileName] = result.value;
 		} else {
 			console.error(`❌ Failed to load: ${fileName}.json`, result.reason);
 			gameDB[fileName] = {};
-			showNotification(`Failed to load ${fileName}.json`, 'error');
 		}
 	});
 	loadPointsFromData();
@@ -1981,7 +1984,7 @@ function createGenericCard(config) {
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	const header = customHeader || `
         <div class="item-card-header">
-            <img src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
+            <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" alt="${name}">
             <span>${name}</span>
         </div>
     `;
@@ -2169,6 +2172,16 @@ function genericRefreshCalculations(config) {
 			saveCurrentPageScore(totalScore);
 		}
 	}
+}
+//Service Worker
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		navigator.serviceWorker.register('/sw.js').then(registration => {
+			console.log('Service Worker registered successfully');
+		}).catch(error => {
+			console.log('Service Worker registration failed:', error);
+		});
+	});
 }
 // ============================================
 // EXPORTS

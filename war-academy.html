@@ -106,7 +106,7 @@
 				loadPresetsFromStorage();
 				initializeInputValidation();
 				loadResearchSpeedupBuffs();
-				await loadGameData();
+				await loadGameData(["War_Academy", "Points"]);
 				if (typeof loadWarAcademy === 'function') loadWarAcademy();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {

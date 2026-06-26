@@ -142,7 +142,7 @@ function createHeroShardsInventoryCard() {
 		const imgUrl = getHeroImageFileName(hero.name);
 		heroesHtml += `
             <div class="hero-shard-item">
-                <img src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
+                <img loading="lazy" decoding="async" src="${imgUrl}" onerror="this.style.display='none';" class="hero-shard-img" alt="${hero.name}">
                 <span class="hero-shard-name" title="${hero.name}">${hero.name}</span>
                 <input type="text" style="text-align: center;" 
                     id="hero_shard_${hero.name.replace(/[^a-zA-Z0-9]/g, '_')}" 
@@ -466,7 +466,7 @@ function createHeroCard(hero, shardData) {
 	const targetFlowerSlot = generateFlowerContainerMarkup(safeId, 'targ');
 	return `<div class="item-card" data-type="hero" data-name="${hero.name}" data-rarity="${hero.rarity}" data-generation="${hero.generation}" data-id="${safeId}">
         <div class="item-card-header">
-            <img src="${getHeroImageFileName(hero.name)}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${hero.name}">
+            <img loading="lazy" decoding="async" src="${getHeroImageFileName(hero.name)}" onerror="this.style.display='none';" style="height: 60px; width: 60px; object-fit: contain;" alt="${hero.name}">
             <span>${hero.name}'s Star Level (Gen ${hero.generation})</span>
         </div>
         <div class="item-card-body">
