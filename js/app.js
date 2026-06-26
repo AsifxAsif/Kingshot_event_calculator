@@ -639,7 +639,10 @@ function saveCurrentToPreset(presetName) {
 		}
 	}
 	// Save buff inputs
-	const buffInputs = ['globalBuildingBuffPercent', 'globalPansMasterArtifact', 'globalWolfPet', 'globalKingPosition', 'globalSaulsResourceful', 'globalGroundWorksCheckbox', 'globalDoubleTimeCheckbox', 'globalTrainingBuffPercent', 'globalTrainingKingPosition', 'globalTrainingMobilizeCheckbox', 'globalTrainingKvKBonusCheckbox', 'globalResearchBuffPercent', 'globalResearchKingPosition', 'globalResearchFreshIdeasCheckbox'];
+	const buffInputs = ['globalBuildingBuffPercent', 'globalPansMasterArtifact', 'globalWolfPet', 'globalKingPosition', 'globalSaulsResourceful', 'globalGroundWorksCheckbox', 'globalDoubleTimeCheckbox', 'globalTrainingBuffPercent', 'globalTrainingKingPosition', 'globalTrainingMobilizeCheckbox', 'globalTrainingKvKBonusCheckbox', 'globalResearchBuffPercent', 'globalResearchKingPosition', 'globalResearchFreshIdeasCheckbox',
+		// Misc page buffs
+		'globalGatheringBuffPercent', 'globalMarchUnits', 'globalBisonGrip', 'globalBisonResource', 'globalBisonNode', 'heroRouletteCount', 'gatherBread', 'gatherWood', 'gatherStone', 'gatherIron'
+	];
 	for (const id of buffInputs) {
 		const el = document.getElementById(id);
 		if (el) {
@@ -702,6 +705,10 @@ function getCurrentPageInfo() {
 	if (path.includes('troops')) return {
 		category: 'troops',
 		display: 'Troops'
+	};
+	if (path.includes('misc')) return {
+		category: 'misc',
+		display: 'Misc'
 	};
 	if (path.includes('index')) return {
 		category: 'vault',
@@ -1036,6 +1043,18 @@ window.clearAllSelections = function() {
 			input.value = '';
 		});
 	}
+	if (category === 'misc') {
+		// Reset misc fields
+		const fields = ['heroRouletteCount', 'gatherBread', 'gatherWood', 'gatherStone', 'gatherIron'];
+		for (const id of fields) {
+			const el = document.getElementById(id);
+			if (el) {
+				el.value = '';
+			}
+		}
+		localStorage.removeItem('misc_data');
+		if (typeof refreshCalculations === 'function') refreshCalculations();
+	}
 	if (category === 'vault') {
 		// Clear all vault inputs from localStorage
 		RESOURCE_ITEMS.forEach(item => {
@@ -1319,7 +1338,10 @@ function applyPresetToCurrentPage(preset) {
 	// ============================================
 	// STEP 10: Restore buff inputs
 	// ============================================
-	const buffInputs = ['globalBuildingBuffPercent', 'globalPansMasterArtifact', 'globalWolfPet', 'globalKingPosition', 'globalSaulsResourceful', 'globalGroundWorksCheckbox', 'globalDoubleTimeCheckbox', 'globalTrainingBuffPercent', 'globalTrainingKingPosition', 'globalTrainingMobilizeCheckbox', 'globalTrainingKvKBonusCheckbox', 'globalResearchBuffPercent', 'globalResearchKingPosition', 'globalResearchFreshIdeasCheckbox'];
+	const buffInputs = ['globalBuildingBuffPercent', 'globalPansMasterArtifact', 'globalWolfPet', 'globalKingPosition', 'globalSaulsResourceful', 'globalGroundWorksCheckbox', 'globalDoubleTimeCheckbox', 'globalTrainingBuffPercent', 'globalTrainingKingPosition', 'globalTrainingMobilizeCheckbox', 'globalTrainingKvKBonusCheckbox', 'globalResearchBuffPercent', 'globalResearchKingPosition', 'globalResearchFreshIdeasCheckbox',
+		// Misc page buffs
+		'globalGatheringBuffPercent', 'globalMarchUnits', 'globalBisonGrip', 'globalBisonResource', 'globalBisonNode', 'heroRouletteCount', 'gatherBread', 'gatherWood', 'gatherStone', 'gatherIron'
+	];
 	for (const id of buffInputs) {
 		if (preset.selections && preset.selections[id] !== undefined) {
 			const el = document.getElementById(id);
@@ -1524,6 +1546,7 @@ function getCurrentPageKey() {
 	if (path.includes('gov-charm')) return 'score_govcharm';
 	if (path.includes('pets')) return 'score_pets';
 	if (path.includes('troops')) return 'score_troops';
+	if (path.includes('misc')) return 'score_misc';
 	return null;
 }
 // ============================================
@@ -1638,7 +1661,7 @@ let globalTotalScore = 0;
 let currentPageScore = 0;
 
 function recalculateTotalFromStorage() {
-	const pageKeys = ['score_buildings', 'score_academy', 'score_forgehammer', 'score_widgets', 'score_heroes', 'score_herogear', 'score_govgear', 'score_govcharm', 'score_pets', 'score_troops'];
+	const pageKeys = ['score_buildings', 'score_academy', 'score_forgehammer', 'score_widgets', 'score_heroes', 'score_herogear', 'score_govgear', 'score_govcharm', 'score_pets', 'score_troops', 'score_misc'];
 	let total = 0;
 	for (const key of pageKeys) {
 		total += parseInt(localStorage.getItem(key) || '0');

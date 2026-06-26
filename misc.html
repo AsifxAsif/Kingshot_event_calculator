@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+		<title>Strongest Governor - Misc</title>
+		<link rel="stylesheet" href="style.css">
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	</head>
+
+	<body>
+		<!-- Loading Overlay -->
+		<div class="loading-overlay" id="loadingOverlay">
+			<div class="loading-spinner">
+				<div class="spinner"></div>
+				<p>Loading Misc Data...</p>
+			</div>
+		</div>
+		<div class="navbar">
+			<label class="hamburger" id="hamburgerIcon">
+				<input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
+				<svg viewBox="0 0 32 32">
+					<path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22">
+					</path>
+					<path class="line" d="M7 16 27 16"></path>
+				</svg>
+			</label>
+			<div class="nav-links" id="navLinks">
+				<a href="index.html" class="nav-link">📦 VAULT</a>
+				<a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
+				<a href="war-academy.html" class="nav-link">📜 WAR ACADEMY</a>
+				<a href="widgets.html" class="nav-link">✨ WIDGETS</a>
+				<a href="heroes.html" class="nav-link">⭐ HEROES</a>
+				<a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
+				<a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
+				<a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
+				<a href="pets.html" class="nav-link">🐾 PETS</a>
+				<a href="troops.html" class="nav-link">⚔️ TROOPS</a>
+				<a href="misc.html" class="nav-link active" aria-current="page">🎲 MISC</a>
+			</div>
+			<div class="scoreboard-total">
+				<div class="scoreboard">
+					<div class="lcd-label">MISC SCORE</div>
+					<div class="lcd-value" id="globalScoreDisplay">0</div>
+				</div>
+				<div class="scoreboard">
+					<div class="lcd-label">Strongest Governor</div>
+					<div class="lcd-value" id="globalTotalScoreDisplay">0</div>
+				</div>
+			</div>
+			<div class="preset-controls">
+				<button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
+					<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+						<path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"></path>
+						<path d="M7 3L7 8L15 8"></path>
+						<path d="M17 20L17 13L7 13L7 20"></path>
+					</svg>
+				</button>
+				<div class="preset-dropdown" id="presetDropdown">
+					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
+					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
+					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
+					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
+					<button class="btn-reset" onclick="resetWithConfirmation()">⟳ Reset</button>
+				</div>
+			</div>
+		</div>
+		<div class="app-container">
+			<!-- Hero Roulette Card -->
+			<div class="speedup-buff-card" style="margin-bottom: 20px;">
+				<div class="speedup-buff-header">
+					<span>🎰 HERO ROULETTE</span>
+				</div>
+				<div class="speedup-buff-body">
+					<div class="buff-row">
+						<div class="buff-field">
+							<label>🎯 Number of Hero Roulette Plays</label>
+							<input type="text" style="text-align: center;" id="heroRouletteCount" value="" placeholder="e.g., 10" oninput="validateMiscInput(this); refreshCalculations()">
+							<small>Each play gives 8000 points in SG event</small>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- ============================================ -->
+			<!-- GATHERING SECTION - All grouped together -->
+			<!-- ============================================ -->
+			<div class="item-card" style="border: 1px solid #999; margin-bottom: 20px;">
+				<div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
+					<span style="font-size: 1.1rem;">⛏️ GATHERING</span>
+				</div>
+				<div class="item-card-body" style="padding: 12px;">
+					<!-- Gathering Settings -->
+					<div class="speedup-buff-card" style="margin-bottom: 16px; border: 1px solid #d0d0d0;">
+						<div class="speedup-buff-header" style="padding: 8px 14px; font-size: 0.85rem;">
+							<span>⚙️ GATHERING SETTINGS</span>
+						</div>
+						<div class="speedup-buff-body" style="padding: 12px;">
+							<div class="buff-row">
+								<div class="buff-field">
+									<label>🚀 March Units</label>
+									<select id="globalMarchUnits" onchange="updateGlobalSettings()">
+										<option value="" disabled selected hidden>Select March Units</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+									</select>
+									<small>Number of gathering marches</small>
+								</div>
+								<div class="buff-field">
+									<label>🐂 Bison Grip of the Titan (Pet Skill)</label>
+									<select id="globalBisonGrip" onchange="updateGlobalSettings()">
+										<option value="0">0</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+									</select>
+									<small>Max 2 rotations</small>
+								</div>
+							</div>
+							<div class="buff-row" id="bisonGripDetails" style="display: none;">
+								<div class="buff-field">
+									<label>🎯 Bison Grip Resource Type</label>
+									<select id="globalBisonResource" onchange="updateGlobalSettings()">
+										<option value="bread">Bread</option>
+										<option value="wood">Wood</option>
+										<option value="stone">Stone</option>
+										<option value="iron">Iron</option>
+									</select>
+								</div>
+								<div class="buff-field">
+									<label>📊 Bison Grip Node Level</label>
+									<select id="globalBisonNode" onchange="updateGlobalSettings()">
+										<option value="1">Level 1</option>
+										<option value="2">Level 2</option>
+										<option value="3">Level 3</option>
+										<option value="4">Level 4</option>
+										<option value="5">Level 5</option>
+										<option value="6">Level 6</option>
+										<option value="7">Level 7</option>
+										<option value="8">Level 8</option>
+									</select>
+								</div>
+							</div>
+							<!-- Bison Grip Points Display -->
+							<div id="bisonPointsDisplay" style="display: none; margin-top: 10px; padding: 8px 14px; background: var(--lcd-bg); border-radius: var(--radius-sm); text-align: center;">
+								<strong style="color: #fff;">🐂 Bison Grip Points:</strong>
+								<span style="color: var(--lcd-glow); font-weight: 700;" id="bisonPointsValue">0</span>
+							</div>
+						</div>
+					</div>
+					<!-- Gathering Cards -->
+					<div class="items-grid misc-grid" id="gatheringGrid"></div>
+				</div>
+			</div>
+		</div>
+		<script src="js/app.js"></script>
+		<script src="js/misc.js"></script>
+		<script>
+			window.addEventListener('DOMContentLoaded', async () => {
+				showLoading();
+				loadPresetsFromStorage();
+				initializeInputValidation();
+				// Load data
+				await loadGameData(["Points", "Misc"]);
+				// Load saved values
+				loadMiscFromStorage();
+				loadGlobalSettings();
+				setTimeout(() => {
+					if (currentPreset && allPresets[currentPreset]) {
+						applyPresetToCurrentPage(allPresets[currentPreset]);
+					}
+					if (typeof renderGatheringCards === 'function') {
+						renderGatheringCards();
+					}
+					if (typeof refreshCalculations === 'function') {
+						refreshCalculations();
+					}
+					hideLoading();
+				}, 150);
+				window.addEventListener('vaultUpdate', () => {
+					if (typeof refreshCalculations === 'function') refreshCalculations();
+				});
+				window.addEventListener('presetLoaded', () => {
+					if (typeof renderGatheringCards === 'function') renderGatheringCards();
+					if (typeof loadGlobalSettings === 'function') loadGlobalSettings();
+				});
+			});
+
+		</script>
+	</body>
+
+</html>

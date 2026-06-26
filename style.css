@@ -1510,3 +1510,14 @@ input[type="number"] {
 		text-shadow: none !important;
 	}
 }
+/* Misc page specific styles */
+.misc-grid {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 1fr;
+}
+@media (min-width: 769px) {
+	.misc-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
