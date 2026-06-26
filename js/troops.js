@@ -1,5 +1,5 @@
 // ============================================
-// TROOPS - FIXED (Double deduction fixed)
+// TROOPS - FULLY FIXED (Active buttons always work when valid)
 // ============================================
 function getTroopsTrainingData(type) {
 	const training = window.gameDB.Troops?.Troops?.Training;
@@ -291,14 +291,63 @@ function getBuffedTrainingTime(originalSeconds) {
 	return originalSeconds;
 }
 // ============================================
-// CRITICAL FIX: refreshTroopsCalculations - Fixed double deduction
+// Speedup calculation with training first, then general
+// ============================================
+function calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked) {
+	if (totalTimeSeconds <= 0) {
+		return {
+			usedTraining: 0,
+			usedGeneral: 0,
+			totalUsed: 0,
+			totalPoints: 0,
+			partialNote: ''
+		};
+	}
+	const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
+	const totalSpeedupMinutesNeeded = secondsToSpeedupMinutes(buffedTimeSeconds);
+	// Get available speedups (excluding those already locked)
+	const trainingAvailable = Math.max(0, (vault.training_speedup || 0) - (otherLocked.training_speedup || 0));
+	const generalAvailable = Math.max(0, (vault.general_speedup || 0) - (otherLocked.general_speedup || 0));
+	let remainingNeeded = totalSpeedupMinutesNeeded;
+	let usedTraining = 0;
+	let usedGeneral = 0;
+	let partialNote = '';
+	// First use training speedups
+	if (trainingAvailable > 0) {
+		usedTraining = Math.min(trainingAvailable, remainingNeeded);
+		remainingNeeded -= usedTraining;
+	}
+	// Then use general speedups if still needed
+	if (remainingNeeded > 0 && generalAvailable > 0) {
+		usedGeneral = Math.min(generalAvailable, remainingNeeded);
+		remainingNeeded -= usedGeneral;
+	}
+	// Check if we have enough total
+	if (remainingNeeded > 0) {
+		partialNote = `⚠️ Only ${usedTraining + usedGeneral} min available (need ${totalSpeedupMinutesNeeded})`;
+		if (usedTraining === 0 && usedGeneral === 0) {
+			partialNote = `⚠️ No speedups available (need ${totalSpeedupMinutesNeeded} min)`;
+		}
+	}
+	const totalUsed = usedTraining + usedGeneral;
+	const totalPoints = totalUsed * SCORE_RULES.speedup_min;
+	return {
+		usedTraining,
+		usedGeneral,
+		totalUsed,
+		totalPoints,
+		totalNeeded: totalSpeedupMinutesNeeded,
+		partialNote
+	};
+}
+// ============================================
+// FIXED: refreshTroopsCalculations - Active buttons always work
 // ============================================
 function refreshTroopsCalculations() {
 	let vault = getCurrentVault();
-	let runningLocked = {};
 	let totalTroopPoints = 0;
 	let totalSpeedupPoints = 0;
-	// Collect ALL locked upgrades first
+	// Collect ALL locked upgrades
 	const allLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -307,7 +356,9 @@ function refreshTroopsCalculations() {
 			}
 		}
 	}
-	// Training Cards
+	// ============================================
+	// 1. Training Cards
+	// ============================================
 	const cards = document.querySelectorAll('.troop-card[data-type="troops"]');
 	for (const card of cards) {
 		const troopType = card.dataset.name;
@@ -326,129 +377,130 @@ function refreshTroopsCalculations() {
 		let stepPoints = 0;
 		let totalTimeSeconds = 0;
 		const isLocked = lockedUpgrades.has(safeId);
-		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		if (level > 0 && quantity > 0) {
+		const isValidSelection = level > 0 && quantity > 0;
+		if (isValidSelection) {
 			const troopPoints = getTroopPointsForLevel(troopType, level);
 			stepPoints = quantity * troopPoints;
 			costTotals = getTroopResourceCosts(troopType, level, quantity) || {};
-			// CRITICAL FIX: Calculate other locked (excluding this upgrade if locked)
+			totalTimeSeconds = getTroopTrainingTime(troopType, level, quantity);
+			// Calculate what OTHER cards have locked away
 			const otherLocked = {};
-			if (isLocked) {
-				// If locked, exclude this upgrade from total
-				for (const [res, amt] of Object.entries(allLocked)) {
-					const currentAmt = costTotals[res] || 0;
-					if (!res.startsWith('_') && amt - currentAmt > 0) {
+			for (const [res, amt] of Object.entries(allLocked)) {
+				if (!res.startsWith('_')) {
+					// Subtract this card's costs if it's already contribution to allLocked
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
 						otherLocked[res] = amt - currentAmt;
 					}
 				}
-			} else {
-				// If not locked, use all locked
-				for (const [res, amt] of Object.entries(allLocked)) {
-					if (!res.startsWith('_')) {
-						otherLocked[res] = amt;
-					}
-				}
 			}
+			// Verify basic resource affordability
 			for (const [res, amt] of Object.entries(costTotals)) {
-				if (!res.startsWith('_') && (vault[res] || 0) < (otherLocked[res] || 0) + amt) {
+				if (res === 'training_speedup' || res === 'general_speedup') continue;
+				if ((vault[res] || 0) < (otherLocked[res] || 0) + amt) {
 					canAfford = false;
 					break;
 				}
 			}
-			totalTimeSeconds = getTroopTrainingTime(troopType, level, quantity);
 		}
-		const upgradeKey = safeId;
-		if (level > 0 && quantity > 0 && canAfford) {
-			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-			let finalSpeedupPoints = 0;
-			let actualSpeedupUsed = 0;
-			if (activeCb?.checked && speedCb?.checked && totalTimeSeconds > 0) {
-				const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-				const speedKey = 'training_speedup';
-				const available = (vault[speedKey] || 0) - (allLocked[speedKey] || 0);
-				if (available < speedupCostMinutes) {
-					actualSpeedupUsed = Math.max(0, available);
-					if (actualSpeedupUsed > 0) {
-						finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-						costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
+		// Calculate speedup usage
+		let speedupResult = {
+			usedTraining: 0,
+			usedGeneral: 0,
+			totalUsed: 0,
+			totalPoints: 0,
+			partialNote: ''
+		};
+		let finalSpeedupPoints = 0;
+		let partialNote = '';
+		if (isValidSelection && speedCb?.checked && totalTimeSeconds > 0) {
+			const otherLocked = {};
+			for (const [res, amt] of Object.entries(allLocked)) {
+				if (!res.startsWith('_')) {
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
+						otherLocked[res] = amt - currentAmt;
 					}
-				} else {
-					actualSpeedupUsed = speedupCostMinutes;
-					finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-					costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
 				}
 			}
-			if (activeCb?.checked) {
-				lockedUpgrades.set(upgradeKey, {
-					costTotals: JSON.parse(JSON.stringify(costTotals)),
-					stepPoints: stepPoints + finalSpeedupPoints,
-					qty: quantity,
-					level: level,
-					speedupWasChecked: speedCb?.checked || false,
-					isActive: true,
-					type: 'training'
-				});
-				totalTroopPoints += stepPoints;
-				totalSpeedupPoints += finalSpeedupPoints;
-			} else {
-				if (lockedUpgrades.has(upgradeKey)) lockedUpgrades.delete(upgradeKey);
+			speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
+			finalSpeedupPoints = speedupResult.totalPoints;
+			partialNote = speedupResult.partialNote;
+			if (speedupResult.usedTraining > 0) {
+				costTotals.training_speedup = (costTotals.training_speedup || 0) + speedupResult.usedTraining;
 			}
-		} else {
-			if (lockedUpgrades.has(upgradeKey)) lockedUpgrades.delete(upgradeKey);
+			if (speedupResult.usedGeneral > 0) {
+				costTotals.general_speedup = (costTotals.general_speedup || 0) + speedupResult.usedGeneral;
+			}
 		}
+		// Update interactive UI elements state safely
 		if (activeCb) {
-			activeCb.disabled = !canAfford || level === 0 || quantity === 0;
-			activeCb.checked = activeCb.disabled ? false : activeCb.checked;
-			activeCb.parentElement.style.opacity = activeCb.disabled ? '0.5' : '1';
-			if (activeCb.disabled) {
-				activeCb.parentElement.classList.add('disabled');
-			} else {
-				activeCb.parentElement.classList.remove('disabled');
+			const isDisabled = !isValidSelection || (!canAfford && !activeCb.checked);
+			activeCb.disabled = isDisabled;
+			if (!isValidSelection) {
+				activeCb.checked = false;
 			}
+			activeCb.parentElement.style.opacity = isDisabled ? '0.5' : '1';
+			activeCb.parentElement.classList.toggle('disabled', isDisabled);
 		}
-		if (speedCb) {
-			const speedKey = 'training_speedup';
-			const hasSpeedups = (vault[speedKey] || 0) > 0;
-			const canUseSpeedup = canAfford && hasSpeedups && totalTimeSeconds > 0;
-			speedCb.disabled = !canUseSpeedup || level === 0 || quantity === 0;
-			speedCb.checked = speedCb.disabled ? false : speedCb.checked;
-			speedCb.parentElement.style.opacity = speedCb.disabled ? '0.5' : '1';
-			if (speedCb.disabled) {
-				speedCb.parentElement.classList.add('disabled');
-				speedCb.parentElement.title = !hasSpeedups ? 'No training speedups in vault' : 'Insufficient resources';
-			} else {
-				speedCb.parentElement.classList.remove('disabled');
-				speedCb.parentElement.title = '';
-			}
-		}
-		// Calculate other locked for display
-		const displayOtherLocked = {};
-		const isCurrentlyLocked = lockedUpgrades.has(safeId);
-		if (isCurrentlyLocked && costTotals) {
-			for (const [res, amt] of Object.entries(allLocked)) {
-				const currentAmt = costTotals[res] || 0;
-				if (!res.startsWith('_') && amt - currentAmt > 0) {
-					displayOtherLocked[res] = amt - currentAmt;
-				}
-			}
+		// Process State Storage updates safely based on real-time DOM checked status
+		if (isValidSelection && canAfford && activeCb?.checked) {
+			lockedUpgrades.set(safeId, {
+				costTotals: JSON.parse(JSON.stringify(costTotals)),
+				stepPoints: stepPoints + finalSpeedupPoints,
+				qty: quantity,
+				level: level,
+				speedupWasChecked: speedCb?.checked || false,
+				isActive: true,
+				type: 'training',
+				usedTraining: speedupResult.usedTraining || 0,
+				usedGeneral: speedupResult.usedGeneral || 0
+			});
+			if (stepPoints > 0) totalTroopPoints += stepPoints;
+			if (finalSpeedupPoints > 0) totalSpeedupPoints += finalSpeedupPoints;
 		} else {
+			if (lockedUpgrades.has(safeId)) {
+				lockedUpgrades.delete(safeId);
+			}
+		}
+		// Speedup Checkbox constraints
+		if (speedCb) {
+			const otherLocked = {};
 			for (const [res, amt] of Object.entries(allLocked)) {
 				if (!res.startsWith('_')) {
-					displayOtherLocked[res] = amt;
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
+						otherLocked[res] = amt - currentAmt;
+					}
 				}
 			}
+			const trainingAvailable = (vault.training_speedup || 0) - (otherLocked.training_speedup || 0);
+			const generalAvailable = (vault.general_speedup || 0) - (otherLocked.general_speedup || 0);
+			const hasAnySpeedups = trainingAvailable > 0 || generalAvailable > 0;
+			const isSpeedDisabled = !isValidSelection || !canAfford || !hasAnySpeedups;
+			speedCb.disabled = isSpeedDisabled;
+			if (!isValidSelection) speedCb.checked = false;
+			speedCb.parentElement.style.opacity = isSpeedDisabled ? '0.5' : '1';
+			speedCb.parentElement.classList.toggle('disabled', isSpeedDisabled);
+			speedCb.parentElement.title = !hasAnySpeedups && isValidSelection ? 'No speedups available in vault' : '';
 		}
-		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked);
-		// Update running locked for subsequent cards
-		if (level > 0 && quantity > 0 && activeCb?.checked) {
-			for (const [res, amt] of Object.entries(costTotals)) {
-				if (!res.startsWith('_')) {
-					runningLocked[res] = (runningLocked[res] || 0) + amt;
-				}
+		// Build and update display info
+		const displayOtherLocked = {};
+		for (const [res, amt] of Object.entries(allLocked)) {
+			if (!res.startsWith('_')) {
+				const currentAmt = lockedUpgrades.has(safeId) ? (costTotals[res] || 0) : 0;
+				if (amt - currentAmt > 0) displayOtherLocked[res] = amt - currentAmt;
 			}
 		}
+		let speedupDetails = '';
+		if (speedCb?.checked && speedupResult.totalUsed > 0) {
+			speedupDetails = ` (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general)`;
+		}
+		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked, partialNote, speedupDetails);
 	}
-	// Promotion Cards
+	// ============================================
+	// 2. Promotion Cards
+	// ============================================
 	const promoCards = document.querySelectorAll('.troop-card[data-type="promotion"]');
 	for (const card of promoCards) {
 		const troopType = card.dataset.name;
@@ -470,189 +522,175 @@ function refreshTroopsCalculations() {
 		let totalTimeSeconds = 0;
 		let pointsPerUnit = 0;
 		const isLocked = lockedUpgrades.has(safeId);
-		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0) {
-			if (toLevel <= fromLevel) {
-				status.className = "status-pane status-warning";
-				status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
-				if (activeCb) {
-					activeCb.checked = false;
-					activeCb.disabled = true;
-				}
-				if (speedCb) {
-					speedCb.checked = false;
-					speedCb.disabled = true;
-				}
-				continue;
-			}
+		const isValidSelection = fromLevel > 0 && toLevel > 0 && toLevel > fromLevel && quantity > 0;
+		if (isValidSelection) {
 			const currentPoints = getTroopPointsForLevel(troopType, fromLevel);
 			const targetPoints = getTroopPointsForLevel(troopType, toLevel);
 			pointsPerUnit = Math.max(0, targetPoints - currentPoints);
 			stepPoints = quantity * pointsPerUnit;
 			costTotals = getPromotionResourceCosts(troopType, fromLevel, toLevel, quantity) || {};
-			// CRITICAL FIX: Calculate other locked (excluding this upgrade if locked)
+			totalTimeSeconds = getPromotionTime(troopType, fromLevel, toLevel, quantity);
 			const otherLocked = {};
-			if (isLocked) {
-				for (const [res, amt] of Object.entries(allLocked)) {
-					const currentAmt = costTotals[res] || 0;
-					if (!res.startsWith('_') && amt - currentAmt > 0) {
+			for (const [res, amt] of Object.entries(allLocked)) {
+				if (!res.startsWith('_')) {
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
 						otherLocked[res] = amt - currentAmt;
-					}
-				}
-			} else {
-				for (const [res, amt] of Object.entries(allLocked)) {
-					if (!res.startsWith('_')) {
-						otherLocked[res] = amt;
 					}
 				}
 			}
 			for (const [res, amt] of Object.entries(costTotals)) {
-				if (!res.startsWith('_') && (vault[res] || 0) < (otherLocked[res] || 0) + amt) {
+				if (res === 'training_speedup' || res === 'general_speedup') continue;
+				if ((vault[res] || 0) < (otherLocked[res] || 0) + amt) {
 					canAfford = false;
 					break;
 				}
 			}
-			totalTimeSeconds = getPromotionTime(troopType, fromLevel, toLevel, quantity);
 		}
-		const upgradeKey = safeId;
-		if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && toLevel > fromLevel && quantity > 0 && canAfford) {
-			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-			let finalSpeedupPoints = 0;
-			let actualSpeedupUsed = 0;
-			if (activeCb?.checked && speedCb?.checked && totalTimeSeconds > 0) {
-				const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-				const speedKey = 'training_speedup';
-				const available = (vault[speedKey] || 0) - (allLocked[speedKey] || 0);
-				if (available < speedupCostMinutes) {
-					actualSpeedupUsed = Math.max(0, available);
-					if (actualSpeedupUsed > 0) {
-						finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-						costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
-					}
-				} else {
-					actualSpeedupUsed = speedupCostMinutes;
-					finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-					costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
-				}
-			}
-			if (activeCb?.checked) {
-				lockedUpgrades.set(upgradeKey, {
-					costTotals: JSON.parse(JSON.stringify(costTotals)),
-					stepPoints: stepPoints + finalSpeedupPoints,
-					qty: quantity,
-					fromLevel: fromLevel,
-					toLevel: toLevel,
-					speedupWasChecked: speedCb?.checked || false,
-					isActive: true,
-					type: 'promotion',
-					pointsPerUnit: pointsPerUnit
-				});
-				totalTroopPoints += stepPoints;
-				totalSpeedupPoints += finalSpeedupPoints;
-			} else {
-				if (lockedUpgrades.has(upgradeKey)) lockedUpgrades.delete(upgradeKey);
-			}
-		} else {
-			if (lockedUpgrades.has(upgradeKey)) lockedUpgrades.delete(upgradeKey);
-		}
-		// ✅ FIXED: Use fromLevel and toLevel instead of level
-		if (activeCb) {
-			const isDisabled = !canAfford || fromLevel === 0 || toLevel === 0 || quantity === 0 || toLevel <= fromLevel;
-			activeCb.disabled = isDisabled;
-			activeCb.checked = activeCb.disabled ? false : activeCb.checked;
-			activeCb.parentElement.style.opacity = activeCb.disabled ? '0.5' : '1';
-			if (activeCb.disabled) {
-				activeCb.parentElement.classList.add('disabled');
-			} else {
-				activeCb.parentElement.classList.remove('disabled');
-			}
-		}
-		if (speedCb) {
-			const speedKey = 'training_speedup';
-			const hasSpeedups = (vault[speedKey] || 0) > 0;
-			const canUseSpeedup = canAfford && hasSpeedups && totalTimeSeconds > 0 && fromLevel > 0 && toLevel > 0 && toLevel > fromLevel && quantity > 0;
-			speedCb.disabled = !canUseSpeedup;
-			speedCb.checked = speedCb.disabled ? false : speedCb.checked;
-			speedCb.parentElement.style.opacity = speedCb.disabled ? '0.5' : '1';
-			if (speedCb.disabled) {
-				speedCb.parentElement.classList.add('disabled');
-				speedCb.parentElement.title = !hasSpeedups ? 'No training speedups in vault' : 'Insufficient resources or invalid selection';
-			} else {
-				speedCb.parentElement.classList.remove('disabled');
-				speedCb.parentElement.title = '';
-			}
-		}
-		// Calculate other locked for display
-		const displayOtherLocked = {};
-		const isCurrentlyLocked = lockedUpgrades.has(safeId);
-		if (isCurrentlyLocked && costTotals) {
-			for (const [res, amt] of Object.entries(allLocked)) {
-				const currentAmt = costTotals[res] || 0;
-				if (!res.startsWith('_') && amt - currentAmt > 0) {
-					displayOtherLocked[res] = amt - currentAmt;
-				}
-			}
-		} else {
+		// Calculate speedup usage
+		let speedupResult = {
+			usedTraining: 0,
+			usedGeneral: 0,
+			totalUsed: 0,
+			totalPoints: 0,
+			partialNote: ''
+		};
+		let finalSpeedupPoints = 0;
+		let partialNote = '';
+		if (isValidSelection && speedCb?.checked && totalTimeSeconds > 0) {
+			const otherLocked = {};
 			for (const [res, amt] of Object.entries(allLocked)) {
 				if (!res.startsWith('_')) {
-					displayOtherLocked[res] = amt;
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
+						otherLocked[res] = amt - currentAmt;
+					}
 				}
 			}
+			speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
+			finalSpeedupPoints = speedupResult.totalPoints;
+			partialNote = speedupResult.partialNote;
+			if (speedupResult.usedTraining > 0) {
+				costTotals.training_speedup = (costTotals.training_speedup || 0) + speedupResult.usedTraining;
+			}
+			if (speedupResult.usedGeneral > 0) {
+				costTotals.general_speedup = (costTotals.general_speedup || 0) + speedupResult.usedGeneral;
+			}
 		}
-		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked, pointsPerUnit);
+		// Update interactive UI elements state safely
+		if (activeCb) {
+			const isDisabled = !isValidSelection || (!canAfford && !activeCb.checked);
+			activeCb.disabled = isDisabled;
+			if (!isValidSelection) {
+				activeCb.checked = false;
+			}
+			activeCb.parentElement.style.opacity = isDisabled ? '0.5' : '1';
+			activeCb.parentElement.classList.toggle('disabled', isDisabled);
+		}
+		// Process State Storage updates safely based on real-time DOM checked status
+		if (isValidSelection && canAfford && activeCb?.checked) {
+			lockedUpgrades.set(safeId, {
+				costTotals: JSON.parse(JSON.stringify(costTotals)),
+				stepPoints: stepPoints + finalSpeedupPoints,
+				qty: quantity,
+				fromLevel: fromLevel,
+				toLevel: toLevel,
+				speedupWasChecked: speedCb?.checked || false,
+				isActive: true,
+				type: 'promotion',
+				pointsPerUnit: pointsPerUnit,
+				usedTraining: speedupResult.usedTraining || 0,
+				usedGeneral: speedupResult.usedGeneral || 0
+			});
+			if (stepPoints > 0) totalTroopPoints += stepPoints;
+			if (finalSpeedupPoints > 0) totalSpeedupPoints += finalSpeedupPoints;
+		} else {
+			if (lockedUpgrades.has(safeId)) {
+				lockedUpgrades.delete(safeId);
+			}
+		}
+		// Speedup Checkbox constraints
+		if (speedCb) {
+			const otherLocked = {};
+			for (const [res, amt] of Object.entries(allLocked)) {
+				if (!res.startsWith('_')) {
+					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+					if (amt - currentAmt > 0) {
+						otherLocked[res] = amt - currentAmt;
+					}
+				}
+			}
+			const trainingAvailable = (vault.training_speedup || 0) - (otherLocked.training_speedup || 0);
+			const generalAvailable = (vault.general_speedup || 0) - (otherLocked.general_speedup || 0);
+			const hasAnySpeedups = trainingAvailable > 0 || generalAvailable > 0;
+			const isSpeedDisabled = !isValidSelection || !canAfford || !hasAnySpeedups;
+			speedCb.disabled = isSpeedDisabled;
+			if (!isValidSelection) speedCb.checked = false;
+			speedCb.parentElement.style.opacity = isSpeedDisabled ? '0.5' : '1';
+			speedCb.parentElement.classList.toggle('disabled', isSpeedDisabled);
+			speedCb.parentElement.title = !hasAnySpeedups && isValidSelection ? 'No speedups available in vault' : '';
+		}
+		// Build and update display info
+		const displayOtherLocked = {};
+		for (const [res, amt] of Object.entries(allLocked)) {
+			if (!res.startsWith('_')) {
+				const currentAmt = lockedUpgrades.has(safeId) ? (costTotals[res] || 0) : 0;
+				if (amt - currentAmt > 0) displayOtherLocked[res] = amt - currentAmt;
+			}
+		}
+		let speedupDetails = '';
+		if (speedCb?.checked && speedupResult.totalUsed > 0) {
+			speedupDetails = ` (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general)`;
+		}
+		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked, pointsPerUnit, partialNote, speedupDetails);
 	}
 	const totalScore = totalTroopPoints + totalSpeedupPoints;
-	document.getElementById('globalScoreDisplay').innerText = totalScore.toLocaleString();
-	if (typeof saveCurrentPageScore === 'function') saveCurrentPageScore(totalScore);
+	const scoreDisplay = document.getElementById('globalScoreDisplay');
+	if (scoreDisplay) {
+		scoreDisplay.innerText = totalScore.toLocaleString();
+		if (typeof saveCurrentPageScore === 'function') saveCurrentPageScore(totalScore);
+	}
 	window.dispatchEvent(new Event('troopsUpdate'));
 }
 
-function displayTroopStatus(status, troopType, level, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, totalLocked) {
+function displayTroopStatus(status, troopType, level, quantity, isActive, speedupTroop, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, totalLocked, partialNote, speedupDetails) {
 	if (level > 0 && quantity > 0 && isActive) {
-		let finalTroopPoints = stepPoints;
-		let finalSpeedupPoints = 0;
-		let partialNote = '';
-		const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-		if (speedupTroop && totalTimeSeconds > 0) {
-			const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-			const speedKey = 'training_speedup';
-			const available = (vault[speedKey] || 0) - (totalLocked[speedKey] || 0);
-			if (available < speedupCostMinutes) {
-				const actualSpeedupUsed = Math.max(0, available);
-				if (actualSpeedupUsed > 0) {
-					partialNote = `⚠️ Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
-					finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-				}
-			} else {
-				finalSpeedupPoints = speedupCostMinutes * SCORE_RULES.speedup_min;
-			}
-		}
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
-		let timeDisplay = buildTimeDisplay(totalTimeSeconds, buffedTimeSeconds, speedupTroop);
-		let pointsDisplay = buildPointsDisplay(finalTroopPoints, finalSpeedupPoints);
+		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
+		let pointsDisplay = buildPointsDisplay(stepPoints, finalSpeedupPoints, speedupDetails);
+		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 		if (canAfford) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : ''}`;
+			status.innerHTML = `<strong>✓ ACTIVE</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : ''}`;
+			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (level > 0 && quantity > 0 && !isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
 		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
 		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div></div>`;
 		if (speedupTroop && totalTimeSeconds > 0) {
-			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-			const estimatedSpeedupMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-			const estimatedSpeedupPoints = estimatedSpeedupMinutes * SCORE_RULES.speedup_min;
-			estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${estimatedSpeedupPoints.toLocaleString()} (if used)</div></div>`;
+			const otherLocked = {};
+			for (const [res, amt] of Object.entries(totalLocked)) {
+				if (!res.startsWith('_')) {
+					otherLocked[res] = amt;
+				}
+			}
+			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
+			if (speedupResult.totalUsed > 0) {
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+			} else if (speedupResult.totalNeeded > 0) {
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag text-warning">⚡ No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+			}
 		}
+		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}<br><span class="text-remaining">✅ Check "TRAIN ACTIVE" to lock</span>`;
+			status.innerHTML = `<strong>⚪ ESTIMATED</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">✅ Check "TRAIN ACTIVE" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}`;
+			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else {
 		status.className = "status-pane";
@@ -660,56 +698,48 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 	}
 }
 
-function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, totalTimeSeconds, canAfford, vault, totalLocked, pointsPerUnit) {
+function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, totalLocked, pointsPerUnit, partialNote, speedupDetails) {
 	if (fromLevel > 0 && toLevel > 0 && toLevel <= fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
 		status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
 		return;
 	}
+	const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 	if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0 && isActive) {
-		let finalSpeedupPoints = 0;
-		let partialNote = '';
-		const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-		if (speedupTroop && totalTimeSeconds > 0) {
-			const speedupCostMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-			const speedKey = 'training_speedup';
-			const available = (vault[speedKey] || 0) - (totalLocked[speedKey] || 0);
-			if (available < speedupCostMinutes) {
-				const actualSpeedupUsed = Math.max(0, available);
-				if (actualSpeedupUsed > 0) {
-					partialNote = `⚠️ Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
-					finalSpeedupPoints = actualSpeedupUsed * SCORE_RULES.speedup_min;
-				}
-			} else {
-				finalSpeedupPoints = speedupCostMinutes * SCORE_RULES.speedup_min;
-			}
-		}
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
-		let timeDisplay = buildTimeDisplay(totalTimeSeconds, buffedTimeSeconds, speedupTroop);
-		let pointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div>${finalSpeedupPoints > 0 ? `<div class="resource-tag">⚡ Speedup Points: +${finalSpeedupPoints.toLocaleString()}</div>` : ''}</div>`;
+		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
+		let pointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div>${finalSpeedupPoints > 0 ? `<div class="resource-tag">⚡ Speedup Points: +${finalSpeedupPoints.toLocaleString()}${speedupDetails || ''}</div>` : ''}</div>`;
 		if (canAfford) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE PROMOTION</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : ''}`;
+			status.innerHTML = `<strong>✓ ACTIVE PROMOTION</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : ''}`;
+			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0 && !isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
 		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
 		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div></div>`;
 		if (speedupTroop && totalTimeSeconds > 0) {
-			const buffedTimeSeconds = getBuffedTrainingTime(totalTimeSeconds);
-			const estimatedSpeedupMinutes = secondsToSpeedupMinutes(buffedTimeSeconds);
-			const estimatedSpeedupPoints = estimatedSpeedupMinutes * SCORE_RULES.speedup_min;
-			estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">⚡ Speedup Points: +${estimatedSpeedupPoints.toLocaleString()} (if used)</div></div>`;
+			const otherLocked = {};
+			for (const [res, amt] of Object.entries(totalLocked)) {
+				if (!res.startsWith('_')) {
+					otherLocked[res] = amt;
+				}
+			}
+			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
+			if (speedupResult.totalUsed > 0) {
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">⚡ Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+			} else if (speedupResult.totalNeeded > 0) {
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag text-warning">⚡ No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+			}
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED PROMOTION</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}<br><span class="text-remaining">✅ Check "PROMOTE ACTIVE" to lock</span>`;
+			status.innerHTML = `<strong>⚪ ESTIMATED PROMOTION</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">✅ Check "PROMOTE ACTIVE" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}`;
+			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (fromLevel > 0 && toLevel === fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
@@ -731,13 +761,13 @@ function buildTimeDisplay(totalTimeSeconds, buffedTimeSeconds, speedupTroop) {
 	return `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(totalTimeSeconds)}</div>`;
 }
 
-function buildPointsDisplay(troopPoints, speedupPoints) {
+function buildPointsDisplay(troopPoints, speedupPoints, speedupDetails) {
 	if (troopPoints > 0 && speedupPoints > 0) {
-		return `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${troopPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}</div></div>`;
+		return `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${troopPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
 	} else if (troopPoints > 0) {
 		return `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${troopPoints.toLocaleString()}</div></div>`;
 	} else if (speedupPoints > 0) {
-		return `<div class="cost-grid"><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}</div></div>`;
+		return `<div class="cost-grid"><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
 	}
 	return '';
 }
@@ -863,6 +893,9 @@ function loadTroops() {
 		refreshTroopsCalculations();
 	}, 50);
 }
+// ============================================
+// EXPORTS
+// ============================================
 window.validateNumberInput = validateNumberInput;
 window.loadTroops = loadTroops;
 window.refreshTroopsCalculations = refreshTroopsCalculations;
