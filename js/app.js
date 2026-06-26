@@ -32,47 +32,71 @@ const RESOURCE_ITEMS = [{
 	id: "truegold",
 	placeholder: "500"
 }, {
-	id: "tempered_truegold",
-	placeholder: "25"
-}, {
 	id: "truegold_dust",
 	placeholder: "1000"
 }, {
-	id: "forge_hammer",
-	placeholder: "50"
+	id: "tempered_truegold",
+	placeholder: "25"
 }, {
-	id: "widgets",
-	placeholder: "30"
+	id: "hero_xp",
+	placeholder: "1000"
 }, {
-	id: "mithril",
-	placeholder: "10"
-}, {
-	id: "satin",
-	placeholder: "5000"
-}, {
-	id: "gilded_threads",
-	placeholder: "200"
-}, {
-	id: "artisans_vision",
-	placeholder: "50"
-}, {
-	id: "charm_guide",
+	id: "stamina",
 	placeholder: "100"
 }, {
-	id: "charm_design",
-	placeholder: "80"
+	id: "master_manuscript",
+	placeholder: "50"
 }, {
-	id: "pet_food",
-	placeholder: "5000"
-}, {
-	id: "growth_manual",
-	placeholder: "100"
-}, {
-	id: "nutrient_potion",
+	id: "general_emblem",
 	placeholder: "20"
 }, {
 	id: "promotion_medallion",
 	placeholder: "10"
+}, {
+	id: "nutrient_potion",
+	placeholder: "20"
+}, {
+	id: "growth_manual",
+	placeholder: "100"
+}, {
+	id: "advanced_taming_mark",
+	placeholder: "10"
+}, {
+	id: "common_taming_mark",
+	placeholder: "30"
+}, {
+	id: "pet_food",
+	placeholder: "5000"
+}, {
+	id: "charm_design",
+	placeholder: "80"
+}, {
+	id: "charm_guide",
+	placeholder: "100"
+}, {
+	id: "artisans_vision",
+	placeholder: "50"
+}, {
+	id: "gilded_threads",
+	placeholder: "200"
+}, {
+	id: "satin",
+	placeholder: "5000"
+}, {
+	id: "mithril",
+	placeholder: "10"
+}, {
+	id: "forge_hammer",
+	placeholder: "50"
+}, {
+	id: "mythic_general_shard",
+	placeholder: "50"
+}, {
+	id: "epic_general_shard",
+	placeholder: "200"
+}, {
+	id: "rare_general_shard",
+	placeholder: "500"
 }, {
 	id: "building_speedup",
 	placeholder: "2d 14h 35m"
@@ -83,44 +107,20 @@ const RESOURCE_ITEMS = [{
 	id: "training_speedup",
 	placeholder: "1d 12h 5m"
 }, {
+	id: "master_speedup",
+	placeholder: "1d"
+}, {
 	id: "general_speedup",
 	placeholder: "10d 8h 45m"
-}, {
-	id: "rare_general_shard",
-	placeholder: "500"
-}, {
-	id: "epic_general_shard",
-	placeholder: "200"
-}, {
-	id: "mythic_general_shard",
-	placeholder: "50"
-}, {
-	id: "hero_roulette",
-	placeholder: "100"
-}, {
-	id: "general_emblem",
-	placeholder: "20"
-}, {
-	id: "master_manuscript",
-	placeholder: "50"
-}, {
-	id: "advanced_taming_mark",
-	placeholder: "10"
-}, {
-	id: "common_taming_mark",
-	placeholder: "30"
 }, {
 	id: "mythic_gear",
 	placeholder: "10"
 }, {
-	id: "hero_xp",
-	placeholder: "1000"
-}, {
-	id: "stamina",
+	id: "hero_roulette",
 	placeholder: "100"
 }, {
-	id: "master_speedup",
-	placeholder: "1d"
+	id: "widgets",
+	placeholder: "30"
 }];
 // ============================================
 // POINT RULES - SG (Strongest Governor) Mode
