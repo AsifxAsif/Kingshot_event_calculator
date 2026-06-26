@@ -710,7 +710,7 @@ async function deletePreset(presetName) {
     try {
         const value = await showModal({
             title: 'Delete Preset',
-            message: `Are you sure you want to delete "${presetName}"? This action cannot be undone.`,
+            message: `Are you sure you want to delete <strong style="color: var(--color-error);">"${presetName}"</strong>? This action cannot be undone.`,
             confirmText: 'Delete',
             cancelText: 'Cancel',
             isDanger: true,
