@@ -29,7 +29,7 @@ function getGovCharmImageFileName(charmName, levelName) {
 			}
 		}
 	}
-	const fileName = `${type}_lvl${level}.png`;
+	const fileName = `${type}_lvl${level}.webp`;
 	return `assets/gov_charms/${fileName}`;
 }
 
@@ -358,14 +358,14 @@ function setGroupTargetLevel(groupType, value) {
 
 function createGovCharmGroupCard(groupName, charmNames, dataArray) {
 	const iconMap = {
-		'Helmet': 'assets/Cavalry.png',
-		'Watch': 'assets/Cavalry.png',
-		'Armor': 'assets/Infantry.png',
-		'Pant': 'assets/Infantry.png',
-		'Belt': 'assets/Archer.png',
-		'Weapon': 'assets/Archer.png'
+		'Helmet': 'assets/Cavalry.webp',
+		'Watch': 'assets/Cavalry.webp',
+		'Armor': 'assets/Infantry.webp',
+		'Pant': 'assets/Infantry.webp',
+		'Belt': 'assets/Archer.webp',
+		'Weapon': 'assets/Archer.webp'
 	};
-	const iconPath = iconMap[groupName] || 'assets/Infantry.png';
+	const iconPath = iconMap[groupName] || 'assets/Infantry.webp';
 	let charmsHtml = '';
 	for (let i = 0; i < charmNames.length; i++) {
 		charmsHtml += createIndividualCharmCard(charmNames[i], i + 1, dataArray);

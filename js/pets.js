@@ -2,7 +2,7 @@
 // PETS - FIXED (Double deduction fixed)
 // ============================================
 function getPetImageFileName(petName) {
-	const fileName = petName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_') + '.png';
+	const fileName = petName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_') + '.webp';
 	return `assets/pet/${fileName}`;
 }
 

@@ -357,9 +357,9 @@ function updateHeroGearImage(level) {
 	if (!imgElement) return;
 	const levelNum = parseFloat(level);
 	if (levelNum >= 100) {
-		imgElement.src = 'assets/hero-gear-red.png';
+		imgElement.src = 'assets/hero-gear-red.webp';
 	} else {
-		imgElement.src = 'assets/hero-gear-mythic.png';
+		imgElement.src = 'assets/hero-gear-mythic.webp';
 	}
 }
 

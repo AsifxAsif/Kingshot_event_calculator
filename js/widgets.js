@@ -53,30 +53,30 @@ function getHeroWidgetInventory(heroName) {
 
 function getHeroImageFileName(heroName) {
 	const imageMap = {
-		'Amadeus': 'amadeus_widget.png',
-		'Helga': 'helga_widget.png',
-		'Jabel': 'jabel_widget.png',
-		'Saul': 'saul_widget.png',
-		'Hilde': 'hilde_widget.png',
-		'Marlin': 'marlin_widget.png',
-		'Zoe': 'zoe_widget.png',
-		'Eric': 'eric_widget.png',
-		'Jaeger': 'jaeger_widget.png',
-		'Petra': 'petra_widget.png',
-		'Alcar': 'alcar_widget.png',
-		'Margot': 'margot_widget.png',
-		'Rosa': 'rosa_widget.png',
-		'Long Fei': 'long_fei_widget.png',
-		'Thrud': 'thrud_widget.png',
-		'Vivian': 'vivian_widget.png',
-		'Sophia': 'sophia_widget.png',
-		'Triton': 'triton_widget.png',
-		'Yang': 'yang_widget.png',
-		'Ava': 'ava_widget.png',
-		'Charles': 'charles_widget.png',
-		'Wee & Woo': 'wee_woo_widget.png'
+		'Amadeus': 'amadeus_widget.webp',
+		'Helga': 'helga_widget.webp',
+		'Jabel': 'jabel_widget.webp',
+		'Saul': 'saul_widget.webp',
+		'Hilde': 'hilde_widget.webp',
+		'Marlin': 'marlin_widget.webp',
+		'Zoe': 'zoe_widget.webp',
+		'Eric': 'eric_widget.webp',
+		'Jaeger': 'jaeger_widget.webp',
+		'Petra': 'petra_widget.webp',
+		'Alcar': 'alcar_widget.webp',
+		'Margot': 'margot_widget.webp',
+		'Rosa': 'rosa_widget.webp',
+		'Long Fei': 'long_fei_widget.webp',
+		'Thrud': 'thrud_widget.webp',
+		'Vivian': 'vivian_widget.webp',
+		'Sophia': 'sophia_widget.webp',
+		'Triton': 'triton_widget.webp',
+		'Yang': 'yang_widget.webp',
+		'Ava': 'ava_widget.webp',
+		'Charles': 'charles_widget.webp',
+		'Wee & Woo': 'wee_woo_widget.webp'
 	};
-	const fileName = imageMap[heroName] || heroName.toLowerCase().replace(/ /g, '_') + '.png';
+	const fileName = imageMap[heroName] || heroName.toLowerCase().replace(/ /g, '_') + '.webp';
 	return `assets/widget/${fileName}`;
 }
 

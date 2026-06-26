@@ -3,18 +3,18 @@
 // ============================================
 function getBuildingImageFileName(buildingName) {
 	const imageMap = {
-		'Town Center': 'town_center.png',
-		'Barracks': 'barracks.png',
-		'Stable': 'stable.png',
-		'Range': 'range.png',
-		'Command Center': 'command_center.png',
-		'War Academy': 'war_academy.png',
-		'Embassy': 'embassy.png',
-		'Academy': 'academy.png',
-		'Infirmary': 'infirmary.png',
-		'Store House': 'store_house.png'
+		'Town Center': 'town_center.webp',
+		'Barracks': 'barracks.webp',
+		'Stable': 'stable.webp',
+		'Range': 'range.webp',
+		'Command Center': 'command_center.webp',
+		'War Academy': 'war_academy.webp',
+		'Embassy': 'embassy.webp',
+		'Academy': 'academy.webp',
+		'Infirmary': 'infirmary.webp',
+		'Store House': 'store_house.webp'
 	};
-	return `assets/building/${imageMap[buildingName] || buildingName.toLowerCase().replace(/ /g, '_') + '.png'}`;
+	return `assets/building/${imageMap[buildingName] || buildingName.toLowerCase().replace(/ /g, '_') + '.webp'}`;
 }
 
 function getBuildingsData(buildingName) {

@@ -26,7 +26,7 @@ function getGovGearImageFileName(gearName, levelName) {
 		if (tierMatch) tier = tierMatch[1];
 		stars = String((levelStr.match(/⭐/g) || []).length);
 	}
-	const fileName = `${prefix}_${color}_t${tier}_s${stars}.png`;
+	const fileName = `${prefix}_${color}_t${tier}_s${stars}.webp`;
 	return `assets/gov_gears/${fileName}`;
 }
 

@@ -33,15 +33,15 @@ function validateNumberInput(input) {
 
 function getTroopImageFileName(troopType) {
 	const imageMap = {
-		'Infantry': 'Infantry.png',
-		'Cavalry': 'Cavalry.png',
-		'Archer': 'Archer.png'
+		'Infantry': 'Infantry.webp',
+		'Cavalry': 'Cavalry.webp',
+		'Archer': 'Archer.webp'
 	};
 	let baseType = troopType;
 	if (troopType.includes('Infantry')) baseType = 'Infantry';
 	else if (troopType.includes('Cavalry')) baseType = 'Cavalry';
 	else if (troopType.includes('Archer')) baseType = 'Archer';
-	return `assets/${imageMap[baseType] || 'Infantry.png'}`;
+	return `assets/${imageMap[baseType] || 'Infantry.webp'}`;
 }
 
 function createTroopIndividualCard(troopType) {

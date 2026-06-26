@@ -3,36 +3,36 @@
 // ============================================
 function getWarAcademyImageFileName(researchName) {
 	const imageMap = {
-		'Truegold Battalion (Infantry)': 'truegold_battalion_infantry.png',
-		'Truegold Blades': 'truegold_blades.png',
-		'Truegold Shields': 'truegold_shields.png',
-		'Truegold Legionaries (Infantry)': 'truegold_legionaries_infantry.png',
-		'Truegold Mauls': 'truegold_mauls.png',
-		'Truegold Plating': 'truegold_plating.png',
-		'Truegold Infantry': 'truegold_infantry.png',
-		'Truegold Infantry Healing': 'truegold_infantry_healing.png',
-		'Truegold Infantry Training': 'truegold_infantry_training.png',
-		'Truegold Infantry Aid': 'truegold_infantry_aid.png',
-		'Truegold Battalion (Cavalry)': 'truegold_battalion_cavalry.png',
-		'Truegold Charge': 'truegold_charge.png',
-		'Truegold Farriery': 'truegold_farriery.png',
-		'Truegold Legionaries (Cavalry)': 'truegold_legionaries_cavalry.png',
-		'Truegold Lances': 'truegold_lances.png',
-		'Truegold Platecraft': 'truegold_platecraft.png',
-		'Truegold Cavalry': 'truegold_cavalry.png',
-		'Truegold Cavalry Healing': 'truegold_cavalry_healing.png',
-		'Truegold Cavalry Training': 'truegold_cavalry_training.png',
-		'Truegold Cavalry Aid': 'truegold_cavalry_aid.png',
-		'Truegold Battalion (Archer)': 'truegold_battalion_archer.png',
-		'Truegold Bows': 'truegold_bows.png',
-		'Truegold Bracers': 'truegold_bracers.png',
-		'Truegold Legionaries (Archer)': 'truegold_legionaries_archer.png',
-		'Truegold Arrows': 'truegold_arrows.png',
-		'Truegold Vests': 'truegold_vests.png',
-		'Truegold Archer': 'truegold_archer.png',
-		'Truegold Archer Healing': 'truegold_archer_healing.png',
-		'Truegold Archer Training': 'truegold_archer_training.png',
-		'Truegold Archer Aid': 'truegold_archer_aid.png',
+		'Truegold Battalion (Infantry)': 'truegold_battalion_infantry.webp',
+		'Truegold Blades': 'truegold_blades.webp',
+		'Truegold Shields': 'truegold_shields.webp',
+		'Truegold Legionaries (Infantry)': 'truegold_legionaries_infantry.webp',
+		'Truegold Mauls': 'truegold_mauls.webp',
+		'Truegold Plating': 'truegold_plating.webp',
+		'Truegold Infantry': 'truegold_infantry.webp',
+		'Truegold Infantry Healing': 'truegold_infantry_healing.webp',
+		'Truegold Infantry Training': 'truegold_infantry_training.webp',
+		'Truegold Infantry Aid': 'truegold_infantry_aid.webp',
+		'Truegold Battalion (Cavalry)': 'truegold_battalion_cavalry.webp',
+		'Truegold Charge': 'truegold_charge.webp',
+		'Truegold Farriery': 'truegold_farriery.webp',
+		'Truegold Legionaries (Cavalry)': 'truegold_legionaries_cavalry.webp',
+		'Truegold Lances': 'truegold_lances.webp',
+		'Truegold Platecraft': 'truegold_platecraft.webp',
+		'Truegold Cavalry': 'truegold_cavalry.webp',
+		'Truegold Cavalry Healing': 'truegold_cavalry_healing.webp',
+		'Truegold Cavalry Training': 'truegold_cavalry_training.webp',
+		'Truegold Cavalry Aid': 'truegold_cavalry_aid.webp',
+		'Truegold Battalion (Archer)': 'truegold_battalion_archer.webp',
+		'Truegold Bows': 'truegold_bows.webp',
+		'Truegold Bracers': 'truegold_bracers.webp',
+		'Truegold Legionaries (Archer)': 'truegold_legionaries_archer.webp',
+		'Truegold Arrows': 'truegold_arrows.webp',
+		'Truegold Vests': 'truegold_vests.webp',
+		'Truegold Archer': 'truegold_archer.webp',
+		'Truegold Archer Healing': 'truegold_archer_healing.webp',
+		'Truegold Archer Training': 'truegold_archer_training.webp',
+		'Truegold Archer Aid': 'truegold_archer_aid.webp',
 	};
 	if (imageMap[researchName]) {
 		return `assets/war_academy/${imageMap[researchName]}`;
@@ -41,7 +41,7 @@ function getWarAcademyImageFileName(researchName) {
 	if (imageMap[cleanName]) {
 		return `assets/war_academy/${imageMap[cleanName]}`;
 	}
-	const fileName = cleanName.toLowerCase().replace(/ /g, '_') + '.png';
+	const fileName = cleanName.toLowerCase().replace(/ /g, '_') + '.webp';
 	return `assets/war_academy/${fileName}`;
 }
 
@@ -678,15 +678,15 @@ function loadWarAcademy() {
 	const categoryGroups = {
 		'INFANTRY': {
 			techs: ['Truegold Battalion (Infantry)', 'Truegold Blades', 'Truegold Shields', 'Truegold Legionaries (Infantry)', 'Truegold Mauls', 'Truegold Plating', 'Truegold Infantry', 'Truegold Infantry Healing', 'Truegold Infantry Training', 'Truegold Infantry Aid'],
-			icon: 'assets/Infantry.png'
+			icon: 'assets/Infantry.webp'
 		},
 		'CAVALRY': {
 			techs: ['Truegold Battalion (Cavalry)', 'Truegold Charge', 'Truegold Farriery', 'Truegold Legionaries (Cavalry)', 'Truegold Lances', 'Truegold Platecraft', 'Truegold Cavalry', 'Truegold Cavalry Healing', 'Truegold Cavalry Training', 'Truegold Cavalry Aid'],
-			icon: 'assets/Cavalry.png'
+			icon: 'assets/Cavalry.webp'
 		},
 		'ARCHER': {
 			techs: ['Truegold Battalion (Archer)', 'Truegold Bows', 'Truegold Bracers', 'Truegold Legionaries (Archer)', 'Truegold Arrows', 'Truegold Vests', 'Truegold Archer', 'Truegold Archer Healing', 'Truegold Archer Training', 'Truegold Archer Aid'],
-			icon: 'assets/Archer.png'
+			icon: 'assets/Archer.webp'
 		}
 	};
 	for (const [categoryName, group] of Object.entries(categoryGroups)) {
