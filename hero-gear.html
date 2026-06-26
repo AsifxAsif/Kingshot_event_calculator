@@ -93,7 +93,7 @@
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
-				await loadGameData(["Hero_Gear", "Points"]);
+				await loadGameData(["Hero_Gear", "Forgehammer", "Points"]);
 				if (typeof loadCombinedPage === 'function') loadCombinedPage();
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {
