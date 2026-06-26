@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Strongest Governor - Troops</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading Troops Data...</p>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <label class="hamburger" id="hamburgerIcon">
+            <input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
+            <svg viewBox="0 0 32 32">
+                <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22">
+                </path>
+                <path class="line" d="M7 16 27 16"></path>
+            </svg>
+        </label>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="nav-link">📦 VAULT</a>
+            <a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
+            <a href="war-academy.html" class="nav-link">📜 WAR ACADEMY</a>
+            <a href="widgets.html" class="nav-link">✨ WIDGETS</a>
+            <a href="heroes.html" class="nav-link">⭐ HEROES</a>
+            <a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
+            <a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
+            <a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
+            <a href="pets.html" class="nav-link">🐾 PETS</a>
+            <a href="troops.html" class="nav-link active" aria-current="page">⚔️ TROOPS</a>
+        </div>
+        <div class="scoreboard-total">
+            <div class="scoreboard">
+                <div class="lcd-label">TROOPS SCORE</div>
+                <div class="lcd-value" id="globalScoreDisplay">0</div>
+            </div>
+            <div class="scoreboard">
+                <div class="lcd-label">Strongest Governor</div>
+                <div class="lcd-value" id="globalTotalScoreDisplay">0</div>
+            </div>
+        </div>
+        <div class="preset-controls">
+            <button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                    <path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"></path>
+                    <path d="M7 3L7 8L15 8"></path>
+                    <path d="M17 20L17 13L7 13L7 20"></path>
+                </svg>
+            </button>
+            <div class="preset-dropdown" id="presetDropdown">
+                <select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
+                <button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
+                <button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
+                <button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
+                <button class="btn-reset" onclick="resetWithConfirmation()">⟳ Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Training Speedup Buff Card -->
+        <div class="speedup-buff-card">
+            <div class="speedup-buff-header">
+                <span>⚡ GLOBAL TRAINING SPEEDUP BUFFS</span>
+            </div>
+            <div class="speedup-buff-body">
+                <div class="buff-row">
+                    <div class="buff-field">
+                        <label>⚔️ Training Speedup (%)</label>
+                        <input type="text" style="text-align: center;" id="globalTrainingBuffPercent" value="0" placeholder="e.g., 121" oninput="updateTrainingSpeedupBuffs()">
+                        <small>Enter your total training speed bonus %</small>
+                    </div>
+                    <div class="buff-field">
+                        <label>👑 King Position</label>
+                        <select id="globalTrainingKingPosition" onchange="updateTrainingSpeedupBuffs()">
+                            <option value="0">None</option>
+                            <option value="10">Chief Minister (10%)</option>
+                            <option value="50">Noble Advisor (50%)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="checkbox-group" style="margin-bottom: 15px;">
+                    <label class="checkbox-label">
+                        <input class="checkbox" type="checkbox" id="globalTrainingMobilizeCheckbox" onchange="updateTrainingSpeedupBuffs()"> 🚀 Mobilize (+30% Speed)
+                    </label>
+                    <label class="checkbox-label">
+                        <input class="checkbox" type="checkbox" id="globalTrainingKvKBonusCheckbox" onchange="updateTrainingSpeedupBuffs()"> 👑 KvK Bonus Active (+25% Speed)
+                    </label>
+                </div>
+                <div class="buff-total">
+                    <strong>Total Speedup Buff:</strong>
+                    <span id="globalTrainingTotalBuffDisplay">0%</span>
+                </div>
+            </div>
+        </div>
+        <div class="items-grid" id="troopsGrid"></div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/troops.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            showLoading();
+            loadPresetsFromStorage();
+            initializeInputValidation();
+            loadTrainingSpeedupBuffs();
+            await loadGameData();
+            if (typeof loadTroops === 'function') loadTroops();
+            setTimeout(() => {
+                if (currentPreset && allPresets[currentPreset]) {
+                    applyPresetToCurrentPage(allPresets[currentPreset]);
+                }
+                hideLoading();
+            }, 150);
+            window.addEventListener('vaultUpdate', () => {
+                if (typeof refreshCalculations === 'function') refreshCalculations();
+                if (typeof refreshTroopsCalculations === 'function') refreshTroopsCalculations();
+            });
+            window.addEventListener('presetLoaded', () => {
+                if (typeof updateTrainingSpeedupBuffs === 'function') updateTrainingSpeedupBuffs();
+            });
+        });
+    </script>
+</body>
+
+</html>
