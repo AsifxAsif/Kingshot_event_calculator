@@ -118,9 +118,6 @@ const RESOURCE_ITEMS = [{
 }, {
 	id: "hero_roulette",
 	placeholder: "100"
-}, {
-	id: "widgets",
-	placeholder: "30"
 }];
 // ============================================
 // POINT RULES - SG (Strongest Governor) Mode
@@ -1500,8 +1497,7 @@ function getImageFileName(resourceId) {
 		master_speedup: "master_speedup.webp",
 		general_speedup: "general_speedup.webp",
 		mythic_gear: "mythic-gear.webp",
-		hero_roulette: "hero_roulette.webp",
-		widgets: "widgets.webp"
+		hero_roulette: "hero_roulette.webp"
 	};
 	return `assets/${imageMap[resourceId] || resourceId + ".webp"}`;
 }

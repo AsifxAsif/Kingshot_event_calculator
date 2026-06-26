@@ -1,5 +1,5 @@
 // ============================================
-// WIDGETS - FIXED (Double deduction fixed, proper flag handling)
+// WIDGETS - FIXED (Removed vault widget dependency)
 // ============================================
 function getSSRHeroes() {
 	if (!window.gameDB || !window.gameDB.Hero || !window.gameDB.Hero.Hero) {
@@ -226,7 +226,8 @@ function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked)
 			widgetsNeeded += widgetCost;
 			stepPoints += widgetCost * SCORE_RULES.widgets;
 		}
-		const keys = ['bread', 'wood', 'stone', 'iron', 'gold', 'truegold', 'tempered_truegold', 'truegold_dust', 'forgehammer', 'widgets', 'mithril', 'satin', 'gilded_threads', 'artisans_vision', 'charm_guide', 'charm_design', 'pet_food', 'growth_manual', 'nutrient_potion', 'promotion_medallion'];
+		// Check for other resources (some widget upgrades might need other resources too)
+		const keys = ['bread', 'wood', 'stone', 'iron', 'gold', 'truegold', 'tempered_truegold', 'truegold_dust', 'forgehammer', 'mithril', 'satin', 'gilded_threads', 'artisans_vision', 'charm_guide', 'charm_design', 'pet_food', 'growth_manual', 'nutrient_potion', 'promotion_medallion'];
 		for (const k of keys) {
 			if (step[k] !== undefined) {
 				const norm = k === 'forgehammer' ? 'forge_hammer' : k;
@@ -234,29 +235,29 @@ function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked)
 			}
 		}
 	}
+	// Get hero-specific widget inventory
 	const heroWidgetsAvailable = getHeroWidgetInventory(heroName);
 	if (heroWidgetsAvailable >= widgetsNeeded) {
+		// User has enough hero-specific widgets
 		costTotals[`${heroName}_widgets`] = widgetsNeeded;
-		delete costTotals.widgets;
 	} else if (heroWidgetsAvailable > 0) {
+		// User has some hero-specific widgets but not enough - can't proceed without more
 		const partialWidgets = heroWidgetsAvailable;
 		costTotals[`${heroName}_widgets`] = partialWidgets;
-		// Use a separate flag object instead of polluting costTotals
 		costTotals._widgetStatus = {
 			partial: true,
 			shortage: widgetsNeeded - partialWidgets,
 			hasWidgets: true,
 			enoughWidgets: false
 		};
-		delete costTotals.widgets;
 	} else {
+		// No hero-specific widgets available
 		costTotals._widgetStatus = {
 			partial: false,
 			shortage: widgetsNeeded,
 			hasWidgets: false,
 			enoughWidgets: false
 		};
-		delete costTotals.widgets;
 	}
 	return {
 		stepPoints,
@@ -270,7 +271,7 @@ function calculateWidgetCosts(heroName, dataArray, from, to, vault, otherLocked)
 	};
 }
 // ============================================
-// CRITICAL FIX: refreshCalculations - Fixed double deduction
+// CRITICAL FIX: refreshCalculations - Removed vault widget dependency
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
@@ -608,6 +609,9 @@ function loadWidgets() {
 	}
 	refreshCalculations();
 }
+// ============================================
+// EXPORTS
+// ============================================
 window.loadHeroWidgetsFromStorage = loadHeroWidgetsFromStorage;
 window.saveHeroWidgetsToStorage = saveHeroWidgetsToStorage;
 window.updateHeroWidgetInput = updateHeroWidgetInput;
