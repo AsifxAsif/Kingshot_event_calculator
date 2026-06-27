@@ -27,17 +27,17 @@
 				</svg>
 			</label>
 			<div class="nav-links" id="navLinks">
-				<a href="index.html" class="nav-link">📦 VAULT</a>
-				<a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
-				<a href="war-academy.html" class="nav-link">📜 WAR ACADEMY</a>
-				<a href="widgets.html" class="nav-link">✨ WIDGETS</a>
-				<a href="heroes.html" class="nav-link">⭐ HEROES</a>
-				<a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
-				<a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
-				<a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
-				<a href="pets.html" class="nav-link">🐾 PETS</a>
-				<a href="troops.html" class="nav-link">⚔️ TROOPS</a>
-				<a href="misc.html" class="nav-link active" aria-current="page">🎲 MISC</a>
+				<a href="index.html" class="nav-link"><img src="assets/vault_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Vault"> VAULT</a>
+				<a href="buildings.html" class="nav-link"><img src="assets/buildings_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Buildings"> BUILDINGS</a>
+				<a href="war-academy.html" class="nav-link"><img src="assets/academy_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="War Academy"> WAR ACADEMY</a>
+				<a href="widgets.html" class="nav-link"><img src="assets/widgets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Widgets"> WIDGETS</a>
+				<a href="heroes.html" class="nav-link"><img src="assets/heroes_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Heroes"> HEROES</a>
+				<a href="hero-gear.html" class="nav-link"><img src="assets/hero_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Hero Gear"> HERO GEAR</a>
+				<a href="gov-gear.html" class="nav-link"><img src="assets/gov_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Gear"> GOV GEAR</a>
+				<a href="gov-charm.html" class="nav-link"><img src="assets/gov_charm_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Charm"> GOV CHARM</a>
+				<a href="pets.html" class="nav-link"><img src="assets/pets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Pets"> PETS</a>
+				<a href="troops.html" class="nav-link"><img src="assets/troops_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Troops"> TROOPS</a>
+				<a href="misc.html" class="nav-link active" aria-current="page"><img src="assets/misc_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Misc"> MISC</a>
 			</div>
 			<div class="scoreboard-total">
 				<div class="scoreboard">
@@ -59,27 +59,52 @@
 				</button>
 				<div class="preset-dropdown" id="presetDropdown">
 					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
-					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
-					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
-					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
-					<button class="btn-reset" onclick="resetWithConfirmation()">⟳ Reset</button>
+					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><img src="assets/plus_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="New"> New</button>
+					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><img src="assets/save_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Update"> Update</button>
+					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset"><img src="assets/delete_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Delete"> Delete</button>
+					<button class="btn-reset" onclick="resetWithConfirmation()"><img src="assets/reset_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Reset"> Reset</button>
 				</div>
 			</div>
 		</div>
 		<div class="app-container">
-			<!-- Hero Roulette Card -->
-			<div class="speedup-buff-card" style="margin-bottom: 20px;">
-				<div class="speedup-buff-header">
-					<span>🎰 HERO ROULETTE</span>
+			<!-- ============================================ -->
+			<!-- HERO ROULETTE - Item Card Style -->
+			<!-- ============================================ -->
+			<div class="item-card" style="border: 1px solid #999; margin-bottom: 20px;">
+				<div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
+					<img loading="lazy" decoding="async" src="assets/hero_roulette.webp" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Hero Roulette">
+					<span style="font-size: 1.1rem;">HERO ROULETTE</span>
 				</div>
-				<div class="speedup-buff-body">
-					<div class="buff-row">
-						<div class="buff-field">
-							<label>🎯 Number of Hero Roulette Plays</label>
-							<input type="text" style="text-align: center;" id="heroRouletteCount" value="" placeholder="e.g., 10" oninput="validateMiscInput(this); refreshCalculations()">
-							<small>Each play gives 8000 points in SG event</small>
+				<div class="item-card-body" style="padding: 12px;">
+					<div class="level-controls">
+						<div class="buff-field" style="min-width: 100%;">
+							<label>
+								<img loading="lazy" decoding="async" src="assets/hero_roulette.webp" style="height: 20px; width: 20px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Spins"> Number of Spins </label>
+							<input type="text" style="text-align: center;" id="rouletteSpinsInput" value="" placeholder="e.g., 120" oninput="validateRouletteInput(this); refreshCalculations()">
+							<small>How many spins do you want to do?</small>
+						</div>
+						<div class="buff-field" style="min-width: 100%;">
+							<label>Cost Breakdown</label>
+							<div style="padding: 10px; background: var(--lcd-bg); border-radius: var(--radius-sm); min-height: 65px;">
+								<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px;">
+									<span style="color: #fff; font-size: 0.8rem;">
+										<img loading="lazy" decoding="async" src="assets/hero_roulette_token.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Tokens"> Tokens used: </span>
+									<span style="color: var(--lcd-glow); font-weight: 700;" id="tokensUsedDisplay">0</span>
+								</div>
+								<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px;">
+									<span style="color: #fff; font-size: 0.8rem;">
+										<img loading="lazy" decoding="async" src="assets/Gem.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Gems"> Gems used: </span>
+									<span style="color: var(--lcd-glow); font-weight: 700;" id="gemsUsedDisplay">0</span>
+								</div>
+								<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px; border-top: 1px solid #444; padding-top: 4px; margin-top: 4px;">
+									<span style="color: #fff; font-size: 0.8rem;">
+										<img loading="lazy" decoding="async" src="assets/hero_roulette.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Total spins"> Total spins: </span>
+									<span style="color: var(--lcd-glow); font-weight: 700;" id="spinsAchievedDisplay">0</span>
+								</div>
+							</div>
 						</div>
 					</div>
+					<div id="rouletteStatus" class="status-pane">Enter number of spins to calculate</div>
 				</div>
 			</div>
 			<!-- ============================================ -->
@@ -87,18 +112,19 @@
 			<!-- ============================================ -->
 			<div class="item-card" style="border: 1px solid #999; margin-bottom: 20px;">
 				<div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
-					<span style="font-size: 1.1rem;">⛏️ GATHERING</span>
+					<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" onerror="this.style.display='none';" style="height: 40px; width: 40px; object-fit: contain;" alt="Gathering">
+					<span style="font-size: 1.1rem;">GATHERING</span>
 				</div>
 				<div class="item-card-body" style="padding: 12px;">
 					<!-- Gathering Settings -->
 					<div class="speedup-buff-card" style="margin-bottom: 16px; border: 1px solid #d0d0d0;">
 						<div class="speedup-buff-header" style="padding: 8px 14px; font-size: 0.85rem;">
-							<span>⚙️ GATHERING SETTINGS</span>
+							<span>GATHERING SETTINGS</span>
 						</div>
 						<div class="speedup-buff-body" style="padding: 12px;">
 							<div class="buff-row">
 								<div class="buff-field">
-									<label>🚀 March Units</label>
+									<label>March Units</label>
 									<select id="globalMarchUnits" onchange="updateGlobalSettings()">
 										<option value="" disabled selected hidden>Select March Units</option>
 										<option value="1">1</option>
@@ -111,7 +137,8 @@
 									<small>Number of gathering marches</small>
 								</div>
 								<div class="buff-field">
-									<label>🐂 Bison Grip of the Titan (Pet Skill)</label>
+									<label>
+										<img loading="lazy" decoding="async" src="assets/grip_of_the_titan.webp" style="height: 20px; width: 20px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bison Grip"> Bison Grip of the Titan (Pet Skill) </label>
 									<select id="globalBisonGrip" onchange="updateGlobalSettings()">
 										<option value="0">0</option>
 										<option value="1">1</option>
@@ -122,16 +149,24 @@
 							</div>
 							<div class="buff-row" id="bisonGripDetails" style="display: none;">
 								<div class="buff-field">
-									<label>🎯 Bison Grip Resource Type</label>
+									<label>Bison Grip Resource Type</label>
 									<select id="globalBisonResource" onchange="updateGlobalSettings()">
-										<option value="bread">Bread</option>
-										<option value="wood">Wood</option>
-										<option value="stone">Stone</option>
-										<option value="iron">Iron</option>
+										<option value="bread">
+											<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bread"> Bread
+										</option>
+										<option value="wood">
+											<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Wood"> Wood
+										</option>
+										<option value="stone">
+											<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Stone"> Stone
+										</option>
+										<option value="iron">
+											<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Iron"> Iron
+										</option>
 									</select>
 								</div>
 								<div class="buff-field">
-									<label>📊 Bison Grip Node Level</label>
+									<label>Bison Grip Node Level</label>
 									<select id="globalBisonNode" onchange="updateGlobalSettings()">
 										<option value="1">Level 1</option>
 										<option value="2">Level 2</option>
@@ -146,7 +181,8 @@
 							</div>
 							<!-- Bison Grip Points Display -->
 							<div id="bisonPointsDisplay" style="display: none; margin-top: 10px; padding: 8px 14px; background: var(--lcd-bg); border-radius: var(--radius-sm); text-align: center;">
-								<strong style="color: #fff;">🐂 Bison Grip Points:</strong>
+								<strong style="color: #fff;">
+									<img loading="lazy" decoding="async" src="assets/grip_of_the_titan.webp" style="height: 20px; width: 20px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bison Grip"> Bison Grip Points: </strong>
 								<span style="color: var(--lcd-glow); font-weight: 700;" id="bisonPointsValue">0</span>
 							</div>
 						</div>

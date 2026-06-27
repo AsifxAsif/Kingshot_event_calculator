@@ -854,6 +854,7 @@ body {
 	z-index: 1001;
 	cursor: pointer;
 	border-radius: var(--radius-sm);
+	border: 1px solid #d0d0d0;
 	background: var(--surface);
 	transition: all var(--transition-fast);
 	box-shadow: var(--shadow-extruded-sm);
@@ -1188,10 +1189,9 @@ input[type="number"] {
 		height: 2em;
 		flex-shrink: 0;
 		min-width: 40px;
-	}
-	.hamburger svg {
-		width: 2.5em;
-		height: 2em;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.scoreboard {
 		padding: 2px 8px;
@@ -1236,6 +1236,7 @@ input[type="number"] {
 		min-width: 40px;
 		align-items: center;
 		justify-content: center;
+		border: 1px solid #d0d0d0;
 		border-radius: var(--radius-sm);
 	}
 	.preset-hamburger svg {

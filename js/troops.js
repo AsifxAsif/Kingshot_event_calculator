@@ -64,13 +64,13 @@ function createTroopIndividualCard(troopType) {
             </div>
             <div class="checkbox-group" style="gap: 8px;">
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="refreshTroopsCalculations()"> 🚀 Train Active
+                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="refreshTroopsCalculations()"> Train Active
                 </label>
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups
+                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="refreshTroopsCalculations()"> +Speedups
                 </label>
             </div>
-            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚔️ Select troop tier and quantity</div>
+            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">Select troop tier and quantity</div>
         </div>
     </div>`;
 }
@@ -117,23 +117,23 @@ function createPromotionIndividualCard(troopType) {
             </div>
             <div class="checkbox-group" style="gap: 8px;">
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="promo_active_${safeId}" onchange="refreshTroopsCalculations()"> ⬆️ Promote Active
+                    <input class="checkbox" type="checkbox" id="promo_active_${safeId}" onchange="refreshTroopsCalculations()"> Promote Active
                 </label>
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="promo_speed_${safeId}" onchange="refreshTroopsCalculations()"> ⏩ +Speedups
+                    <input class="checkbox" type="checkbox" id="promo_speed_${safeId}" onchange="refreshTroopsCalculations()"> +Speedups
                 </label>
             </div>
-            <div id="promo_status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current tier, target tier, and quantity</div>
+            <div id="promo_status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">Select current tier, target tier, and quantity</div>
         </div>
     </div>`;
 }
 
 function createTroopGroupCard(groupName, itemsHtml) {
-	const icon = groupName === 'TRAINING' ? '⚔️' : '⬆️';
+	const icon = groupName === 'TRAINING' ? 'Training' : 'Promotion';
 	return `
         <div class="item-card" style="border: 1px solid #999; margin-bottom: 16px;">
             <div class="item-card-header" style="background: var(--surface-dark); border-bottom: 2px solid rgba(0,0,0,0.06); display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 1.1rem;">${icon} ${groupName}</span>
+                <span style="font-size: 1.1rem;">${icon}</span>
             </div>
             <div class="item-card-body" style="padding: 12px;">
                 <div class="items-grid" style="grid-template-columns: 1fr; gap: 10px;">
@@ -324,9 +324,9 @@ function calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked) {
 	}
 	// Check if we have enough total
 	if (remainingNeeded > 0) {
-		partialNote = `⚠️ Only ${usedTraining + usedGeneral} min available (need ${totalSpeedupMinutesNeeded})`;
+		partialNote = `Only ${usedTraining + usedGeneral} min available (need ${totalSpeedupMinutesNeeded})`;
 		if (usedTraining === 0 && usedGeneral === 0) {
-			partialNote = `⚠️ No speedups available (need ${totalSpeedupMinutesNeeded} min)`;
+			partialNote = `No speedups available (need ${totalSpeedupMinutesNeeded} min)`;
 		}
 	}
 	const totalUsed = usedTraining + usedGeneral;
@@ -661,15 +661,15 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 		if (canAfford) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>ACTIVE</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (level > 0 && quantity > 0 && !isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
 		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
-		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div></div>`;
+		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div></div>`;
 		if (speedupTroop && totalTimeSeconds > 0) {
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
@@ -679,47 +679,47 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 			}
 			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
 			if (speedupResult.totalUsed > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
 			} else if (speedupResult.totalNeeded > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag text-warning">⚡ No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag text-warning">No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
 			}
 		}
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">✅ Check "TRAIN ACTIVE" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">Check "TRAIN ACTIVE" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else {
 		status.className = "status-pane";
-		status.innerHTML = `⚔️ Select troop tier and quantity`;
+		status.innerHTML = `Select troop tier and quantity`;
 	}
 }
 
 function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, totalLocked, pointsPerUnit, partialNote, speedupDetails) {
 	if (fromLevel > 0 && toLevel > 0 && toLevel <= fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
-		status.innerHTML = `⚠️ Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
+		status.innerHTML = `Target tier (${toLevel}) must be higher than current tier (${fromLevel})`;
 		return;
 	}
 	const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 	if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0 && isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
 		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
-		let pointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div>${finalSpeedupPoints > 0 ? `<div class="resource-tag">⚡ Speedup Points: +${finalSpeedupPoints.toLocaleString()}${speedupDetails || ''}</div>` : ''}</div>`;
+		let pointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div>${finalSpeedupPoints > 0 ? `<div class="resource-tag">Speedup Points: +${finalSpeedupPoints.toLocaleString()}${speedupDetails || ''}</div>` : ''}</div>`;
 		if (canAfford) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE PROMOTION</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>ACTIVE PROMOTION</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES</strong><br>${pointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (fromLevel > 0 && toLevel > 0 && fromLevel !== toLevel && quantity > 0 && !isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
 		let timeDisplay = buildTimeDisplay(totalTimeSeconds, getBuffedTrainingTime(totalTimeSeconds), speedupTroop);
-		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div></div>`;
+		let estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div></div>`;
 		if (speedupTroop && totalTimeSeconds > 0) {
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
@@ -729,45 +729,45 @@ function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity,
 			}
 			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
 			if (speedupResult.totalUsed > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">⚡ Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
 			} else if (speedupResult.totalNeeded > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">🎖️ Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag text-warning">⚡ No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag text-warning">No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
 			}
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED PROMOTION</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">✅ Check "PROMOTE ACTIVE" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED PROMOTION</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}<br><span class="text-remaining">Check "PROMOTE ACTIVE" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES</strong><br>${estimatedPointsDisplay}<div class="cost-grid">${costHtml}</div>${timeDisplay}${partialHtml}`;
 		}
 	} else if (fromLevel > 0 && toLevel === fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
-		status.innerHTML = `⚠️ Current tier and target tier are the same. Select different tiers to promote.`;
+		status.innerHTML = `Current tier and target tier are the same. Select different tiers to promote.`;
 	} else if (fromLevel > 0 && quantity > 0 && !toLevel) {
 		status.className = "status-pane";
-		status.innerHTML = `⚙️ Select target tier`;
+		status.innerHTML = `Select target tier`;
 	} else {
 		status.className = "status-pane";
-		status.innerHTML = `⚙️ Select current tier, target tier, and quantity`;
+		status.innerHTML = `Select current tier, target tier, and quantity`;
 	}
 }
 
 function buildTimeDisplay(totalTimeSeconds, buffedTimeSeconds, speedupTroop) {
 	if (totalTimeSeconds <= 0) return '';
 	if (buffedTimeSeconds !== totalTimeSeconds) {
-		return `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(buffedTimeSeconds)} (original: ${formatSecondsToTime(totalTimeSeconds)})</div>`;
+		return `<div class="resource-tag">Total Time: ${formatSecondsToTime(buffedTimeSeconds)} (original: ${formatSecondsToTime(totalTimeSeconds)})</div>`;
 	}
-	return `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(totalTimeSeconds)}</div>`;
+	return `<div class="resource-tag">Total Time: ${formatSecondsToTime(totalTimeSeconds)}</div>`;
 }
 
 function buildPointsDisplay(troopPoints, speedupPoints, speedupDetails) {
 	if (troopPoints > 0 && speedupPoints > 0) {
-		return `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${troopPoints.toLocaleString()}</div><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
+		return `<div class="cost-grid"><div class="resource-tag">Troop Points: +${troopPoints.toLocaleString()}</div><div class="resource-tag">Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
 	} else if (troopPoints > 0) {
-		return `<div class="cost-grid"><div class="resource-tag">🎖️ Troop Points: +${troopPoints.toLocaleString()}</div></div>`;
+		return `<div class="cost-grid"><div class="resource-tag">Troop Points: +${troopPoints.toLocaleString()}</div></div>`;
 	} else if (speedupPoints > 0) {
-		return `<div class="cost-grid"><div class="resource-tag">⚡ Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
+		return `<div class="cost-grid"><div class="resource-tag">Speedup Points: +${speedupPoints.toLocaleString()}${speedupDetails || ''}</div></div>`;
 	}
 	return '';
 }

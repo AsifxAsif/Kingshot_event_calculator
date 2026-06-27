@@ -29,6 +29,9 @@ const RESOURCE_ITEMS = [{
 	id: "gold",
 	placeholder: "10K"
 }, {
+	id: "gems",
+	placeholder: "10000"
+}, {
 	id: "truegold",
 	placeholder: "500"
 }, {
@@ -116,7 +119,7 @@ const RESOURCE_ITEMS = [{
 	id: "mythic_gear",
 	placeholder: "10"
 }, {
-	id: "hero_roulette",
+	id: "hero_roulette_token",
 	placeholder: "100"
 }];
 // ============================================
@@ -160,7 +163,7 @@ const SCORE_RULES = {
 // ============================================
 function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 	if (!costTotals || !Object.keys(costTotals).length) {
-		return '<span>✨ No resources required</span>';
+		return '<span>No resources required</span>';
 	}
 	// Filter out internal flags
 	const filteredCosts = {};
@@ -170,7 +173,7 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		}
 	}
 	if (!Object.keys(filteredCosts).length) {
-		return '<span>✨ No resources required</span>';
+		return '<span>No resources required</span>';
 	}
 	let basicResources = '';
 	let premiumResources = '';
@@ -235,11 +238,11 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		}
 	}
 	let result = '';
-	if (heroResources) result += `<div class="resource-group-label">🎖️ Hero Resources:</div>${heroResources}`;
-	if (basicResources) result += `<div class="resource-group-label">📦 Basic Resources:</div>${basicResources}`;
-	if (premiumResources) result += `<div class="resource-group-label">💎 Premium Resources:</div>${premiumResources}`;
-	if (speedupResources) result += `<div class="resource-group-label">⏱️ Speedups:</div>${speedupResources}`;
-	if (otherResources) result += `<div class="resource-group-label">🔧 Other Resources:</div>${otherResources}`;
+	if (heroResources) result += `<div class="resource-group-label">Hero Resources:</div>${heroResources}`;
+	if (basicResources) result += `<div class="resource-group-label">Basic Resources:</div>${basicResources}`;
+	if (premiumResources) result += `<div class="resource-group-label">Premium Resources:</div>${premiumResources}`;
+	if (speedupResources) result += `<div class="resource-group-label">Speedups:</div>${speedupResources}`;
+	if (otherResources) result += `<div class="resource-group-label">Other Resources:</div>${otherResources}`;
 	if (!document.getElementById('resource-group-style')) {
 		const style = document.createElement('style');
 		style.id = 'resource-group-style';
@@ -653,6 +656,20 @@ function saveCurrentToPreset(presetName) {
 			}
 		}
 	}
+	// Save misc page gathering card data
+	if (page === 'misc') {
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			const nodeSelect = document.getElementById(`gather_node_${cardId}`);
+			const skillSelect = document.getElementById(`gather_skill_${cardId}`);
+			const speedInput = document.getElementById(`gather_speed_${cardId}`);
+			if (resourceSelect) presetData.selections[`gather_resource_${cardId}`] = resourceSelect.value;
+			if (nodeSelect) presetData.selections[`gather_node_${cardId}`] = nodeSelect.value;
+			if (skillSelect) presetData.selections[`gather_skill_${cardId}`] = skillSelect.value;
+			if (speedInput) presetData.selections[`gather_speed_${cardId}`] = speedInput.value;
+		});
+	}
 	allPresets[presetName] = presetData;
 	localStorage.setItem("governor_presets", JSON.stringify(allPresets));
 	localStorage.setItem("governor_current_preset", presetName);
@@ -665,7 +682,11 @@ function saveCurrentToPreset(presetName) {
 // ============================================
 function getCurrentPageInfo() {
 	const path = window.location.pathname;
-	// ✅ Check more specific paths FIRST
+	// Check more specific paths FIRST
+	if (path.includes('forgehammer')) return {
+		category: 'forgehammer',
+		display: 'Forgehammer'
+	};
 	if (path.includes('hero-gear')) return {
 		category: 'herogear',
 		display: 'Hero Gear'
@@ -673,10 +694,6 @@ function getCurrentPageInfo() {
 	if (path.includes('war-academy')) return {
 		category: 'academy',
 		display: 'War Academy'
-	};
-	if (path.includes('forgehammer')) return {
-		category: 'forgehammer',
-		display: 'Forgehammer'
 	};
 	if (path.includes('buildings')) return {
 		category: 'building',
@@ -794,7 +811,7 @@ function updatePresetSelect() {
 	for (const name in allPresets) {
 		const option = document.createElement("option");
 		option.value = name;
-		option.textContent = name + (name === "default" ? " (Default)" : "");
+		option.textContent = name + (name === "Default" ? " (Default)" : "");
 		if (name === currentPreset) option.selected = true;
 		select.appendChild(option);
 	}
@@ -1483,6 +1500,7 @@ function formatNumber(num) {
 // ============================================
 // FIXED: IMAGE FILE NAME MAPPING (added missing resources)
 // ============================================
+// In app.js - Update getImageFileName function
 function getImageFileName(resourceId) {
 	const imageMap = {
 		bread: "Bread.webp",
@@ -1490,6 +1508,7 @@ function getImageFileName(resourceId) {
 		stone: "Stone.webp",
 		iron: "Iron.webp",
 		gold: "Gold.webp",
+		gems: "Gem.webp",
 		truegold: "truegold.webp",
 		truegold_dust: "truegold_dust.webp",
 		tempered_truegold: "tempered_truegold.webp",
@@ -1519,6 +1538,13 @@ function getImageFileName(resourceId) {
 		master_speedup: "master_speedup.webp",
 		general_speedup: "general_speedup.webp",
 		mythic_gear: "mythic-gear.webp",
+		hero_roulette_token: "hero_roulette_token.webp",
+		bread_node: "bread_node.webp",
+		wood_node: "wood_node.webp",
+		stone_node: "stone_node.webp",
+		iron_node: "iron_node.webp",
+		gathering_speed: "gathering_speed.webp",
+		grip_of_the_titan: "grip_of_the_titan.webp",
 		hero_roulette: "hero_roulette.webp"
 	};
 	return `assets/${imageMap[resourceId] || resourceId + ".webp"}`;
@@ -1552,19 +1578,38 @@ function getCurrentPageKey() {
 // ============================================
 // GLOBAL DATA LOADING
 // ============================================
+async function fetchWithCache(filename) {
+	const cacheKey = `data_${filename}`;
+	try {
+		const cached = sessionStorage.getItem(cacheKey);
+		if (cached) {
+			return JSON.parse(cached);
+		}
+	} catch (e) {
+		// Cached data corrupted, re-fetch
+	}
+	const response = await fetch(`data/${filename}.json`);
+	const data = await response.json();
+	try {
+		sessionStorage.setItem(cacheKey, JSON.stringify(data));
+	} catch (e) {
+		// Quota exceeded, ignore
+	}
+	return data;
+}
 async function loadGameData(filesToLoad = null) {
 	// If no specific files requested, load minimal set
 	if (!filesToLoad) {
 		// For vault page, we only need Points.json for scoring
 		filesToLoad = ["Points"];
 	}
-	const results = await Promise.allSettled(filesToLoad.map(f => fetch(`data/${f}.json`).then(r => r.json())));
+	const results = await Promise.allSettled(filesToLoad.map(f => fetchWithCache(f)));
 	results.forEach((result, i) => {
 		const fileName = filesToLoad[i];
 		if (result.status === 'fulfilled') {
 			gameDB[fileName] = result.value;
 		} else {
-			console.error(`❌ Failed to load: ${fileName}.json`, result.reason);
+			console.error(`Failed to load: ${fileName}.json`, result.reason);
 			gameDB[fileName] = {};
 		}
 	});
@@ -2014,10 +2059,10 @@ function createGenericCard(config) {
         </div>
         ${extraControls}
         <div class="checkbox-group">
-            ${showCheckbox ? `<label class="checkbox-label"><input class="checkbox" type="checkbox" id="${activeId}" onchange="${onUpgradeChange}('${safeId}', this.checked)"> ⬆️ Upgrade</label>` : ''}
-            ${showSpeedup ? `<label class="checkbox-label"><input class="checkbox" type="checkbox" id="${speedId}" onchange="${onSpeedupChange}('${safeId}', this.checked)"> ⏩ +Speedups</label>` : ''}
+            ${showCheckbox ? `<label class="checkbox-label"><input class="checkbox" type="checkbox" id="${activeId}" onchange="${onUpgradeChange}('${safeId}', this.checked)"> Upgrade</label>` : ''}
+            ${showSpeedup ? `<label class="checkbox-label"><input class="checkbox" type="checkbox" id="${speedId}" onchange="${onSpeedupChange}('${safeId}', this.checked)"> +Speedups</label>` : ''}
         </div>
-        <div id="${statusId}" class="status-pane">⚙️ Select current & target level</div>
+        <div id="${statusId}" class="status-pane">Select current & target level</div>
     `;
 	return `<div class="item-card" data-type="${type}" data-name="${name}" data-id="${safeId}">
         ${header}
@@ -2069,7 +2114,7 @@ function genericRefreshCalculations(config) {
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
-			status.innerHTML = `⚙️ Select current & target level`;
+			status.innerHTML = `Select current & target level`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -2085,7 +2130,7 @@ function genericRefreshCalculations(config) {
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
 		if (isAtMax) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `🏆 <strong>MAXED!</strong><br>Already at highest level (${highestLevel})`;
+			status.innerHTML = `<strong>MAXED!</strong><br>Already at highest level (${highestLevel})`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -2098,7 +2143,7 @@ function genericRefreshCalculations(config) {
 		}
 		if (String(from) === String(to)) {
 			status.className = "status-pane status-warning";
-			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
+			status.innerHTML = `Current and target levels are the same. Select a higher target level.`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -2129,9 +2174,8 @@ function genericRefreshCalculations(config) {
 			let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 			const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
-			const timeHtml = getBuffedTime && locked.totalTimeSeconds ? `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(getBuffedTime(locked.totalTimeSeconds))}</div>` : '';
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${partialHtml}</div>`;
 			totalScore += stepPoints;
 			if (activeCb) activeCb.disabled = false;
 			if (speedCb) speedCb.disabled = false;
@@ -2148,7 +2192,7 @@ function genericRefreshCalculations(config) {
 		const costs = calculateCosts(dataArray, from, to, speedCheck, vault, otherLocked);
 		if (!costs) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
+			status.innerHTML = `Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
 		const {
@@ -2167,7 +2211,7 @@ function genericRefreshCalculations(config) {
 		let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
-		const timeHtml = getBuffedTime && costs.totalTimeSeconds ? `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(getBuffedTime(costs.totalTimeSeconds))}</div>` : '';
+		const timeHtml = getBuffedTime && costs.totalTimeSeconds ? `<div class="resource-tag">Total Time: ${formatSecondsToTime(getBuffedTime(costs.totalTimeSeconds))}</div>` : '';
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
@@ -2178,10 +2222,10 @@ function genericRefreshCalculations(config) {
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div><br><span class="text-remaining">✅ Click "Upgrade" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div><br><span class="text-remaining">Click "Upgrade" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
 		}
 	}
 	const scoreDisplay = document.getElementById('globalScoreDisplay');
@@ -2202,6 +2246,23 @@ if ('serviceWorker' in navigator) {
 		});
 	});
 }
+// ============================================
+// DEBOUNCE FUNCTION FOR PERFORMANCE
+// ============================================
+let refreshTimeout = null;
+
+function debouncedRefresh(module) {
+	if (refreshTimeout) clearTimeout(refreshTimeout);
+	refreshTimeout = setTimeout(() => {
+		if (module === 'troops' && typeof refreshTroopsCalculations === 'function') {
+			refreshTroopsCalculations();
+		} else if (typeof refreshCalculations === 'function') {
+			refreshCalculations();
+		}
+		refreshTimeout = null;
+	}, 100);
+}
+window.debouncedRefresh = debouncedRefresh;
 // ============================================
 // EXPORTS
 // ============================================
@@ -2228,8 +2289,8 @@ window.applyPresetToCurrentPage = applyPresetToCurrentPage;
 window.getCurrentPageCategory = getCurrentPageCategory;
 window.getCurrentPageDisplayName = getCurrentPageDisplayName;
 window.getCurrentPageInfo = getCurrentPageInfo;
-window.clearAllSelections = window.clearAllSelections;
-window.updateVaultResource = window.updateVaultResource;
+window.clearAllSelections = clearAllSelections;
+window.updateVaultResource = updateVaultResource;
 window.parseTimeToSeconds = parseTimeToSeconds;
 window.formatSecondsToTime = formatSecondsToTime;
 window.secondsToSpeedupMinutes = secondsToSpeedupMinutes;
@@ -2271,3 +2332,5 @@ window.buildResourceDisplay = buildResourceDisplay;
 window.buildLevelOptions = buildLevelOptions;
 window.createGenericCard = createGenericCard;
 window.genericRefreshCalculations = genericRefreshCalculations;
+window.fetchWithCache = fetchWithCache;
+window.debouncedRefresh = debouncedRefresh;

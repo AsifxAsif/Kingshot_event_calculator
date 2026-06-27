@@ -255,10 +255,10 @@ function createIndividualCharmCard(charmName, charmNumber, dataArray) {
                 </div>
                 <div class="checkbox-group" style="gap: 8px;">
                     <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px; height: auto; min-height: 32px;">
-                        <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onGovCharmUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade
+                        <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onGovCharmUpgradeCheckboxChange('${safeId}', this.checked)"> Upgrade
                     </label>
                 </div>
-                <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current & target level</div>
+                <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">Select current & target level</div>
             </div>
         </div>
     `;
@@ -463,7 +463,7 @@ function refreshCalculations() {
 		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
-			status.innerHTML = `⚙️ Select current & target level`;
+			status.innerHTML = `Select current & target level`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -473,7 +473,7 @@ function refreshCalculations() {
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
 		if (isAtMax) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `🏆 <strong>CHARM MAXED!</strong><br>Already at highest level (${highestLevel})`;
+			status.innerHTML = `<strong>CHARM MAXED!</strong><br>Already at highest level (${highestLevel})`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -482,7 +482,7 @@ function refreshCalculations() {
 		}
 		if (String(from) === String(to)) {
 			status.className = "status-pane status-warning";
-			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
+			status.innerHTML = `Current and target levels are the same. Select a higher target level.`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -507,7 +507,7 @@ function refreshCalculations() {
 			let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div>`;
+			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div>`;
 			totalScore += stepPoints;
 			if (activeCb) activeCb.disabled = false;
 			continue;
@@ -521,7 +521,7 @@ function refreshCalculations() {
 		const costs = calculateGovCharmCosts(dataArray, from, to, vault, otherLocked);
 		if (!costs) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
+			status.innerHTML = `Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
 		const {
@@ -545,10 +545,10 @@ function refreshCalculations() {
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div><br><span class="text-remaining">✅ Click "Upgrade" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div><br><span class="text-remaining">Click "Upgrade" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}</div>`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}</div>`;
 		}
 	}
 	const scoreDisplay = document.getElementById('globalScoreDisplay');

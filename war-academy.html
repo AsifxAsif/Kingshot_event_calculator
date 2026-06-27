@@ -27,17 +27,17 @@
 				</svg>
 			</label>
 			<div class="nav-links" id="navLinks">
-				<a href="index.html" class="nav-link">📦 VAULT</a>
-				<a href="buildings.html" class="nav-link">🏛️ BUILDINGS</a>
-				<a href="war-academy.html" class="nav-link active" aria-current="page">📜 WAR ACADEMY</a>
-				<a href="widgets.html" class="nav-link">✨ WIDGETS</a>
-				<a href="heroes.html" class="nav-link">⭐ HEROES</a>
-				<a href="hero-gear.html" class="nav-link">⚔️ HERO GEAR</a>
-				<a href="gov-gear.html" class="nav-link">👑 GOV GEAR</a>
-				<a href="gov-charm.html" class="nav-link">🍀 GOV CHARM</a>
-				<a href="pets.html" class="nav-link">🐾 PETS</a>
-				<a href="troops.html" class="nav-link">⚔️ TROOPS</a>
-				<a href="misc.html" class="nav-link">🎲 MISC</a>
+				<a href="index.html" class="nav-link"><img src="assets/vault_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Vault"> VAULT</a>
+				<a href="buildings.html" class="nav-link"><img src="assets/buildings_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Buildings"> BUILDINGS</a>
+				<a href="war-academy.html" class="nav-link active" aria-current="page"><img src="assets/academy_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="War Academy"> WAR ACADEMY</a>
+				<a href="widgets.html" class="nav-link"><img src="assets/widgets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Widgets"> WIDGETS</a>
+				<a href="heroes.html" class="nav-link"><img src="assets/heroes_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Heroes"> HEROES</a>
+				<a href="hero-gear.html" class="nav-link"><img src="assets/hero_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Hero Gear"> HERO GEAR</a>
+				<a href="gov-gear.html" class="nav-link"><img src="assets/gov_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Gear"> GOV GEAR</a>
+				<a href="gov-charm.html" class="nav-link"><img src="assets/gov_charm_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Charm"> GOV CHARM</a>
+				<a href="pets.html" class="nav-link"><img src="assets/pets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Pets"> PETS</a>
+				<a href="troops.html" class="nav-link"><img src="assets/troops_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Troops"> TROOPS</a>
+				<a href="misc.html" class="nav-link"><img src="assets/misc_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Misc"> MISC</a>
 			</div>
 			<div class="scoreboard-total">
 				<div class="scoreboard">
@@ -59,10 +59,10 @@
 				</button>
 				<div class="preset-dropdown" id="presetDropdown">
 					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
-					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset">➕ New</button>
-					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset">💾 Update</button>
-					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset">🗑️ Delete</button>
-					<button class="btn-reset" onclick="resetWithConfirmation()">⟳ Reset</button>
+					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><img src="assets/plus_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="New"> New</button>
+					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><img src="assets/save_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Update"> Update</button>
+					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset"><img src="assets/delete_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Delete"> Delete</button>
+					<button class="btn-reset" onclick="resetWithConfirmation()"><img src="assets/reset_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Reset"> Reset</button>
 				</div>
 			</div>
 		</div>
@@ -70,17 +70,17 @@
 			<!-- Research Speedup Buff Card -->
 			<div class="speedup-buff-card">
 				<div class="speedup-buff-header">
-					<span>⚡ GLOBAL RESEARCH SPEEDUP BUFFS</span>
+					<span><img src="assets/lightning_icon.webp" onerror="this.style.display='none';" style="height:18px;width:18px;vertical-align:middle;margin-right:6px;" alt="Speed"> GLOBAL RESEARCH SPEEDUP BUFFS</span>
 				</div>
 				<div class="speedup-buff-body">
 					<div class="buff-row">
 						<div class="buff-field">
-							<label>📚 Research Speedup (%)</label>
+							<label><img src="assets/research_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Research"> Research Speedup (%)</label>
 							<input type="text" style="text-align: center;" id="globalResearchBuffPercent" value="" placeholder="e.g., 121" oninput="updateResearchSpeedupBuffs()">
 							<small>Enter your total research speed bonus %</small>
 						</div>
 						<div class="buff-field">
-							<label>👑 King Position: Chief Minister</label>
+							<label><img src="assets/king_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="King"> King Position: Chief Minister</label>
 							<select id="globalResearchKingPosition" onchange="updateResearchSpeedupBuffs()">
 								<option value="0">None</option>
 								<option value="10">10%</option>
@@ -90,7 +90,7 @@
 					</div>
 					<div class="checkbox-group" style="margin-bottom: 15px;">
 						<label class="checkbox-label">
-							<input class="checkbox" type="checkbox" id="globalResearchFreshIdeasCheckbox" onchange="updateResearchSpeedupBuffs()"> 💡 Fresh Ideas (+10% Speed) </label>
+							<input class="checkbox" type="checkbox" id="globalResearchFreshIdeasCheckbox" onchange="updateResearchSpeedupBuffs()"> <img src="assets/fresh_ideas_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Fresh Ideas"> Fresh Ideas (+10% Speed) </label>
 					</div>
 					<div class="buff-total">
 						<strong>Total Speedup Buff:</strong>

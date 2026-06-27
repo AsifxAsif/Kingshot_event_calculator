@@ -9,6 +9,128 @@ let globalBisonGrip = 0;
 let globalBisonResource = 'bread';
 let globalBisonNode = 1;
 // ============================================
+// IMAGE HELPERS
+// ============================================
+function getResourceImage(resourceType) {
+	const images = {
+		'bread': 'assets/Bread.webp',
+		'wood': 'assets/Wood.webp',
+		'stone': 'assets/Stone.webp',
+		'iron': 'assets/Iron.webp'
+	};
+	return images[resourceType] || '';
+}
+
+function getNodeImage(resourceType) {
+	const nodeImageMap = {
+		'bread': 'assets/bread_node.webp',
+		'wood': 'assets/wood_node.webp',
+		'stone': 'assets/stone_node.webp',
+		'iron': 'assets/iron_node.webp'
+	};
+	return nodeImageMap[resourceType] || 'assets/bread_node.webp';
+}
+
+function updateNodeImage(cardId, resourceType) {
+	const nodeImg = document.getElementById(`node_img_${cardId}`);
+	if (!nodeImg) return;
+	const imgSrc = getNodeImage(resourceType || 'bread');
+	if (nodeImg.src !== imgSrc) {
+		nodeImg.src = imgSrc;
+	}
+}
+
+function getResourceOptionHtml(resourceType) {
+	const images = {
+		'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread"> Bread',
+		'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood"> Wood',
+		'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone"> Stone',
+		'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron"> Iron'
+	};
+	return images[resourceType] || resourceType;
+}
+// ============================================
+// HERO ROULETTE - User specifies spins
+// ============================================
+function getRouletteTokens() {
+	return parseFloat(localStorage.getItem('vault_hero_roulette_token')) || 0;
+}
+
+function getRouletteGems() {
+	return parseFloat(localStorage.getItem('vault_gems')) || 0;
+}
+
+function calculateRouletteCost(spins) {
+	const tokens = getRouletteTokens();
+	const gems = getRouletteGems();
+	// Constants
+	const SINGLE_SPIN_TOKENS = 1;
+	const SINGLE_SPIN_GEMS = 1500;
+	const BATCH_SPIN_TOKENS = 9; // 10 spins for 9 tokens
+	const BATCH_SPIN_GEMS = 13500; // 10 spins for 13500 gems
+	const SPINS_PER_BATCH = 10;
+	let remainingSpins = spins;
+	let tokensUsed = 0;
+	let gemsUsed = 0;
+	let tokenBatches = 0;
+	let singleTokenSpins = 0;
+	let gemBatches = 0;
+	let singleGemSpins = 0;
+	// Strategy: Use tokens first (best value)
+	// 1. Use tokens for batch spins
+	let maxTokenBatches = Math.floor(tokens / BATCH_SPIN_TOKENS);
+	let batchesNeeded = Math.floor(remainingSpins / SPINS_PER_BATCH);
+	let actualBatches = Math.min(maxTokenBatches, batchesNeeded);
+	tokenBatches = actualBatches;
+	tokensUsed += actualBatches * BATCH_SPIN_TOKENS;
+	remainingSpins -= actualBatches * SPINS_PER_BATCH;
+	// 2. Use tokens for single spins
+	let maxSingleTokens = Math.floor((tokens - tokensUsed) / SINGLE_SPIN_TOKENS);
+	let singleNeeded = Math.min(maxSingleTokens, remainingSpins);
+	singleTokenSpins = singleNeeded;
+	tokensUsed += singleNeeded;
+	remainingSpins -= singleNeeded;
+	// 3. Use gems for batch spins
+	if (remainingSpins > 0) {
+		let maxGemBatches = Math.floor(gems / BATCH_SPIN_GEMS);
+		let gemBatchesNeeded = Math.floor(remainingSpins / SPINS_PER_BATCH);
+		let actualGemBatches = Math.min(maxGemBatches, gemBatchesNeeded);
+		gemBatches = actualGemBatches;
+		gemsUsed += actualGemBatches * BATCH_SPIN_GEMS;
+		remainingSpins -= actualGemBatches * SPINS_PER_BATCH;
+	}
+	// 4. Use gems for single spins
+	if (remainingSpins > 0) {
+		let maxSingleGems = Math.floor((gems - gemsUsed) / SINGLE_SPIN_GEMS);
+		let singleGemsNeeded = Math.min(maxSingleGems, remainingSpins);
+		singleGemSpins = singleGemsNeeded;
+		gemsUsed += singleGemsNeeded * SINGLE_SPIN_GEMS;
+		remainingSpins -= singleGemsNeeded;
+	}
+	// Calculate total spins achieved
+	const totalSpinsAchieved = spins - remainingSpins;
+	const canAfford = remainingSpins === 0;
+	return {
+		totalSpinsAchieved,
+		tokensUsed,
+		gemsUsed,
+		tokenBatches,
+		singleTokenSpins,
+		gemBatches,
+		singleGemSpins,
+		remainingSpins,
+		canAfford,
+		spinsRequested: spins,
+		tokensAvailable: tokens,
+		gemsAvailable: gems
+	};
+}
+
+function calculateRoulettePoints(totalSpins) {
+	const pointsPerSpin = SCORE_RULES.roulette || 8000;
+	return totalSpins * pointsPerSpin;
+}
+// ============================================
 // GATHERING DATA
 // ============================================
 function getGatheringData() {
@@ -27,9 +149,6 @@ function loadMiscFromStorage() {
 	if (saved) {
 		try {
 			const data = JSON.parse(saved);
-			if (data.heroRouletteCount !== undefined) {
-				document.getElementById('heroRouletteCount').value = data.heroRouletteCount || '';
-			}
 			// Gathering cards data
 			if (data.gatheringCards) {
 				for (const [cardId, cardData] of Object.entries(data.gatheringCards)) {
@@ -37,7 +156,9 @@ function loadMiscFromStorage() {
 					const nodeSelect = document.getElementById(`gather_node_${cardId}`);
 					const skillSelect = document.getElementById(`gather_skill_${cardId}`);
 					const speedInput = document.getElementById(`gather_speed_${cardId}`);
-					if (resourceSelect) resourceSelect.value = cardData.resource || '';
+					if (resourceSelect) {
+						resourceSelect.value = cardData.resource || '';
+					}
 					if (nodeSelect) nodeSelect.value = cardData.node || '';
 					if (skillSelect) skillSelect.value = cardData.skill || '';
 					if (speedInput) speedInput.value = cardData.speed || '';
@@ -47,11 +168,21 @@ function loadMiscFromStorage() {
 			console.warn('Failed to load misc data:', e);
 		}
 	}
+	// Update all node images after restoring values
+	// Use setTimeout to ensure DOM is ready
+	setTimeout(() => {
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			if (resourceSelect && resourceSelect.value) {
+				updateNodeImage(parseInt(cardId), resourceSelect.value);
+			}
+		});
+	}, 50);
 }
 
 function saveMiscToStorage() {
 	const data = {
-		heroRouletteCount: document.getElementById('heroRouletteCount').value || '',
 		gatheringCards: {}
 	};
 	// Save gathering card data
@@ -94,6 +225,17 @@ function validateMiscInput(input) {
 		input.value = cleaned;
 	}
 }
+
+function validateRouletteInput(input) {
+	let value = input.value.replace(/-/g, '');
+	value = value.replace(/[^0-9.]/g, '');
+	if (value === '' || isNaN(parseFloat(value))) {
+		input.value = '';
+	} else {
+		input.value = value;
+	}
+}
+window.validateRouletteInput = validateRouletteInput;
 // ============================================
 // GATHERING CALCULATIONS
 // ============================================
@@ -105,16 +247,6 @@ function getSkillTitle(resourceType) {
 		'iron': "Seth's Craftmanship"
 	};
 	return titles[resourceType] || 'Skill Level';
-}
-
-function getSpeedupLabel(resourceType) {
-	const labels = {
-		'bread': '🍞 Bread Gathering Speedup (%)',
-		'wood': '🪵 Wood Gathering Speedup (%)',
-		'stone': '🪨 Stone Gathering Speedup (%)',
-		'iron': '⛏️ Iron Gathering Speedup (%)'
-	};
-	return labels[resourceType] || '⚡ Gathering Speedup (%)';
 }
 
 function getSkillBonus(skillLevel) {
@@ -222,7 +354,7 @@ function getGatheringRates() {
 	return rates;
 }
 // ============================================
-// RENDER GATHERING CARDS - 2 columns layout
+// RENDER GATHERING CARDS - 2 columns layout with dynamic node images
 // ============================================
 function renderGatheringCards() {
 	const container = document.getElementById('gatheringGrid');
@@ -234,19 +366,34 @@ function renderGatheringCards() {
 	for (let i = 1; i <= numCards; i++) {
 		container.innerHTML += createGatheringCard(i);
 	}
-	// Restore saved values
+	// Restore saved values - this will also update node images
 	loadMiscFromStorage();
 	refreshCalculations();
 }
 
 function createGatheringCard(cardId) {
-	// Resource options with placeholder
+	// Resource options with images
 	const resourceOptions = `
-        <option value="" disabled selected hidden>Resource Type</option>
-        <option value="bread">Bread</option>
-        <option value="wood">Wood</option>
-        <option value="stone">Stone</option>
-        <option value="iron">Iron</option>
+        <option value="" disabled selected hidden>
+            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
+            Resource Type
+        </option>
+        <option value="bread">
+            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bread">
+            Bread
+        </option>
+        <option value="wood">
+            <img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Wood">
+            Wood
+        </option>
+        <option value="stone">
+            <img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Stone">
+            Stone
+        </option>
+        <option value="iron">
+            <img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Iron">
+            Iron
+        </option>
     `;
 	// Node options with placeholder
 	let nodeOptions = '<option value="" disabled selected hidden>Node Level</option>';
@@ -258,22 +405,30 @@ function createGatheringCard(cardId) {
 	for (let i = 0; i <= 5; i++) {
 		skillOptions += `<option value="${i}">Level ${i} (${i * 5}%)</option>`;
 	}
+	// Default node image (bread_node as default)
+	const defaultNodeImg = 'assets/bread_node.webp';
 	return `
         <div class="item-card gathering-card" data-card-id="${cardId}">
-            <div class="item-card-header" style="background: var(--surface-dark);">
-                <span style="font-size: 1rem;">⛏️ Gathering March ${cardId}</span>
+            <div class="item-card-header" style="background: var(--surface-dark); display: flex; align-items: center; gap: 10px;">
+                <img loading="lazy" decoding="async" src="${defaultNodeImg}" style="height: 50px; width: 50px; object-fit: contain;" onerror="this.style.display='none';" id="node_img_${cardId}" alt="Node">
+                <span style="font-size: 1rem;">
+                    Gathering March ${cardId}
+                </span>
             </div>
             <div class="item-card-body">
                 <!-- Row 1: Resource Type + Node Level -->
                 <div class="level-controls">
                     <div class="buff-field" style="min-width: 100%;">
-                        <label>📦 Resource Type</label>
+                        <label>
+                            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
+                            Resource Type
+                        </label>
                         <select id="gather_resource_${cardId}" onchange="onGatheringCardChange(${cardId})">
                             ${resourceOptions}
                         </select>
                     </div>
                     <div class="buff-field" style="min-width: 100%;">
-                        <label>📊 Node Level</label>
+                        <label>Node Level</label>
                         <select id="gather_node_${cardId}" onchange="onGatheringCardChange(${cardId})">
                             ${nodeOptions}
                         </select>
@@ -288,31 +443,44 @@ function createGatheringCard(cardId) {
                         </select>
                     </div>
                     <div class="buff-field" style="min-width: 100%;">
-                        <label id="speed_label_${cardId}">⚡ Gathering Speedup (%)</label>
+                        <label id="speed_label_${cardId}">
+                            <img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Speed">
+                            Gathering Speedup (%)
+                        </label>
                         <input type="text" style="text-align: center;" id="gather_speed_${cardId}" value="" placeholder="e.g., 50" oninput="validateMiscInput(this); onGatheringCardChange(${cardId})">
                         <small>Resource-specific speed buff %</small>
                     </div>
                 </div>
-                <div id="gather_status_${cardId}" class="status-pane">⚙️ Select resource type, node level, and skill level</div>
+                <div id="gather_status_${cardId}" class="status-pane">Select resource type, node level, and skill level</div>
             </div>
         </div>
     `;
 }
 
 function onGatheringCardChange(cardId) {
-	// Update skill label and speedup label
+	// Update skill label
 	const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
 	const skillLabel = document.getElementById(`skill_label_${cardId}`);
 	const speedLabel = document.getElementById(`speed_label_${cardId}`);
 	if (resourceSelect) {
 		const resource = resourceSelect.value;
+		// Update node image based on selected resource
+		updateNodeImage(cardId, resource);
 		// Update skill label
 		if (skillLabel) {
 			skillLabel.textContent = resource ? getSkillTitle(resource) : 'Skill Level';
 		}
-		// Update speedup label
+		// Update speedup label with resource-specific label
 		if (speedLabel) {
-			speedLabel.textContent = resource ? getSpeedupLabel(resource) : '⚡ Gathering Speedup (%)';
+			const imgMap = {
+				'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread">',
+				'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood">',
+				'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone">',
+				'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron">'
+			};
+			const img = resource ? imgMap[resource] || '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">' : '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">';
+			const label = resource ? `${img} ${resource.charAt(0).toUpperCase() + resource.slice(1)} Gathering Speedup (%)` : 'Gathering Speedup (%)';
+			speedLabel.innerHTML = label;
 		}
 	}
 	saveMiscToStorage();
@@ -326,16 +494,66 @@ function refreshCalculations() {
 	let totalGatheringPoints = 0;
 	let totalGatheringTimeSeconds = 0;
 	// ============================================
-	// 1. Hero Roulette
+	// 1. Hero Roulette - User specifies spins
 	// ============================================
-	const rouletteInput = document.getElementById('heroRouletteCount');
+	const spinsInput = document.getElementById('rouletteSpinsInput');
+	const rouletteStatus = document.getElementById('rouletteStatus');
+	let requestedSpins = parseFloat(spinsInput?.value) || 0;
 	let roulettePoints = 0;
-	if (rouletteInput) {
-		const count = parseFloat(rouletteInput.value) || 0;
-		const pointsPerPlay = SCORE_RULES.roulette || 8000;
-		roulettePoints = count * pointsPerPlay;
-		totalScore += roulettePoints;
+	let canAfford = false;
+	let tokensUsed = 0;
+	let gemsUsed = 0;
+	let totalSpinsAchieved = 0;
+	let result = null;
+	if (requestedSpins > 0) {
+		result = calculateRouletteCost(requestedSpins);
+		totalSpinsAchieved = result.totalSpinsAchieved;
+		tokensUsed = result.tokensUsed;
+		gemsUsed = result.gemsUsed;
+		canAfford = result.canAfford;
+		roulettePoints = calculateRoulettePoints(totalSpinsAchieved);
 	}
+	// Update displays
+	const tokensUsedDisplay = document.getElementById('tokensUsedDisplay');
+	if (tokensUsedDisplay) {
+		tokensUsedDisplay.textContent = tokensUsed.toLocaleString();
+	}
+	const gemsUsedDisplay = document.getElementById('gemsUsedDisplay');
+	if (gemsUsedDisplay) {
+		gemsUsedDisplay.textContent = gemsUsed.toLocaleString();
+	}
+	const spinsAchievedDisplay = document.getElementById('spinsAchievedDisplay');
+	if (spinsAchievedDisplay) {
+		spinsAchievedDisplay.textContent = totalSpinsAchieved.toLocaleString();
+	}
+	// Update Status Pane (like other pages)
+	if (rouletteStatus) {
+		if (requestedSpins === 0) {
+			rouletteStatus.className = "status-pane";
+			rouletteStatus.innerHTML = `Enter number of spins to calculate`;
+		} else if (canAfford) {
+			rouletteStatus.className = "status-pane status-ok";
+			let details = '';
+			if (tokensUsed > 0) details += ` | Tokens: ${tokensUsed}`;
+			if (gemsUsed > 0) details += ` | Gems: ${gemsUsed.toLocaleString()}`;
+			rouletteStatus.innerHTML = `
+                <strong>CAN AFFORD</strong><br>
+                Points: +${roulettePoints.toLocaleString()}<br>
+                ${totalSpinsAchieved} spins achieved${details}
+            `;
+		} else {
+			rouletteStatus.className = "status-pane status-error";
+			const tokensAvail = result?.tokensAvailable || 0;
+			const gemsAvail = result?.gemsAvailable || 0;
+			rouletteStatus.innerHTML = `
+                <strong>INSUFFICIENT RESOURCES</strong><br>
+                Need ${result?.remainingSpins || requestedSpins} more spins<br>
+                ${totalSpinsAchieved} spins achieved | +${roulettePoints.toLocaleString()} pts<br>
+                <span style="font-size: 0.7rem;">Available: ${tokensAvail} tokens | ${gemsAvail.toLocaleString()} gems</span>
+            `;
+		}
+	}
+	totalScore += roulettePoints;
 	// ============================================
 	// 2. Bison Grip - Instant full node gather
 	// ============================================
@@ -367,17 +585,23 @@ function refreshCalculations() {
 			const points = calculateGatheringPoints(result.resourceAmount, resource);
 			totalGatheringPoints += points;
 			totalGatheringTimeSeconds += result.timeSeconds;
-			// Build status display
+			// Build status display with images
 			const totalBonus = result.totalBonus;
+			const imgSrc = getResourceImage(resource);
+			const nodeImgSrc = getNodeImage(resource);
 			let statusHtml = `
-                <strong>${resource.charAt(0).toUpperCase() + resource.slice(1)} - Level ${node}</strong><br>
-                📦 Resource: ${formatNumber(result.resourceAmount)}<br>
-                ⏱️ Time: ${formatSecondsToTime(result.timeSeconds)} 
+                <strong>
+                    <img loading="lazy" decoding="async" src="${imgSrc}" style="height: 20px; width: 20px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="${resource}">
+                    ${resource.charAt(0).toUpperCase() + resource.slice(1)} - Level ${node}
+                </strong><br>
+                <img loading="lazy" decoding="async" src="${nodeImgSrc}" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Node">
+                Resource: ${formatNumber(result.resourceAmount)}<br>
+                Time: ${formatSecondsToTime(result.timeSeconds)} 
                 ${result.originalTime !== result.timeSeconds ? `(original: ${formatSecondsToTime(result.originalTime)})` : ''}<br>
-                🎯 Skill: Level ${skill} (+${getSkillBonus(skill)}%)<br>
-                ⚡ Speed Buff: +${speedBuff}%<br>
-                🔥 Total Bonus: +${totalBonus}%<br>
-                🎖️ Points: +${points.toLocaleString()}
+                Skill: Level ${skill} (+${getSkillBonus(skill)}%)<br>
+                Speed Buff: +${speedBuff}%<br>
+                Total Bonus: +${totalBonus}%<br>
+                Points: +${points.toLocaleString()}
             `;
 			if (points > 0) {
 				status.className = "status-pane status-ok";
@@ -396,7 +620,7 @@ function refreshCalculations() {
 		} else {
 			// Show placeholder message
 			status.className = "status-pane";
-			status.innerHTML = `⚙️ Select resource type and node level`;
+			status.innerHTML = `Select resource type and node level`;
 		}
 	}
 	// ============================================
@@ -429,11 +653,9 @@ function refreshCalculations() {
 // CLEAR ALL SELECTIONS
 // ============================================
 function clearAllSelections() {
-	const fields = ['heroRouletteCount'];
-	for (const id of fields) {
-		const el = document.getElementById(id);
-		if (el) el.value = '';
-	}
+	// Reset spins input
+	const spinsInput = document.getElementById('rouletteSpinsInput');
+	if (spinsInput) spinsInput.value = '';
 	// Reset all gathering cards to defaults (empty)
 	document.querySelectorAll('.gathering-card').forEach(card => {
 		const cardId = card.dataset.cardId;
@@ -441,7 +663,11 @@ function clearAllSelections() {
 		const nodeSelect = document.getElementById(`gather_node_${cardId}`);
 		const skillSelect = document.getElementById(`gather_skill_${cardId}`);
 		const speedInput = document.getElementById(`gather_speed_${cardId}`);
-		if (resourceSelect) resourceSelect.value = '';
+		if (resourceSelect) {
+			resourceSelect.value = '';
+			// Reset node image to default (bread_node)
+			updateNodeImage(parseInt(cardId), 'bread');
+		}
 		if (nodeSelect) nodeSelect.value = '';
 		if (skillSelect) skillSelect.value = '';
 		if (speedInput) speedInput.value = '';
@@ -460,7 +686,7 @@ function clearAllSelections() {
 }
 window.clearAllSelections = clearAllSelections;
 // ============================================
-// GLOBAL SETTINGS LOAD/SAVE - FIXED: Placeholder works
+// GLOBAL SETTINGS LOAD/SAVE
 // ============================================
 function loadGlobalSettings() {
 	globalMarchUnits = parseInt(localStorage.getItem("globalMarchUnits") || "0");
@@ -469,11 +695,9 @@ function loadGlobalSettings() {
 	globalBisonNode = parseInt(localStorage.getItem("globalBisonNode") || "1");
 	const marchSelect = document.getElementById("globalMarchUnits");
 	if (marchSelect) {
-		// Only set value if it's a valid option (1-6)
 		if (globalMarchUnits >= 1 && globalMarchUnits <= 6) {
 			marchSelect.value = globalMarchUnits;
 		} else {
-			// Reset to default placeholder
 			marchSelect.value = "";
 		}
 	}
@@ -487,18 +711,20 @@ function loadGlobalSettings() {
 	if (details) {
 		details.style.display = globalBisonGrip > 0 ? 'flex' : 'none';
 	}
+	const bisonDisplay = document.getElementById('bisonPointsDisplay');
+	if (bisonDisplay) {
+		bisonDisplay.style.display = globalBisonGrip > 0 ? 'block' : 'none';
+	}
 }
 
 function updateGlobalSettings() {
 	const marchSelect = document.getElementById("globalMarchUnits");
 	if (marchSelect) {
 		const value = parseInt(marchSelect.value) || 0;
-		// Only save if it's a valid option (1-6)
 		if (value >= 1 && value <= 6) {
 			globalMarchUnits = value;
 			localStorage.setItem("globalMarchUnits", globalMarchUnits);
 		} else {
-			// If invalid, reset to 0 and show placeholder
 			globalMarchUnits = 0;
 			localStorage.setItem("globalMarchUnits", "0");
 			marchSelect.value = "";
@@ -551,6 +777,13 @@ window.calculateGatheringTime = calculateGatheringTime;
 window.calculateGatheringPoints = calculateGatheringPoints;
 window.getGatheringRates = getGatheringRates;
 window.getSkillTitle = getSkillTitle;
-window.getSpeedupLabel = getSpeedupLabel;
 window.getSkillBonus = getSkillBonus;
 window.calculateBisonGripPoints = calculateBisonGripPoints;
+window.getRouletteTokens = getRouletteTokens;
+window.getRouletteGems = getRouletteGems;
+window.calculateRouletteCost = calculateRouletteCost;
+window.calculateRoulettePoints = calculateRoulettePoints;
+window.getResourceImage = getResourceImage;
+window.getNodeImage = getNodeImage;
+window.updateNodeImage = updateNodeImage;
+window.getResourceOptionHtml = getResourceOptionHtml;

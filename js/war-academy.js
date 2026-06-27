@@ -181,13 +181,13 @@ function createAcademyIndividualCard(item, dataArray) {
             </div>
             <div class="checkbox-group" style="gap: 8px;">
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onAcademyUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade
+                    <input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onAcademyUpgradeCheckboxChange('${safeId}', this.checked)"> Upgrade
                 </label>
                 <label class="checkbox-label" style="font-size: 0.75rem; padding: 4px 10px;">
-                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="onAcademySpeedupChange('${safeId}', this.checked)"> ⏩ +Speedups
+                    <input class="checkbox" type="checkbox" id="speed_${safeId}" onchange="onAcademySpeedupChange('${safeId}', this.checked)"> +Speedups
                 </label>
             </div>
-            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">⚙️ Select current & target level</div>
+            <div id="status_${safeId}" class="status-pane" style="font-size: 0.7rem; padding: 6px 8px;">Select current & target level</div>
         </div>
     </div>`;
 }
@@ -256,7 +256,7 @@ function calculateAcademyCosts(dataArray, from, to, speedCheck, vault, otherLock
 		if (available < speedupCostMinutes) {
 			actualSpeedupUsed = Math.max(0, available);
 			if (actualSpeedupUsed > 0) {
-				partialNote = `⚠️ Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
+				partialNote = `Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
 				stepPoints += actualSpeedupUsed * SCORE_RULES.speedup_min;
 				costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
 			}
@@ -309,7 +309,7 @@ function refreshCalculations() {
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
-			status.innerHTML = `⚙️ Select current & target level`;
+			status.innerHTML = `Select current & target level`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -331,7 +331,7 @@ function refreshCalculations() {
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
 		if (isAtMax) {
 			status.className = "status-pane status-ok";
-			status.innerHTML = `🏆 <strong>TECH MAXED!</strong><br>Already at highest level (${highestLevel})`;
+			status.innerHTML = `<strong>TECH MAXED!</strong><br>Already at highest level (${highestLevel})`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -344,7 +344,7 @@ function refreshCalculations() {
 		}
 		if (String(from) === String(to)) {
 			status.className = "status-pane status-warning";
-			status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
+			status.innerHTML = `Current and target levels are the same. Select a higher target level.`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -376,7 +376,7 @@ function refreshCalculations() {
 			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 			const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${partialHtml}</div>`;
 			totalScore += stepPoints;
 			if (activeCb) activeCb.disabled = false;
 			if (speedCb) speedCb.disabled = false;
@@ -393,7 +393,7 @@ function refreshCalculations() {
 		const costs = calculateAcademyCosts(dataArray, from, to, speedCheck, vault, otherLocked);
 		if (!costs) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
+			status.innerHTML = `Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
 		const {
@@ -413,7 +413,7 @@ function refreshCalculations() {
 		let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
-		const timeHtml = totalTimeSeconds > 0 ? `<div class="resource-tag">⏱️ Total Time: ${formatSecondsToTime(getBuffedTime(totalTimeSeconds))}</div>` : '';
+		const timeHtml = totalTimeSeconds > 0 ? `<div class="resource-tag">Total Time: ${formatSecondsToTime(getBuffedTime(totalTimeSeconds))}</div>` : '';
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
@@ -439,10 +439,10 @@ function refreshCalculations() {
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div><br><span class="text-remaining">✅ Click "Upgrade" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div><br><span class="text-remaining">Click "Upgrade" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
 		}
 	}
 	const scoreDisplay = document.getElementById('globalScoreDisplay');

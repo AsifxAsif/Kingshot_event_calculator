@@ -162,12 +162,12 @@ function createHeroShardsInventoryCard() {
 	return `
         <div class="speedup-buff-card" style="margin-bottom: 20px;">
             <div class="speedup-buff-header">
-                <span>📦 HERO SPECIFIC SHARDS INVENTORY</span>
+                <span>HERO SPECIFIC SHARDS INVENTORY</span>
             </div>
             <div class="speedup-buff-body">
                 <div class="buff-row">
                     <div class="buff-field">
-                        <label>🎮 Latest Hero Generation</label>
+                        <label>Latest Hero Generation</label>
                         <select id="heroGenerationSelect" onchange="updateGenerationFilter()">
                             ${genOptions}
                         </select>
@@ -481,10 +481,10 @@ function createHeroCard(hero, shardData) {
                 </div>
             </div>
             <div class="checkbox-group">
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onHeroUpgradeCheckboxChange('${safeId}', this.checked)"> ⬆️ Upgrade</label>
-                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="general_${safeId}" onchange="onHeroGeneralShardsChange('${safeId}', this.checked)" disabled> 📦 General Shards</label>
+                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="active_${safeId}" onchange="onHeroUpgradeCheckboxChange('${safeId}', this.checked)"> Upgrade</label>
+                <label class="checkbox-label"><input class="checkbox" type="checkbox" id="general_${safeId}" onchange="onHeroGeneralShardsChange('${safeId}', this.checked)" disabled> General Shards</label>
             </div>
-            <div id="status_${safeId}" class="status-pane">⚙️ Select current & target level (0 = no shards)</div>
+            <div id="status_${safeId}" class="status-pane">Select current & target level (0 = no shards)</div>
         </div>
     </div>`;
 }
@@ -622,11 +622,11 @@ function refreshCalculations() {
 		if (!from || !to) {
 			status.className = "status-pane";
 			if ((!from || from === "0") && !to) {
-				status.innerHTML = `⚙️ Select current AND target level`;
+				status.innerHTML = `Select current AND target level`;
 			} else if (!from || from === "0") {
-				status.innerHTML = `⚙️ Select current level first`;
+				status.innerHTML = `Select current level first`;
 			} else {
-				status.innerHTML = `⚙️ Select target level`;
+				status.innerHTML = `Select target level`;
 			}
 			if (activeCb) {
 				activeCb.checked = false;
@@ -642,10 +642,11 @@ function refreshCalculations() {
 		const targetNumeric = parseFloat(to);
 		if (targetNumeric < currentNumeric) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Target level (${to}) cannot be lower than current level (${from === "0" ? "0" : from}). Please select a higher target level.`;
+			status.innerHTML = `Target level (${to}) cannot be lower than current level (${from === "0" ? "0" : from}). Please select a higher target level.`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
+				window.clearTimeout(timeoutId);
 			}
 			if (generalCb) {
 				generalCb.checked = false;
@@ -657,10 +658,10 @@ function refreshCalculations() {
 			const isMaxLevel = (String(from) === "5.0");
 			if (isMaxLevel) {
 				status.className = "status-pane status-ok";
-				status.innerHTML = `🏆 HERO MAXED! 🏆`;
+				status.innerHTML = `HERO MAXED!`;
 			} else {
 				status.className = "status-pane status-warning";
-				status.innerHTML = `⚙️ Current and target levels are the same. Select a higher target level.`;
+				status.innerHTML = `Current and target levels are the same. Select a higher target level.`;
 			}
 			if (activeCb) {
 				activeCb.checked = false;
@@ -675,7 +676,7 @@ function refreshCalculations() {
 		const steps = getHeroUpgradeSteps(shardData, from, to);
 		if (steps.length === 0) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}. No upgrade path found.`;
+			status.innerHTML = `Cannot upgrade from ${from} to ${to}. No upgrade path found.`;
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
@@ -710,9 +711,9 @@ function refreshCalculations() {
 				generalCb.disabled = false;
 				generalCb.parentElement.style.opacity = '1';
 				if (parseFloat(achievableLevel) < parseFloat(to)) {
-					generalCb.parentElement.title = `⚠️ With your current ${availableGeneralShards} ${generalShardType.replace(/_/g, ' ')}s, you can only reach level ${achievableLevel}`;
+					generalCb.parentElement.title = `With your current ${availableGeneralShards} ${generalShardType.replace(/_/g, ' ')}s, you can only reach level ${achievableLevel}`;
 				} else {
-					generalCb.parentElement.title = `✓ You have enough general shards to reach level ${to}`;
+					generalCb.parentElement.title = `You have enough general shards to reach level ${to}`;
 				}
 			}
 		}
@@ -734,7 +735,7 @@ function refreshCalculations() {
 			let costHtml = buildResourceDisplay(costTotals, vault, otherLocked, hero.name);
 			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} steps)` : '';
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>✓ ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div>`;
+			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}</div>`;
 			totalScore += stepPoints;
 			if (activeCb) activeCb.disabled = false;
 			continue;
@@ -748,17 +749,17 @@ function refreshCalculations() {
 		const costs = calculateHeroCostsWithShards(hero, shardData, from, to, vault, otherLocked, useGeneralShards);
 		if (!costs) {
 			status.className = "status-pane status-error";
-			status.innerHTML = `❌ Cannot upgrade from ${from} to ${to}`;
+			status.innerHTML = `Cannot upgrade from ${from} to ${to}`;
 			continue;
 		}
 		if (costs.error) {
 			const achievableLevel2 = getAchievableTargetLevel(hero, shardData, from, vault, otherLocked, availableHeroShards);
 			const availableGeneralShards2 = (vault[generalShardType] || 0) - (otherLocked[generalShardType] || 0);
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT HERO SHARDS</strong><br>
+			status.innerHTML = `<strong>INSUFFICIENT HERO SHARDS</strong><br>
                 Need ${costs.heroShardsNeeded} ${hero.name} shards, only have ${availableHeroShards}.<br>
-                <strong>💡 Tip:</strong> Check "General Shards" to use ${generalShardType.replace(/_/g, ' ')}s as fallback.<br>
-                <span style="color: #ff0000;">→ With your current ${availableGeneralShards2} ${generalShardType.replace(/_/g, ' ')}s, you can reach up to level ${achievableLevel2}.</span><br>
+                <strong>Tip:</strong> Check "General Shards" to use ${generalShardType.replace(/_/g, ' ')}s as fallback.<br>
+                <span style="color: #ff0000;"> With your current ${availableGeneralShards2} ${generalShardType.replace(/_/g, ' ')}s, you can reach up to level ${achievableLevel2}.</span><br>
                 <span style="font-size: 0.7rem;">(Current target is ${to})</span>`;
 			if (activeCb) activeCb.disabled = true;
 			continue;
@@ -782,18 +783,18 @@ function refreshCalculations() {
 		}
 		let costHtml = buildResourceDisplay(costTotals, vault, otherLocked, hero.name);
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} steps)` : '';
-		const generalShardInfo = generalShardsUsed > 0 ? `<div class="resource-tag text-warning">⚠️ Using ${generalShardsUsed} general ${generalShardType.replace(/_/g, ' ')}s</div>` : '';
-		const heroShardInfo = heroShardsUsed > 0 ? `<div class="resource-tag">🎖️ Using ${heroShardsUsed} of ${heroShardsNeeded} ${hero.name} shards</div>` : '';
+		const generalShardInfo = generalShardsUsed > 0 ? `<div class="resource-tag text-warning">Using ${generalShardsUsed} general ${generalShardType.replace(/_/g, ' ')}s</div>` : '';
+		const heroShardInfo = heroShardsUsed > 0 ? `<div class="resource-tag">Using ${heroShardsUsed} of ${heroShardsNeeded} ${hero.name} shards</div>` : '';
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>⚪ ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${heroShardInfo}${generalShardInfo}${costHtml}</div><br><span class="text-remaining">✅ Click "Upgrade" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${heroShardInfo}${generalShardInfo}${costHtml}</div><br><span class="text-remaining">Click "Upgrade" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>✗ INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${heroShardInfo}${generalShardInfo}${costHtml}</div>`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${heroShardInfo}${generalShardInfo}${costHtml}</div>`;
 		}
 	}
 	const scoreDisplay = document.getElementById('globalScoreDisplay');
@@ -825,7 +826,7 @@ function onHeroUpgradeCheckboxChange(safeId, isChecked) {
 				const status = document.getElementById(`status_${safeId}`);
 				if (status) {
 					status.className = "status-pane status-ok";
-					status.innerHTML = `🏆 HERO MAXED! 🏆`;
+					status.innerHTML = `HERO MAXED!`;
 				}
 			}
 			return;
@@ -951,12 +952,12 @@ function onHeroGeneralShardsChange(safeId, isChecked) {
 				to = achievableLevel;
 				if (status) {
 					status.className = "status-pane status-warning";
-					status.innerHTML = `⚠️⚠️⚠️ TARGET AUTO-ADJUSTED ⚠️⚠️⚠️<br>
-                        <strong>Original target: ${targetNumeric} → New target: ${achievableLevel}</strong><br>
+					status.innerHTML = `TARGET AUTO-ADJUSTED<br>
+                        <strong>Original target: ${targetNumeric} New target: ${achievableLevel}</strong><br>
                         Not enough ${generalShardType.replace(/_/g, ' ')}s to reach ${targetNumeric}.<br>
                         Available ${generalShardType.replace(/_/g, ' ')}s: ${availableGeneralShards}<br>
                         Shortage for ${targetNumeric}: ${shortageForTarget} ${generalShardType.replace(/_/g, ' ')}s<br>
-                        <span style="font-size: 0.7rem;">✓ Target has been automatically reduced. Click "Upgrade" to lock.</span>`;
+                        <span style="font-size: 0.7rem;">Target has been automatically reduced. Click "Upgrade" to lock.</span>`;
 					setTimeout(() => {
 						if (status.className === "status-pane status-warning") {
 							refreshCalculations();
@@ -967,7 +968,7 @@ function onHeroGeneralShardsChange(safeId, isChecked) {
 		} else if (shortageForTarget > availableGeneralShards && availableGeneralShards > 0) {
 			if (status) {
 				status.className = "status-pane status-warning";
-				status.innerHTML = `⚠️ INSUFFICIENT GENERAL SHARDS ⚠️<br>
+				status.innerHTML = `INSUFFICIENT GENERAL SHARDS<br>
                     Need ${shortageForTarget} ${generalShardType.replace(/_/g, ' ')}s, only have ${availableGeneralShards}.<br>
                     Please select a lower target level.`;
 				setTimeout(() => {
@@ -979,9 +980,9 @@ function onHeroGeneralShardsChange(safeId, isChecked) {
 		} else if (shortageForTarget > 0 && shortageForTarget <= availableGeneralShards) {
 			if (status) {
 				status.className = "status-pane status-ok";
-				status.innerHTML = `✅ Using ${shortageForTarget} ${generalShardType.replace(/_/g, ' ')}s as fallback.<br>
+				status.innerHTML = `Using ${shortageForTarget} ${generalShardType.replace(/_/g, ' ')}s as fallback.<br>
                     Available: ${availableGeneralShards} ${generalShardType.replace(/_/g, ' ')}s<br>
-                    <span style="font-size: 0.7rem;">✓ Click "Upgrade" to lock.</span>`;
+                    <span style="font-size: 0.7rem;">Click "Upgrade" to lock.</span>`;
 				setTimeout(() => {
 					refreshCalculations();
 				}, 3000);
@@ -995,7 +996,7 @@ function onHeroGeneralShardsChange(safeId, isChecked) {
 			}
 			if (status) {
 				status.className = "status-pane status-error";
-				status.innerHTML = `❌ No ${generalShardType.replace(/_/g, ' ')}s available in vault!`;
+				status.innerHTML = `No ${generalShardType.replace(/_/g, ' ')}s available in vault!`;
 			}
 			return;
 		}
