@@ -39,13 +39,25 @@ function updateNodeImage(cardId, resourceType) {
 		nodeImg.src = imgSrc;
 	}
 }
+// ============================================
+// SKILL IMAGE HELPER
+// ============================================
+function getSkillImage(resourceType) {
+	const skillImageMap = {
+		'bread': 'assets/olive_foragers_luck.webp',
+		'wood': 'assets/forrest_master_woodcutter.webp',
+		'stone': 'assets/edwin_stone_mining.webp',
+		'iron': 'assets/seth_craftmanship.webp'
+	};
+	return skillImageMap[resourceType] || 'assets/heroes/olive.webp';
+}
 
 function getResourceOptionHtml(resourceType) {
 	const images = {
-		'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread"> Bread',
-		'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood"> Wood',
-		'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone"> Stone',
-		'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron"> Iron'
+		'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread"> Bread',
+		'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood"> Wood',
+		'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone"> Stone',
+		'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron"> Iron'
 	};
 	return images[resourceType] || resourceType;
 }
@@ -241,10 +253,10 @@ window.validateRouletteInput = validateRouletteInput;
 // ============================================
 function getSkillTitle(resourceType) {
 	const titles = {
-		'bread': "Olive's Forager's Luck",
-		'wood': "Forrest's Master Woodcutter",
-		'stone': "Edwin's Stone Mining",
-		'iron': "Seth's Craftmanship"
+		'bread': " Olive's Forager's Luck",
+		'wood': " Forrest's Master Woodcutter",
+		'stone': " Edwin's Stone Mining",
+		'iron': " Seth's Craftmanship"
 	};
 	return titles[resourceType] || 'Skill Level';
 }
@@ -354,7 +366,7 @@ function getGatheringRates() {
 	return rates;
 }
 // ============================================
-// RENDER GATHERING CARDS - 2 columns layout with dynamic node images
+// RENDER GATHERING CARDS - With properly aligned images
 // ============================================
 function renderGatheringCards() {
 	const container = document.getElementById('gatheringGrid');
@@ -375,23 +387,23 @@ function createGatheringCard(cardId) {
 	// Resource options with images
 	const resourceOptions = `
         <option value="" disabled selected hidden>
-            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
+            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
             Resource Type
         </option>
         <option value="bread">
-            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bread">
+            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Bread">
             Bread
         </option>
         <option value="wood">
-            <img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Wood">
+            <img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Wood">
             Wood
         </option>
         <option value="stone">
-            <img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Stone">
+            <img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Stone">
             Stone
         </option>
         <option value="iron">
-            <img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Iron">
+            <img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Iron">
             Iron
         </option>
     `;
@@ -410,7 +422,7 @@ function createGatheringCard(cardId) {
 	return `
         <div class="item-card gathering-card" data-card-id="${cardId}">
             <div class="item-card-header" style="background: var(--surface-dark); display: flex; align-items: center; gap: 10px;">
-                <img loading="lazy" decoding="async" src="${defaultNodeImg}" style="height: 50px; width: 50px; object-fit: contain;" onerror="this.style.display='none';" id="node_img_${cardId}" alt="Node">
+                <img loading="lazy" decoding="async" src="${defaultNodeImg}" style="height: 50px; width: 50px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" id="node_img_${cardId}" alt="Node">
                 <span style="font-size: 1rem;">
                     Gathering March ${cardId}
                 </span>
@@ -420,7 +432,7 @@ function createGatheringCard(cardId) {
                 <div class="level-controls">
                     <div class="buff-field" style="min-width: 100%;">
                         <label>
-                            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
+                            <img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Resource">
                             Resource Type
                         </label>
                         <select id="gather_resource_${cardId}" onchange="onGatheringCardChange(${cardId})">
@@ -428,7 +440,10 @@ function createGatheringCard(cardId) {
                         </select>
                     </div>
                     <div class="buff-field" style="min-width: 100%;">
-                        <label>Node Level</label>
+                        <label class="label-with-image" id="node_label_${cardId}">
+                            <img loading="lazy" decoding="async" src="${defaultNodeImg}" onerror="this.style.display='none';" id="node_label_img_${cardId}" alt="Node">
+                            Node Level
+                        </label>
                         <select id="gather_node_${cardId}" onchange="onGatheringCardChange(${cardId})">
                             ${nodeOptions}
                         </select>
@@ -437,14 +452,16 @@ function createGatheringCard(cardId) {
                 <!-- Row 2: Skill Level + Speedup -->
                 <div class="level-controls">
                     <div class="buff-field" style="min-width: 100%;">
-                        <label id="skill_label_${cardId}">Skill Level</label>
+                        <label class="label-with-image" id="skill_label_${cardId}">
+                            <img loading="lazy" decoding="async" src="assets/heroes/olive.webp" onerror="this.style.display='none';" id="skill_label_img_${cardId}" alt="Skill"> Skill Level
+                        </label>
                         <select id="gather_skill_${cardId}" onchange="onGatheringCardChange(${cardId})">
                             ${skillOptions}
                         </select>
                     </div>
                     <div class="buff-field" style="min-width: 100%;">
                         <label id="speed_label_${cardId}">
-                            <img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Speed">
+                            <img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Speed">
                             Gathering Speedup (%)
                         </label>
                         <input type="text" style="text-align: center;" id="gather_speed_${cardId}" value="" placeholder="e.g., 50" oninput="validateMiscInput(this); onGatheringCardChange(${cardId})">
@@ -458,7 +475,7 @@ function createGatheringCard(cardId) {
 }
 
 function onGatheringCardChange(cardId) {
-	// Update skill label
+	// Update skill label and node label
 	const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
 	const skillLabel = document.getElementById(`skill_label_${cardId}`);
 	const speedLabel = document.getElementById(`speed_label_${cardId}`);
@@ -466,19 +483,42 @@ function onGatheringCardChange(cardId) {
 		const resource = resourceSelect.value;
 		// Update node image based on selected resource
 		updateNodeImage(cardId, resource);
-		// Update skill label
+		// Update node label image
+		const nodeLabelImg = document.getElementById(`node_label_img_${cardId}`);
+		if (nodeLabelImg && resource) {
+			const nodeImgSrc = getNodeImage(resource);
+			if (nodeLabelImg.src !== nodeImgSrc) {
+				nodeLabelImg.src = nodeImgSrc;
+			}
+		}
+		// Update skill label with image and text
 		if (skillLabel) {
-			skillLabel.textContent = resource ? getSkillTitle(resource) : 'Skill Level';
+			const skillImg = document.getElementById(`skill_label_img_${cardId}`);
+			if (skillImg && resource) {
+				const skillImgSrc = getSkillImage(resource);
+				if (skillImg.src !== skillImgSrc) {
+					skillImg.src = skillImgSrc;
+				}
+			}
+			// Keep the text content separate from the image
+			const textNode = document.createTextNode(resource ? getSkillTitle(resource) : 'Skill Level');
+			// Clear label but keep the image
+			const imgElement = skillLabel.querySelector('img');
+			skillLabel.innerHTML = '';
+			if (imgElement) {
+				skillLabel.appendChild(imgElement);
+			}
+			skillLabel.appendChild(textNode);
 		}
 		// Update speedup label with resource-specific label
 		if (speedLabel) {
 			const imgMap = {
-				'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread">',
-				'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood">',
-				'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone">',
-				'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron">'
+				'bread': '<img loading="lazy" decoding="async" src="assets/Bread.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Bread">',
+				'wood': '<img loading="lazy" decoding="async" src="assets/Wood.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Wood">',
+				'stone': '<img loading="lazy" decoding="async" src="assets/Stone.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Stone">',
+				'iron': '<img loading="lazy" decoding="async" src="assets/Iron.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Iron">'
 			};
-			const img = resource ? imgMap[resource] || '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">' : '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">';
+			const img = resource ? imgMap[resource] || '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">' : '<img loading="lazy" decoding="async" src="assets/gathering_speed.webp" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display=\'none\';" alt="Speed">';
 			const label = resource ? `${img} ${resource.charAt(0).toUpperCase() + resource.slice(1)} Gathering Speedup (%)` : 'Gathering Speedup (%)';
 			speedLabel.innerHTML = label;
 		}
@@ -589,18 +629,20 @@ function refreshCalculations() {
 			const totalBonus = result.totalBonus;
 			const imgSrc = getResourceImage(resource);
 			const nodeImgSrc = getNodeImage(resource);
+			const skillImgSrc = getSkillImage(resource);
 			let statusHtml = `
                 <strong>
-                    <img loading="lazy" decoding="async" src="${imgSrc}" style="height: 20px; width: 20px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="${resource}">
+                    <img loading="lazy" decoding="async" src="${imgSrc}" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="${resource}">
                     ${resource.charAt(0).toUpperCase() + resource.slice(1)} - Level ${node}
                 </strong><br>
-                <img loading="lazy" decoding="async" src="${nodeImgSrc}" style="height: 16px; width: 16px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Node">
+                <img loading="lazy" decoding="async" src="${nodeImgSrc}" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Node">
                 Resource: ${formatNumber(result.resourceAmount)}<br>
-                Time: ${formatSecondsToTime(result.timeSeconds)} 
-                ${result.originalTime !== result.timeSeconds ? `(original: ${formatSecondsToTime(result.originalTime)})` : ''}<br>
+                <img loading="lazy" decoding="async" src="${skillImgSrc}" style="height: 30px; width: 30px; object-fit: contain; vertical-align: middle;" onerror="this.style.display='none';" alt="Skill">
                 Skill: Level ${skill} (+${getSkillBonus(skill)}%)<br>
                 Speed Buff: +${speedBuff}%<br>
                 Total Bonus: +${totalBonus}%<br>
+                Time: ${formatSecondsToTime(result.timeSeconds)} 
+                ${result.originalTime !== result.timeSeconds ? `(original: ${formatSecondsToTime(result.originalTime)})` : ''}<br>
                 Points: +${points.toLocaleString()}
             `;
 			if (points > 0) {
@@ -787,3 +829,4 @@ window.getResourceImage = getResourceImage;
 window.getNodeImage = getNodeImage;
 window.updateNodeImage = updateNodeImage;
 window.getResourceOptionHtml = getResourceOptionHtml;
+window.getSkillImage = getSkillImage;

@@ -283,7 +283,7 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		const req = isSpeed ? `${amt} min` : formatNumber(amt);
 		const statusClass = remaining < 0 ? 'text-deficit' : 'text-remaining';
 		const statusText = remaining < 0 ? `${formatNumber(-remaining)} short` : `${formatNumber(remaining)} remaining`;
-		const imgStyle = isHeroResource(res) ? 'height:20px;width:20px;object-fit:contain;border-radius:4px;' : '';
+		const imgStyle = isHeroResource(res) ? 'height:30px;width:30px;object-fit:contain;border-radius:4px;' : '';
 		const tag = `<div class="resource-tag"><img loading="lazy" decoding="async" src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}"> ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
 		if (category === 'hero') {
 			heroResources += tag;
