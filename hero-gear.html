@@ -10,6 +10,48 @@
 		<link rel="preload" as="style" href="style.css">
 		<link rel="preload" as="script" href="js/app.js">
 		<meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+		<!-- Critical CSS for above-the-fold -->
+		<style>
+			.hero-gear-grid {
+				display: grid;
+				gap: 16px;
+				grid-template-columns: 1fr 1fr;
+			}
+
+			@media (max-width:768px) {
+				.hero-gear-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.item-card {
+				overflow: hidden;
+				background: #f0f0f0;
+				border: 1px solid #888;
+				border-radius: 20px;
+				box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.08), -8px -8px 16px rgba(255, 255, 255, 0.7);
+				content-visibility: auto;
+				contain-intrinsic-size: 280px;
+			}
+
+			.item-card-header {
+				display: flex;
+				gap: 12px;
+				font-weight: 700;
+				padding: 14px 18px;
+				align-items: center;
+				background: #d8d8d8;
+				border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+			}
+
+			.item-card-body {
+				display: flex;
+				gap: 12px;
+				padding: 16px;
+				flex-direction: column;
+			}
+
+		</style>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<!-- Font Awesome -->
@@ -103,7 +145,16 @@
 				loadPresetsFromStorage();
 				initializeInputValidation();
 				await loadGameData(["Hero_Gear", "Forgehammer", "Points"]);
-				if (typeof loadCombinedPage === 'function') loadCombinedPage();
+				const renderHeroGear = () => {
+					if (typeof loadCombinedPage === 'function') {
+						loadCombinedPage();
+					}
+				};
+				if ('requestIdleCallback' in window) {
+					requestIdleCallback(renderHeroGear);
+				} else {
+					setTimeout(renderHeroGear, 10);
+				}
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {
 						applyPresetToCurrentPage(allPresets[currentPreset]);

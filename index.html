@@ -10,6 +10,57 @@
 		<link rel="preload" as="style" href="style.css">
 		<link rel="preload" as="script" href="js/app.js">
 		<meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+		<!-- Critical CSS inline for above-the-fold -->
+		<style>
+			/* Critical styles for instant rendering */
+			.vault-grid {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+			}
+
+			.vault-item {
+				padding: 12px;
+				border-radius: 8px;
+				background: rgba(255, 255, 255, 0.5);
+				border: 1px solid #888;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+				content-visibility: auto;
+				contain-intrinsic-size: 80px;
+			}
+
+			.vault-label {
+				display: flex;
+				gap: 8px;
+				margin-bottom: 8px;
+				align-items: center;
+			}
+
+			.vault-label img {
+				width: 36px;
+				height: 36px;
+				object-fit: contain;
+			}
+
+			.vault-label label {
+				font-size: 0.7rem;
+				text-transform: uppercase;
+				font-weight: 700;
+				color: #555;
+			}
+
+			.vault-item input {
+				width: 100%;
+				padding: 8px;
+				font-size: 0.75rem;
+				text-align: center;
+				border-radius: 8px;
+				background: #f0f0f0;
+				border: 1px solid #d0d0d0;
+				font-weight: 700;
+			}
+
+		</style>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<link rel="preload" as="image" href="assets/Bread.webp">
@@ -17,10 +68,6 @@
 		<link rel="preload" as="image" href="assets/Stone.webp">
 		<link rel="preload" as="image" href="assets/Iron.webp">
 		<link rel="preload" as="image" href="assets/Gold.webp">
-		<link rel="preload" as="image" href="assets/truegold.webp">
-		<link rel="preload" as="image" href="assets/tempered_truegold.webp">
-		<link rel="preload" as="image" href="assets/truegold_dust.webp">
-		<link rel="preload" as="image" href="assets/forge_hammer.webp">
 		<!-- Font Awesome -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	</head>
@@ -86,21 +133,30 @@
 		</div>
 		<script src="js/app.js"></script>
 		<script>
+			// Performance: Use requestAnimationFrame for UI updates
 			function buildVaultUI() {
 				const container = document.getElementById("vaultContainer");
 				if (!container) return;
-				container.innerHTML = "";
+				// Use DocumentFragment for batch DOM insertion
+				const fragment = document.createDocumentFragment();
 				for (const item of RESOURCE_ITEMS) {
 					const saved = localStorage.getItem(`vault_${item.id}`) || "";
 					const img = getImageFileName(item.id);
-					container.innerHTML += `<div class="vault-item">
+					const div = document.createElement('div');
+					div.className = 'vault-item';
+					div.innerHTML = `
                     <div class="vault-label">
                         <img loading="lazy" decoding="async" src="${img}" onerror="this.style.display='none';" alt="${item.id}">
                         <label>${item.id.replace(/_/g, " ")}</label>
                     </div>
-                    <input type="text" id="vault_${item.id}" value="${saved}" placeholder="e.g., ${item.placeholder}" oninput="validateVaultInput(this); updateVaultResource('${item.id}', this.value)" onblur="validateVaultInput(this); updateGlobalTotalScore()">
-                </div>`;
+                    <input type="text" id="vault_${item.id}" value="${saved}" placeholder="e.g., ${item.placeholder}" 
+                           oninput="validateVaultInput(this); updateVaultResource('${item.id}', this.value)" 
+                           onblur="validateVaultInput(this); updateGlobalTotalScore()">
+                `;
+					fragment.appendChild(div);
 				}
+				container.innerHTML = '';
+				container.appendChild(fragment);
 			}
 
 			function validateVaultInput(input) {
@@ -122,14 +178,25 @@
 				showLoading();
 				loadPresetsFromStorage();
 				initializeInputValidation();
-				buildVaultUI();
+				// Use requestIdleCallback for non-critical work
+				const renderVault = () => {
+					buildVaultUI();
+					// Trigger score update after vault is rendered
+					setTimeout(() => {
+						if (typeof updateGlobalTotalScore === 'function') {
+							updateGlobalTotalScore();
+						}
+					}, 50);
+				};
+				if ('requestIdleCallback' in window) {
+					requestIdleCallback(renderVault);
+				} else {
+					setTimeout(renderVault, 10);
+				}
 				await loadGameData(["Points"]);
 				setTimeout(() => {
 					if (currentPreset && allPresets[currentPreset]) {
 						applyPresetToCurrentPage(allPresets[currentPreset]);
-					}
-					if (typeof updateGlobalTotalScore === 'function') {
-						updateGlobalTotalScore();
 					}
 					hideLoading();
 				}, 150);

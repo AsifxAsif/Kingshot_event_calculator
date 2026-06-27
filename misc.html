@@ -10,6 +10,54 @@
 		<link rel="preload" as="style" href="style.css">
 		<link rel="preload" as="script" href="js/app.js">
 		<meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+		<!-- Critical CSS for above-the-fold -->
+		<style>
+			.item-card {
+				overflow: hidden;
+				background: #f0f0f0;
+				border: 1px solid #888;
+				border-radius: 20px;
+				box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.08), -8px -8px 16px rgba(255, 255, 255, 0.7);
+				content-visibility: auto;
+				contain-intrinsic-size: 280px;
+			}
+
+			.item-card-header {
+				display: flex;
+				gap: 12px;
+				font-weight: 700;
+				padding: 14px 18px;
+				align-items: center;
+				background: #d8d8d8;
+				border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+			}
+
+			.item-card-body {
+				display: flex;
+				gap: 12px;
+				padding: 16px;
+				flex-direction: column;
+			}
+
+			.misc-grid {
+				display: grid;
+				gap: 16px;
+				grid-template-columns: 1fr;
+			}
+
+			@media (min-width:769px) {
+				.misc-grid {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			.level-controls {
+				display: grid;
+				gap: 10px;
+				grid-template-columns: 1fr 1fr;
+			}
+
+		</style>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<!-- Font Awesome -->
@@ -211,15 +259,22 @@
 				// Load saved values
 				loadMiscFromStorage();
 				loadGlobalSettings();
-				setTimeout(() => {
-					if (currentPreset && allPresets[currentPreset]) {
-						applyPresetToCurrentPage(allPresets[currentPreset]);
-					}
+				const renderMisc = () => {
 					if (typeof renderGatheringCards === 'function') {
 						renderGatheringCards();
 					}
 					if (typeof refreshCalculations === 'function') {
 						refreshCalculations();
+					}
+				};
+				if ('requestIdleCallback' in window) {
+					requestIdleCallback(renderMisc);
+				} else {
+					setTimeout(renderMisc, 10);
+				}
+				setTimeout(() => {
+					if (currentPreset && allPresets[currentPreset]) {
+						applyPresetToCurrentPage(allPresets[currentPreset]);
 					}
 					hideLoading();
 				}, 150);
