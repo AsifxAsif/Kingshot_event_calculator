@@ -7,6 +7,8 @@
 		<title>Strongest Governor - GOV Gear</title>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	</head>
 
 	<body>
@@ -27,17 +29,17 @@
 				</svg>
 			</label>
 			<div class="nav-links" id="navLinks">
-				<a href="index.html" class="nav-link"><img src="assets/vault_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Vault"> VAULT</a>
-				<a href="buildings.html" class="nav-link"><img src="assets/buildings_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Buildings"> BUILDINGS</a>
-				<a href="war-academy.html" class="nav-link"><img src="assets/academy_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="War Academy"> WAR ACADEMY</a>
-				<a href="widgets.html" class="nav-link"><img src="assets/widgets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Widgets"> WIDGETS</a>
-				<a href="heroes.html" class="nav-link"><img src="assets/heroes_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Heroes"> HEROES</a>
-				<a href="hero-gear.html" class="nav-link"><img src="assets/hero_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Hero Gear"> HERO GEAR</a>
-				<a href="gov-gear.html" class="nav-link active" aria-current="page"><img src="assets/gov_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Gear"> GOV GEAR</a>
-				<a href="gov-charm.html" class="nav-link"><img src="assets/gov_charm_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Charm"> GOV CHARM</a>
-				<a href="pets.html" class="nav-link"><img src="assets/pets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Pets"> PETS</a>
-				<a href="troops.html" class="nav-link"><img src="assets/troops_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Troops"> TROOPS</a>
-				<a href="misc.html" class="nav-link"><img src="assets/misc_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Misc"> MISC</a>
+				<a href="index.html" class="nav-link">VAULT</a>
+				<a href="buildings.html" class="nav-link">BUILDINGS</a>
+				<a href="war-academy.html" class="nav-link">WAR ACADEMY</a>
+				<a href="widgets.html" class="nav-link">WIDGETS</a>
+				<a href="heroes.html" class="nav-link">HEROES</a>
+				<a href="hero-gear.html" class="nav-link">HERO GEAR</a>
+				<a href="gov-gear.html" class="nav-link active" aria-current="page">GOV GEAR</a>
+				<a href="gov-charm.html" class="nav-link">GOV CHARM</a>
+				<a href="pets.html" class="nav-link">PETS</a>
+				<a href="troops.html" class="nav-link">TROOPS</a>
+				<a href="misc.html" class="nav-link">MISC</a>
 			</div>
 			<div class="scoreboard-total">
 				<div class="scoreboard">
@@ -59,10 +61,10 @@
 				</button>
 				<div class="preset-dropdown" id="presetDropdown">
 					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
-					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><img src="assets/plus_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="New"> New</button>
-					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><img src="assets/save_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Update"> Update</button>
-					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset"><img src="assets/delete_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Delete"> Delete</button>
-					<button class="btn-reset" onclick="resetWithConfirmation()"><img src="assets/reset_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Reset"> Reset</button>
+					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><i class="fas fa-plus"></i> New</button>
+					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><i class="fa-regular fa-floppy-disk"></i> Update</button>
+					<button class="preset-btn btn-delete" onclick="deletePreset(currentPreset)" title="Delete Preset"><i class="fa-regular fa-trash-can"></i> Delete</button>
+					<button class="btn-reset" onclick="resetWithConfirmation()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
 				</div>
 			</div>
 		</div>

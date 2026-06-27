@@ -210,12 +210,12 @@ body {
 	transform: translateY(1px);
 	box-shadow: var(--shadow-inset);
 }
-.btn-reset {
-	background: #f5e6e6;
+.btn-delete, .btn-reset {
+	background: #ffc9c9;
 	color: var(--color-error);
 }
-.btn-reset:hover {
-	background: #ffebee;
+.btn-delete:hover, .btn-reset:hover {
+	background: #ffb9c4;
 }
 /* ============================================
    PRESET HAMBURGER - Hidden on desktop

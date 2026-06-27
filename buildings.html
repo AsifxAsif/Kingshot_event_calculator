@@ -7,6 +7,8 @@
 		<title>Strongest Governor - Buildings</title>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	</head>
 
 	<body>
@@ -27,17 +29,17 @@
 				</svg>
 			</label>
 			<div class="nav-links" id="navLinks">
-				<a href="index.html" class="nav-link"><img src="assets/vault_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Vault"> VAULT</a>
-				<a href="buildings.html" class="nav-link active" aria-current="page"><img src="assets/buildings_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Buildings"> BUILDINGS</a>
-				<a href="war-academy.html" class="nav-link"><img src="assets/academy_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="War Academy"> WAR ACADEMY</a>
-				<a href="widgets.html" class="nav-link"><img src="assets/widgets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Widgets"> WIDGETS</a>
-				<a href="heroes.html" class="nav-link"><img src="assets/heroes_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Heroes"> HEROES</a>
-				<a href="hero-gear.html" class="nav-link"><img src="assets/hero_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Hero Gear"> HERO GEAR</a>
-				<a href="gov-gear.html" class="nav-link"><img src="assets/gov_gear_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Gear"> GOV GEAR</a>
-				<a href="gov-charm.html" class="nav-link"><img src="assets/gov_charm_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="GOV Charm"> GOV CHARM</a>
-				<a href="pets.html" class="nav-link"><img src="assets/pets_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Pets"> PETS</a>
-				<a href="troops.html" class="nav-link"><img src="assets/troops_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Troops"> TROOPS</a>
-				<a href="misc.html" class="nav-link"><img src="assets/misc_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Misc"> MISC</a>
+				<a href="index.html" class="nav-link">VAULT</a>
+				<a href="buildings.html" class="nav-link active" aria-current="page">BUILDINGS</a>
+				<a href="war-academy.html" class="nav-link">WAR ACADEMY</a>
+				<a href="widgets.html" class="nav-link">WIDGETS</a>
+				<a href="heroes.html" class="nav-link">HEROES</a>
+				<a href="hero-gear.html" class="nav-link">HERO GEAR</a>
+				<a href="gov-gear.html" class="nav-link">GOV GEAR</a>
+				<a href="gov-charm.html" class="nav-link">GOV CHARM</a>
+				<a href="pets.html" class="nav-link">PETS</a>
+				<a href="troops.html" class="nav-link">TROOPS</a>
+				<a href="misc.html" class="nav-link">MISC</a>
 			</div>
 			<div class="scoreboard-total">
 				<div class="scoreboard">
@@ -59,10 +61,10 @@
 				</button>
 				<div class="preset-dropdown" id="presetDropdown">
 					<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
-					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><img src="assets/plus_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="New"> New</button>
-					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><img src="assets/save_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Update"> Update</button>
-					<button class="preset-btn" onclick="deletePreset(currentPreset)" title="Delete Preset"><img src="assets/delete_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Delete"> Delete</button>
-					<button class="btn-reset" onclick="resetWithConfirmation()"><img src="assets/reset_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Reset"> Reset</button>
+					<button class="preset-btn" onclick="createNewPreset()" title="Create New Preset"><i class="fa-solid fa-plus"></i> New</button>
+					<button class="preset-btn" onclick="updatePreset(currentPreset)" title="Update Current Preset"><i class="fa-regular fa-floppy-disk"></i> Update</button>
+					<button class="preset-btn btn-delete" onclick="deletePreset(currentPreset)" title="Delete Preset"><i class="fa-regular fa-trash-can"></i> Delete</button>
+					<button class="btn-reset" onclick="resetWithConfirmation()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
 				</div>
 			</div>
 		</div>
@@ -70,22 +72,22 @@
 			<!-- Global Speedup Buff Card -->
 			<div class="speedup-buff-card">
 				<div class="speedup-buff-header">
-					<span><img src="assets/lightning_icon.webp" onerror="this.style.display='none';" style="height:18px;width:18px;vertical-align:middle;margin-right:6px;" alt="Speed"> GLOBAL BUILDING SPEEDUP BUFFS</span>
+					<span><img src="assets/building_speedup.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Speed"> BUILDING SPEEDUP BUFFS</span>
 				</div>
 				<div class="speedup-buff-body">
 					<div class="buff-row">
 						<div class="buff-field">
-							<label><img src="assets/buildings_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Building"> Building Speedup (%)</label>
+							<label><img src="assets/building_speedup.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Building"> Building Speedup (%)</label>
 							<input type="text" style="text-align: center;" id="globalBuildingBuffPercent" value="" placeholder="e.g., 121" oninput="updateBuildingSpeedupBuffs()">
 							<small>Enter your total building speed bonus %</small>
 						</div>
 						<div class="buff-field">
-							<label><img src="assets/artifact_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Artifact"> Pan's Master Artifact (h)</label>
+							<label><img src="assets/artifact_icon.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Artifact"> Pan's Master Artifact (h)</label>
 							<input type="text" id="globalPansMasterArtifact" value="" placeholder="e.g., 3h, 4h, 2h 30m" style="text-align: center;" oninput="updateBuildingSpeedupBuffs()">
 							<small>Fixed hour reduction</small>
 						</div>
 						<div class="buff-field">
-							<label><img src="assets/wolf_pet_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Wolf Pet"> Wolf Pet</label>
+							<label><img src="assets/wolf_pet_icon.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Wolf Pet"> Wolf Pet</label>
 							<select id="globalWolfPet" onchange="updateBuildingSpeedupBuffs()">
 								<option value="0">No Wolf Pet</option>
 								<option value="5">5%</option>
@@ -96,7 +98,7 @@
 							</select>
 						</div>
 						<div class="buff-field">
-							<label><img src="assets/king_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="King"> King Position: Chief Minister</label>
+							<label><img src="assets/chief_minister.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="King"> King Position: Chief Minister</label>
 							<select id="globalKingPosition" onchange="updateBuildingSpeedupBuffs()">
 								<option value="0">None</option>
 								<option value="10">10%</option>
@@ -106,9 +108,9 @@
 					</div>
 					<div class="checkbox-group" style="margin-bottom: 15px;">
 						<label class="checkbox-label">
-							<input class="checkbox" type="checkbox" id="globalGroundWorksCheckbox" onchange="updateBuildingSpeedupBuffs()"> <img src="assets/ground_works_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Ground Works"> Ground Works (+10% Speed) </label>
+							<input class="checkbox" type="checkbox" id="globalGroundWorksCheckbox" onchange="updateBuildingSpeedupBuffs()"> <img src="assets/ground_works_icon.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Ground Works"> Ground Works (+10% Speed) </label>
 						<div class="buff-field" style="min-width: 180px;">
-							<label><img src="assets/saul_icon.webp" onerror="this.style.display='none';" style="height:16px;width:16px;vertical-align:middle;margin-right:4px;" alt="Saul"> Saul's Resourceful</label>
+							<label><img src="assets/saul_resourceful_icon.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Saul"> Saul's Resourceful</label>
 							<select id="globalSaulsResourceful" onchange="updateBuildingSpeedupBuffs()">
 								<option value="0">No Saul Hero</option>
 								<option value="3">Level 1 (3%)</option>
@@ -120,7 +122,7 @@
 							<small>Reduces resource costs for building upgrades</small>
 						</div>
 						<label class="checkbox-label">
-							<input class="checkbox" type="checkbox" id="globalDoubleTimeCheckbox" onchange="updateBuildingSpeedupBuffs()"> <img src="assets/double_time_icon.webp" onerror="this.style.display='none';" style="height:14px;width:14px;vertical-align:middle;margin-right:4px;" alt="Double Time"> Double Time Active (-20% Time) </label>
+							<input class="checkbox" type="checkbox" id="globalDoubleTimeCheckbox" onchange="updateBuildingSpeedupBuffs()"> <img src="assets/double_time_icon.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Double Time"> Double Time Active (-20% Time) </label>
 					</div>
 					<div class="buff-total">
 						<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
