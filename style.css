@@ -1,5 +1,8 @@
+/* ============================================
+   CRITICAL CSS - Inlined for instant rendering
+   ============================================ */
+/* Root Variables */
 :root {
-	/* Enhanced Color Palette */
 	--lcd-bg: #1a1e16;
 	--bg-main: #e8e8e8;
 	--surface: #f0f0f0;
@@ -7,16 +10,10 @@
 	--text-primary: #1a1a1a;
 	--text-secondary: #555;
 	--text-muted: #888;
-	/* Neumorphic Shadows - Enhanced */
-	--shadow-extruded: 8px 8px 16px rgba(0, 0, 0, 0.08),
-		-8px -8px 16px rgba(255, 255, 255, 0.7);
-	--shadow-extruded-sm: 4px 4px 8px rgba(0, 0, 0, 0.06),
-		-4px -4px 8px rgba(255, 255, 255, 0.6);
-	--shadow-extruded-lg: 12px 12px 24px rgba(0, 0, 0, 0.1),
-		-12px -12px 24px rgba(255, 255, 255, 0.8);
-	--shadow-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.06),
-		inset -4px -4px 8px rgba(255, 255, 255, 0.5);
-	/* Colors */
+	--shadow-extruded: 8px 8px 16px rgba(0, 0, 0, 0.08), -8px -8px 16px rgba(255, 255, 255, 0.7);
+	--shadow-extruded-sm: 4px 4px 8px rgba(0, 0, 0, 0.06), -4px -4px 8px rgba(255, 255, 255, 0.6);
+	--shadow-extruded-lg: 12px 12px 24px rgba(0, 0, 0, 0.1), -12px -12px 24px rgba(255, 255, 255, 0.8);
+	--shadow-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.06), inset -4px -4px 8px rgba(255, 255, 255, 0.5);
 	--color-success: #2e7d32;
 	--color-success-bg: #e8f5e9;
 	--color-error: #c62828;
@@ -25,21 +22,18 @@
 	--color-warning-bg: #fff3e0;
 	--color-info: #0d47a1;
 	--color-info-bg: #e3f2fd;
-	/* LCD Colors */
 	--lcd-glow: #4af205;
 	--lcd-glow-dim: rgba(74, 242, 5, 0.3);
-	/* Border Radius */
 	--radius-sm: 8px;
 	--radius-md: 14px;
 	--radius-lg: 20px;
 	--radius-xl: 28px;
-	/* Transitions */
 	--transition-fast: 0.15s ease;
 	--transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	/* Layout */
 	--navbar-height: 56px;
 	--spacing-sm: 10px;
 }
+/* Base Reset - Critical */
 * {
 	margin: 0;
 	padding: 0;
@@ -55,7 +49,7 @@ body {
 	background: var(--bg-main);
 	color: var(--text-primary);
 }
-/* Scrollbar Styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
 	width: 6px;
 	height: 8px;
@@ -73,9 +67,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
 	background: #b0b0b0;
 }
-/* ============================================
-   NAVBAR - Enhanced
-   ============================================ */
+/* Navbar - Critical */
 .navbar {
 	display: flex;
 	gap: 12px;
@@ -164,9 +156,7 @@ body {
 .scoreboard:hover .lcd-value {
 	text-shadow: 0 0 20px var(--lcd-glow-dim), 0 0 40px rgba(74, 242, 5, 0.2);
 }
-/* ============================================
-   PRESET CONTROLS
-   ============================================ */
+/* Preset Controls */
 .preset-controls {
 	display: flex;
 	gap: 8px;
@@ -210,22 +200,16 @@ body {
 	transform: translateY(1px);
 	box-shadow: var(--shadow-inset);
 }
-.btn-delete, .btn-reset {
-	background: #ffc9c9;
+.btn-reset {
+	background: #f5e6e6;
 	color: var(--color-error);
 }
-.btn-delete:hover, .btn-reset:hover {
-	background: #ffb9c4;
+.btn-reset:hover {
+	background: #ffebee;
 }
-/* ============================================
-   PRESET HAMBURGER - Hidden on desktop
-   ============================================ */
 .preset-hamburger {
 	display: none;
 }
-/* ============================================
-   ACTION_HAS - Preset Hamburger Button Styles
-   ============================================ */
 .action_has {
 	cursor: pointer;
 	display: flex;
@@ -254,23 +238,16 @@ body {
 	height: 1.6em;
 	width: 1.6em;
 }
-/* ============================================
-   PRESET DROPDOWN - Desktop
-   ============================================ */
 .preset-dropdown {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
 	align-items: center;
 }
-.preset-dropdown .preset-select,
-.preset-dropdown .preset-btn,
-.preset-dropdown .btn-reset {
+.preset-dropdown .preset-select, .preset-dropdown .preset-btn, .preset-dropdown .btn-reset {
 	display: block;
 }
-/* ============================================
-   APP CONTAINER
-   ============================================ */
+/* App Container */
 .app-container {
 	display: flex;
 	gap: 20px;
@@ -278,9 +255,7 @@ body {
 	max-width: 1400px;
 	flex-direction: column;
 }
-/* ============================================
-   VAULT SECTION
-   ============================================ */
+/* Vault Section */
 .vault-section {
 	padding: 24px;
 	background: var(--surface);
@@ -356,37 +331,17 @@ body {
 	color: #bbb;
 	font-weight: 400;
 }
-/* ============================================
-   ITEMS GRID
-   ============================================ */
+/* Items Grid */
 .items-grid {
 	display: grid;
 	gap: 16px;
 	grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
 }
-/* ============================================
-   HERO GEAR GRID - FIXED (removed inline styles)
-   ============================================ */
 .hero-gear-grid {
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;
 }
-/* ============================================
-   GOV GEAR & GOV CHARM GRID - FIXED
-   ============================================ */
-.gov-gear-grid,
-.gov-charm-grid {
-	grid-template-columns: 1fr;
-}
-@media (min-width: 769px) {
-	.gov-gear-grid,
-	.gov-charm-grid {
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
-/* ============================================
-   ITEM CARDS - Enhanced
-   ============================================ */
+/* Item Cards */
 .item-card {
 	overflow: hidden;
 	background: var(--surface);
@@ -431,8 +386,7 @@ body {
 	gap: 10px;
 	grid-template-columns: 1fr 1fr;
 }
-.level-controls select,
-.level-controls input {
+.level-controls select, .level-controls input {
 	width: 100%;
 	padding: 10px;
 	font-size: 0.85rem;
@@ -444,13 +398,9 @@ body {
 	font-weight: 700;
 	cursor: pointer;
 }
-.level-controls select:focus,
-.level-controls input:focus {
+.level-controls select:focus, .level-controls input:focus {
 	outline: none;
 	box-shadow: var(--shadow-inset);
-}
-.level-controls select option {
-	font-weight: 400;
 }
 /* Checkbox Group */
 .checkbox-group {
@@ -485,7 +435,6 @@ body {
 	cursor: pointer;
 	flex-shrink: 0;
 }
-/* Custom Checkbox */
 .checkbox {
 	appearance: none;
 	width: 20px;
@@ -514,41 +463,7 @@ body {
 .checkbox:checked::after {
 	transform: translate(-50%, -50%) scale(1);
 }
-/* ============================================
-   CHECKBOX GROUP - DISABLED STATE FIX
-   ============================================ */
-.checkbox-label.disabled {
-	opacity: 0.4;
-	cursor: not-allowed;
-	pointer-events: none !important;
-	user-select: none;
-}
-.checkbox-label.disabled:hover {
-	background: rgba(0, 0, 0, 0.03) !important;
-	border-color: transparent !important;
-	transform: none !important;
-	box-shadow: none !important;
-}
-.checkbox:disabled {
-	opacity: 0.3;
-	cursor: not-allowed;
-	pointer-events: none;
-}
-.checkbox-label:has(.checkbox:disabled) {
-	opacity: 0.4;
-	cursor: not-allowed;
-	pointer-events: none !important;
-}
-.checkbox-label:has(.checkbox:disabled):hover {
-	background: rgba(0, 0, 0, 0.03) !important;
-	border-color: transparent !important;
-	transform: none !important;
-	box-shadow: none !important;
-}
-.checkbox-label:has(.checkbox:disabled) .checkbox-label {
-	pointer-events: none;
-}
-/* Status Pane - Enhanced */
+/* Status Pane */
 .status-pane {
 	padding: 12px 14px;
 	font-size: 0.75rem;
@@ -579,7 +494,7 @@ body {
 	background: var(--color-info-bg);
 	border-left-color: var(--color-info);
 }
-/* Resource Tags - Enhanced */
+/* Resource Tags */
 .cost-grid {
 	display: flex;
 	flex-wrap: wrap;
@@ -620,9 +535,6 @@ body {
 	color: var(--color-warning);
 	font-weight: 700;
 }
-/* ============================================
-   RESOURCE GROUP LABEL
-   ============================================ */
 .resource-group-label {
 	font-size: 0.7rem;
 	font-weight: 700;
@@ -630,9 +542,7 @@ body {
 	margin: 4px 0 2px 0;
 	width: 100%;
 }
-/* ============================================
-   SPEEDUP BUFF CARD - Enhanced
-   ============================================ */
+/* Speedup Buff Card */
 .speedup-buff-card {
 	overflow: hidden;
 	margin-bottom: 20px;
@@ -677,8 +587,7 @@ body {
 	margin-bottom: 4px;
 	color: var(--text-secondary);
 }
-.buff-field input,
-.buff-field select {
+.buff-field input, .buff-field select {
 	width: 100%;
 	padding: 10px;
 	font-size: 0.85rem;
@@ -689,8 +598,7 @@ body {
 	transition: all var(--transition-fast);
 	font-weight: 700;
 }
-.buff-field input:focus,
-.buff-field select:focus {
+.buff-field input:focus, .buff-field select:focus {
 	outline: none;
 	box-shadow: var(--shadow-inset);
 }
@@ -718,9 +626,7 @@ body {
 	color: var(--lcd-glow);
 	text-shadow: 0 0 12px var(--lcd-glow-dim);
 }
-/* ============================================
-   HERO FLOWERS - Enhanced
-   ============================================ */
+/* Hero Flowers */
 .level-controls-flowers {
 	display: flex;
 	flex-direction: column;
@@ -790,9 +696,7 @@ body {
 	stroke: #3a4a4a;
 	stroke-width: 2.5px;
 }
-/* ============================================
-   HERO SHARDS INVENTORY
-   ============================================ */
+/* Hero Shards Inventory */
 .hero-shards-grid {
 	display: grid;
 	gap: 10px;
@@ -846,15 +750,12 @@ body {
 	outline: none;
 	box-shadow: var(--shadow-inset);
 }
-/* ============================================
-   HAMBURGER MENU
-   ============================================ */
+/* Hamburger Menu */
 .hamburger {
 	order: 1;
 	z-index: 1001;
 	cursor: pointer;
 	border-radius: var(--radius-sm);
-	border: 1px solid #d0d0d0;
 	background: var(--surface);
 	transition: all var(--transition-fast);
 	box-shadow: var(--shadow-extruded-sm);
@@ -879,8 +780,7 @@ body {
 	stroke-linecap: round;
 	stroke-linejoin: round;
 	stroke: var(--text-primary);
-	transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-		stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1), stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .line-top-bottom {
 	stroke-dasharray: 12 63;
@@ -892,24 +792,7 @@ body {
 	stroke-dasharray: 20 300;
 	stroke-dashoffset: -32.42;
 }
-/* ============================================
-   INPUT STATES
-   ============================================ */
-input:invalid {
-	border-color: var(--color-error);
-	box-shadow: var(--shadow-inset), 0 0 0 3px rgba(198, 40, 40, 0.2);
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-	margin: 0;
-	-webkit-appearance: none;
-}
-input[type="number"] {
-	-moz-appearance: textfield;
-}
-/* ============================================
-   LOADING INDICATOR
-   ============================================ */
+/* Loading Overlay */
 .loading-overlay {
 	position: fixed;
 	top: 0;
@@ -952,9 +835,7 @@ input[type="number"] {
 		transform: rotate(360deg);
 	}
 }
-/* ============================================
-   MENU OVERLAY
-   ============================================ */
+/* Menu Overlay */
 .menu-overlay {
 	position: fixed;
 	top: 0;
@@ -978,9 +859,7 @@ input[type="number"] {
 		opacity: 1;
 	}
 }
-/* ============================================
-   NOTIFICATION SYSTEM
-   ============================================ */
+/* Notification System */
 .app-notification {
 	position: fixed;
 	bottom: 20px;
@@ -1022,9 +901,7 @@ input[type="number"] {
 		transform: translateX(0);
 	}
 }
-/* ============================================
-   MODAL SYSTEM
-   ============================================ */
+/* Modal System */
 .app-modal-overlay {
 	position: fixed;
 	top: 0;
@@ -1171,7 +1048,7 @@ input[type="number"] {
 /* ============================================
    RESPONSIVE - MOBILE
    ============================================ */
-@media (max-width: 768px) {
+@media (max-width:768px) {
 	body {
 		padding: 10px;
 	}
@@ -1189,9 +1066,10 @@ input[type="number"] {
 		height: 2em;
 		flex-shrink: 0;
 		min-width: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	}
+	.hamburger svg {
+		width: 2.5em;
+		height: 2em;
 	}
 	.scoreboard {
 		padding: 2px 8px;
@@ -1236,16 +1114,13 @@ input[type="number"] {
 		min-width: 40px;
 		align-items: center;
 		justify-content: center;
-		border: 1px solid #d0d0d0;
 		border-radius: var(--radius-sm);
 	}
 	.preset-hamburger svg {
 		height: 1.6em;
 		width: 1.6em;
 	}
-	.preset-controls .preset-select,
-	.preset-controls .preset-btn,
-	.preset-controls .btn-reset {
+	.preset-controls .preset-select, .preset-controls .preset-btn, .preset-controls .btn-reset {
 		display: none;
 	}
 	.preset-dropdown {
@@ -1269,9 +1144,7 @@ input[type="number"] {
 	.preset-dropdown.show {
 		display: flex;
 	}
-	.preset-dropdown.show .preset-select,
-	.preset-dropdown.show .preset-btn,
-	.preset-dropdown.show .btn-reset {
+	.preset-dropdown.show .preset-select, .preset-dropdown.show .preset-btn, .preset-dropdown.show .btn-reset {
 		display: block;
 		font-size: 0.8rem;
 		padding: 10px 14px;
@@ -1284,8 +1157,7 @@ input[type="number"] {
 		min-width: 100%;
 		flex: 1 1 100%;
 	}
-	.preset-dropdown.show .preset-btn,
-	.preset-dropdown.show .btn-reset {
+	.preset-dropdown.show .preset-btn, .preset-dropdown.show .btn-reset {
 		flex: 1 1 calc(50% - 5px);
 		text-align: center;
 		font-weight: 700;
@@ -1391,10 +1263,8 @@ input[type="number"] {
 		padding: 6px 12px;
 	}
 }
-/* ============================================
-   TABLET
-   ============================================ */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* Tablet */
+@media (min-width:769px) and (max-width:1200px) {
 	.hero-shards-grid {
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	}
@@ -1402,10 +1272,8 @@ input[type="number"] {
 		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 	}
 }
-/* ============================================
-   DESKTOP LARGE
-   ============================================ */
-@media (min-width: 1201px) {
+/* Desktop Large */
+@media (min-width:1201px) {
 	.hero-shards-grid {
 		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 	}
@@ -1414,10 +1282,8 @@ input[type="number"] {
 		width: 64px;
 	}
 }
-/* ============================================
-   DESKTOP - show all controls normally
-   ============================================ */
-@media (min-width: 769px) {
+/* Desktop - show all controls */
+@media (min-width:769px) {
 	.nav-links {
 		display: flex;
 	}
@@ -1440,15 +1306,11 @@ input[type="number"] {
 		align-items: center;
 		background: transparent;
 	}
-	.preset-dropdown .preset-select,
-	.preset-dropdown .preset-btn,
-	.preset-dropdown .btn-reset {
+	.preset-dropdown .preset-select, .preset-dropdown .preset-btn, .preset-dropdown .btn-reset {
 		display: block;
 	}
 }
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
+/* Utility */
 .hidden {
 	display: none !important;
 }
@@ -1489,16 +1351,9 @@ input[type="number"] {
 	align-items: center;
 	justify-content: center;
 }
-/* ============================================
-   PRINT STYLES
-   ============================================ */
+/* Print */
 @media print {
-	.navbar,
-	.preset-controls,
-	.hamburger,
-	.menu-overlay,
-	.loading-overlay,
-	.app-notification {
+	.navbar, .preset-controls, .hamburger, .menu-overlay, .loading-overlay, .app-notification {
 		display: none !important;
 	}
 	.item-card {
@@ -1511,14 +1366,34 @@ input[type="number"] {
 		text-shadow: none !important;
 	}
 }
-/* Misc page specific styles */
+/* Misc page specific */
 .misc-grid {
 	display: grid;
 	gap: 16px;
 	grid-template-columns: 1fr;
 }
-@media (min-width: 769px) {
+@media (min-width:769px) {
 	.misc-grid {
 		grid-template-columns: 1fr 1fr;
+	}
+}
+/* GOV Gear & GOV Charm */
+.gov-gear-grid, .gov-charm-grid {
+	grid-template-columns: 1fr;
+}
+@media (min-width:769px) {
+	.gov-gear-grid, .gov-charm-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+/* Troops Grid */
+.troops-grid {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 1fr;
+}
+@media (min-width:769px) {
+	.troops-grid {
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
