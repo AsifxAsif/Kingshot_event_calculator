@@ -612,92 +612,61 @@ function onBuildingSpeedupChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-
+// ============================================
+// BUILDINGS - FIXED TARGET DROPDOWN RESTORATION
+// ============================================
 function loadBuildings() {
-	const container = document.getElementById('buildingsGrid');
-	if (!container) return;
-	if (!window.gameDB || !window.gameDB.Buildings) {
-		console.warn('Building data not loaded yet, retrying...');
-		setTimeout(loadBuildings, 100);
-		return;
-	}
-	container.innerHTML = '';
-	for (const name in window.gameDB.Buildings) {
-		if (window.gameDB.Buildings[name]?.length) {
-			container.innerHTML += createBuildingCard(name, window.gameDB.Buildings[name]);
-		}
-	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="building"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const name = card.dataset.name;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		const targSelect = document.getElementById(`targ_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			const dataArray = getBuildingsData(name);
-			const toLevels = getBuildingTargetLevels(dataArray);
-			const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-			const currentNum = convertLevelToNumeric(currSelect.value);
-			let dynamicTargOpts = '<option value="" disabled selected hidden>Target Level</option>';
-			let hasHigherLevels = false;
-			for (let i = 0; i < toLevels.length; i++) {
-				const targetNum = convertLevelToNumeric(toLevels[i]);
-				if (targetNum > currentNum) {
-					dynamicTargOpts += `<option value="${toLevels[i]}">${toLevels[i]}</option>`;
-					hasHigherLevels = true;
+	loadPresetSelections();
+	const currentPage = window.getCurrentPageKey ? window.getCurrentPageKey() : "buildings";
+	if (currentPage !== "buildings") return;
+	renderBuildingCards();
+	// 1. Restore regular preset dropdown choices
+	const presetName = localStorage.getItem("current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// Group restorations by their unique safeId to cleanly handle sequence mapping
+		const targetUpdates = new Map();
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('curr_building_') || id.startsWith('targ_building_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					// Isolate whether it's a current or target level selector
+					if (id.startsWith('curr_building_')) {
+						let valueExists = false;
+						for (let i = 0; i < element.options.length; i++) {
+							if (element.options[i].value === value) {
+								valueExists = true;
+								break;
+							}
+						}
+						if (valueExists) {
+							element.value = value;
+							// CRITICAL FIX: Trigger change event to filter options in the target dropdown
+							element.dispatchEvent(new Event('change'));
+						}
+					} else if (id.startsWith('targ_building_')) {
+						// Defer setting targets until current levels have rebuilt the options array
+						targetUpdates.set(id, value);
+					}
 				}
 			}
-			if (!hasHigherLevels && highestLevel) {
-				dynamicTargOpts += `<option value="${highestLevel}">${highestLevel} (Max)</option>`;
-			}
-			targSelect.innerHTML = dynamicTargOpts;
-			const next = getBuildingNextLevel(dataArray, currSelect.value, name);
-			if (next) {
-				for (let i = 0; i < targSelect.options.length; i++) {
-					if (String(targSelect.options[i].value) === String(next)) {
-						targSelect.selectedIndex = i;
+		}
+		// Apply target values after options have been filtered by the 'change' events above
+		for (const [id, value] of targetUpdates.entries()) {
+			const element = document.getElementById(id);
+			if (element) {
+				let valueExists = false;
+				for (let i = 0; i < element.options.length; i++) {
+					if (element.options[i].value === value) {
+						valueExists = true;
 						break;
 					}
 				}
-			} else if (targSelect.options.length > 1) {
-				targSelect.selectedIndex = 1;
-			}
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('curr_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
-			}
-			if (id.startsWith('targ_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
+				if (valueExists) element.value = value;
 			}
 		}
 	}
-	// Restore locked upgrades
+	// 2. Restore locked upgrades checkboxes
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('building_')) {
 			const cb = document.getElementById(`active_${safeId}`);

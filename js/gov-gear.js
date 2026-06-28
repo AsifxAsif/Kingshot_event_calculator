@@ -558,47 +558,53 @@ function onGovGearUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-
+// ============================================
+// GOV GEAR - FIXED TARGET DROPDOWN RESTORATION
+// ============================================
 function loadGovGear() {
-	const container = document.getElementById('govGearGrid');
-	if (!container) return;
-	if (!window.gameDB || !window.gameDB.Gov_Gear) {
-		console.warn('GOV Gear data not loaded yet, retrying...');
-		setTimeout(loadGovGear, 100);
-		return;
-	}
-	container.innerHTML = '';
-	container.className = 'items-grid gov-gear-grid';
-	const parents = ['Helmet', 'Watch', 'Armor', 'Pant', 'Belt', 'Weapon'];
-	const dataArray = getGovGearData();
-	for (const parent of parents) {
-		container.innerHTML += createGovGearCard(parent, dataArray);
-	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="govgear"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onGovGearCurrentSelect(safeId);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	loadPresetSelections();
+	const currentPage = window.getCurrentPageKey ? window.getCurrentPageKey() : "gov_gear";
+	if (currentPage !== "gov_gear") return;
+	renderGovGearCards();
+	const presetName = localStorage.getItem("current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
+		const targetUpdates = new Map();
 		for (const [id, value] of Object.entries(preset.selections)) {
 			if (id.startsWith('curr_govgear_') || id.startsWith('targ_govgear_')) {
 				const element = document.getElementById(id);
 				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
+					if (id.startsWith('curr_govgear_')) {
+						let valueExists = false;
+						for (let i = 0; i < element.options.length; i++) {
+							if (element.options[i].value === value) {
+								valueExists = true;
+								break;
+							}
 						}
+						if (valueExists) {
+							element.value = value;
+							// CRITICAL FIX: Rebuild dynamic target options immediately
+							element.dispatchEvent(new Event('change'));
+						}
+					} else {
+						targetUpdates.set(id, value);
 					}
-					if (valueExists) element.value = value;
 				}
+			}
+		}
+		// Apply delayed target selections safely
+		for (const [id, value] of targetUpdates.entries()) {
+			const element = document.getElementById(id);
+			if (element) {
+				let valueExists = false;
+				for (let i = 0; i < element.options.length; i++) {
+					if (element.options[i].value === value) {
+						valueExists = true;
+						break;
+					}
+				}
+				if (valueExists) element.value = value;
 			}
 		}
 	}
@@ -630,10 +636,13 @@ function loadGovGear() {
 							break;
 						}
 					}
-					if (valueExists) currSelect.value = String(data.fromLevel);
+					if (valueExists) {
+						currSelect.value = String(data.fromLevel);
+						currSelect.dispatchEvent(new Event('change')); // Fix for locked upgrades restoration
+					}
 				}
 			}
-			const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
+			const card = document.querySelector(`.item-card[data-id=\"${safeId}\"]`);
 			if (card) {
 				const currSelect = document.getElementById(`curr_${safeId}`);
 				const targSelect = document.getElementById(`targ_${safeId}`);
