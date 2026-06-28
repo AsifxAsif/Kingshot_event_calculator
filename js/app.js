@@ -12,6 +12,8 @@ let pointData = {};
 let currentEventMode = 'sg';
 let refreshTimeout = null;
 let dataLoadPromise = null;
+let dataLoaded = false;
+let dataLoadCallbacks = [];
 // ============================================
 // RESOURCE ITEMS DEFINITION
 // ============================================
@@ -373,6 +375,16 @@ function hideLoading() {
 	const overlay = DOMCache.get('loadingOverlay');
 	if (overlay) overlay.classList.remove('active');
 }
+
+function waitForData() {
+	return new Promise((resolve) => {
+		if (dataLoaded) {
+			resolve(true);
+		} else {
+			dataLoadCallbacks.push(resolve);
+		}
+	});
+}
 // ============================================
 // MODAL SYSTEM
 // ============================================
@@ -442,6 +454,68 @@ function showModal(options) {
 function closeModal() {
 	const overlay = document.querySelector('.app-modal-overlay');
 	if (overlay) overlay.remove();
+}
+// ============================================
+// PRESET IMPORT/EXPORT
+// ============================================
+function exportPreset() {
+	try {
+		const presetData = JSON.stringify(allPresets, null, 2);
+		const blob = new Blob([presetData], {
+			type: 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `kingshot_presets_${new Date().toISOString().slice(0,10)}.json`;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		showNotification('Presets exported successfully!', 'success');
+	} catch (error) {
+		console.error('Export error:', error);
+		showNotification('Failed to export presets.', 'error');
+	}
+}
+
+function importPreset() {
+	const input = document.createElement('input');
+	input.type = 'file';
+	input.accept = '.json';
+	input.onchange = function(e) {
+		const file = e.target.files[0];
+		if (!file) return;
+		const reader = new FileReader();
+		reader.onload = function(event) {
+			try {
+				const importedData = JSON.parse(event.target.result);
+				if (typeof importedData !== 'object' || importedData === null) {
+					throw new Error('Invalid preset format');
+				}
+				showModal({
+					title: 'Import Presets',
+					message: `This will <strong style="color: var(--color-warning);">overwrite</strong> all your current presets. Are you sure?`,
+					confirmText: 'Import',
+					cancelText: 'Cancel',
+					isDanger: true,
+					onConfirm: function() {
+						allPresets = importedData;
+						localStorage.setItem("governor_presets", JSON.stringify(allPresets));
+						currentPreset = "default";
+						localStorage.setItem("governor_current_preset", "default");
+						updatePresetSelect();
+						loadPreset("default");
+						showNotification('Presets imported successfully!', 'success');
+					}
+				});
+			} catch (error) {
+				showNotification('Invalid preset file. Please check the format.', 'error');
+			}
+		};
+		reader.readAsText(file);
+	};
+	input.click();
 }
 // ============================================
 // NAVIGATION FUNCTIONS
@@ -1491,6 +1565,9 @@ async function loadGameData(filesToLoad = null) {
 			}
 		});
 		loadPointsFromData();
+		dataLoaded = true;
+		dataLoadCallbacks.forEach(cb => cb(true));
+		dataLoadCallbacks = [];
 		return true;
 	})();
 	return dataLoadPromise;
@@ -2109,6 +2186,8 @@ window.SCORE_RULES = SCORE_RULES;
 window.currentPreset = currentPreset;
 window.allPresets = allPresets;
 window.pointData = pointData;
+window.dataLoaded = dataLoaded;
+window.waitForData = waitForData;
 window.showLoading = showLoading;
 window.hideLoading = hideLoading;
 window.toggleNavMenu = toggleNavMenu;
@@ -2172,3 +2251,5 @@ window.fetchWithCache = fetchWithCache;
 window.debouncedRefresh = debouncedRefresh;
 window.DOMCache = DOMCache;
 window.preloadCriticalAssets = preloadCriticalAssets;
+window.exportPreset = exportPreset;
+window.importPreset = importPreset;

@@ -261,7 +261,6 @@ function getBuffedTime(originalSeconds) {
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
-	// Collect ALL locked upgrades
 	const totalLocked = {};
 	for (const [_, ld] of lockedUpgrades.entries()) {
 		for (const [res, amt] of Object.entries(ld.costTotals)) {
@@ -338,7 +337,6 @@ function refreshCalculations() {
 				partialNote
 			} = locked;
 			if (speedCb && speedCb.checked !== locked.speedupWasChecked) speedCb.checked = locked.speedupWasChecked;
-			// CRITICAL FIX: Exclude current upgrade from totalLocked
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(totalLocked)) {
 				const currentAmt = costTotals[res] || 0;
@@ -359,7 +357,6 @@ function refreshCalculations() {
 			continue;
 		}
 		const speedCheck = speedCb?.checked || false;
-		// For non-locked upgrades, totalLocked already excludes this upgrade
 		const otherLocked = {};
 		for (const [res, amt] of Object.entries(totalLocked)) {
 			if (!res.startsWith('_')) {
@@ -395,7 +392,6 @@ function refreshCalculations() {
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
-			// Toggle disabled class
 			if (!canAfford) {
 				activeCb.parentElement.classList.add('disabled');
 			} else {
@@ -408,7 +404,6 @@ function refreshCalculations() {
 			const canUseSpeedup = canAfford && hasSpeedups;
 			speedCb.disabled = !canUseSpeedup;
 			speedCb.parentElement.style.opacity = canUseSpeedup ? '1' : '0.5';
-			// Toggle disabled class
 			if (!canUseSpeedup) {
 				speedCb.parentElement.classList.add('disabled');
 				speedCb.parentElement.title = !hasSpeedups ? 'No building speedups in vault' : 'Insufficient resources';
@@ -433,7 +428,7 @@ function refreshCalculations() {
 		}
 	}
 }
-// Event handlers (unchanged, but they call the fixed refreshCalculations)
+// Event handlers
 function onBuildingCurrentSelect(safeId, name) {
 	const curr = document.getElementById(`curr_${safeId}`);
 	const targ = document.getElementById(`targ_${safeId}`);
