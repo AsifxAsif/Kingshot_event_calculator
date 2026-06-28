@@ -717,10 +717,10 @@ function onGovCharmUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
+const container = document.getElementById('govCharmGrid');
 
-
-	const container = document.getElementById('govCharmGrid');
-	function loadGovCharm() {if (!container) return;
+function loadGovCharm() {
+	if (!container) return;
 	if (!window.gameDB || !window.gameDB.Gov_Charm) {
 		console.warn('GOV Charm data not loaded yet, retrying...');
 		setTimeout(loadGovCharm, 100);
