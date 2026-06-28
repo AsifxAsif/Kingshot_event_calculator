@@ -669,51 +669,68 @@ function onAcademySpeedupChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-// ============================================
-// WAR ACADEMY - COMPREHENSIVE RESEARCH LOADER
-// ============================================
+
 function loadWarAcademy() {
-	loadPresetSelections();
-	const currentPage = window.getCurrentPageKey ? window.getCurrentPageKey() : "war_academy";
-	if (currentPage !== "war_academy") return;
-	renderWarAcademyCards();
-	const presetName = localStorage.getItem("current_preset") || "default";
+	const container = document.getElementById('academyGrid');
+	if (!container) return;
+	if (!window.gameDB || !window.gameDB.War_Academy) {
+		console.warn('War Academy data not loaded yet, retrying...');
+		setTimeout(loadWarAcademy, 100);
+		return;
+	}
+	container.innerHTML = '';
+	const allItems = getWarAcademyData();
+	const categoryGroups = {
+		'INFANTRY': {
+			techs: ['Truegold Battalion (Infantry)', 'Truegold Blades', 'Truegold Shields', 'Truegold Legionaries (Infantry)', 'Truegold Mauls', 'Truegold Plating', 'Truegold Infantry', 'Truegold Infantry Healing', 'Truegold Infantry Training', 'Truegold Infantry Aid'],
+			icon: 'assets/Infantry.webp'
+		},
+		'CAVALRY': {
+			techs: ['Truegold Battalion (Cavalry)', 'Truegold Charge', 'Truegold Farriery', 'Truegold Legionaries (Cavalry)', 'Truegold Lances', 'Truegold Platecraft', 'Truegold Cavalry', 'Truegold Cavalry Healing', 'Truegold Cavalry Training', 'Truegold Cavalry Aid'],
+			icon: 'assets/Cavalry.webp'
+		},
+		'ARCHER': {
+			techs: ['Truegold Battalion (Archer)', 'Truegold Bows', 'Truegold Bracers', 'Truegold Legionaries (Archer)', 'Truegold Arrows', 'Truegold Vests', 'Truegold Archer', 'Truegold Archer Healing', 'Truegold Archer Training', 'Truegold Archer Aid'],
+			icon: 'assets/Archer.webp'
+		}
+	};
+	for (const [categoryName, group] of Object.entries(categoryGroups)) {
+		const categoryItems = [];
+		for (const techName of group.techs) {
+			const item = allItems.find(i => i.displayName === techName);
+			if (item) categoryItems.push(item);
+		}
+		if (categoryItems.length > 0) {
+			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
+		}
+	}
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="academy"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const name = card.dataset.name;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		const targSelect = document.getElementById(`targ_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onAcademyCurrentSelect(safeId, name);
+		}
+	});
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
-		const targetUpdates = new Map();
 		for (const [id, value] of Object.entries(preset.selections)) {
 			if (id.startsWith('curr_academy_') || id.startsWith('targ_academy_')) {
 				const element = document.getElementById(id);
 				if (element && element.tagName === "SELECT") {
-					if (id.startsWith('curr_academy_')) {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
 						}
-						if (valueExists) {
-							element.value = value;
-							element.dispatchEvent(new Event('change')); // Triggers target dropdown filtering
-						}
-					} else {
-						targetUpdates.set(id, value);
 					}
+					if (valueExists) element.value = value;
 				}
-			}
-		}
-		for (const [id, value] of targetUpdates.entries()) {
-			const element = document.getElementById(id);
-			if (element) {
-				let valueExists = false;
-				for (let i = 0; i < element.options.length; i++) {
-					if (element.options[i].value === value) {
-						valueExists = true;
-						break;
-					}
-				}
-				if (valueExists) element.value = value;
 			}
 		}
 	}
@@ -722,22 +739,8 @@ function loadWarAcademy() {
 		if (safeId.startsWith('academy_')) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = true;
-			if (data.fromLevel) {
-				const currSelect = document.getElementById(`curr_${safeId}`);
-				if (currSelect) {
-					let valueExists = false;
-					for (let i = 0; i < currSelect.options.length; i++) {
-						if (currSelect.options[i].value === String(data.fromLevel)) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) {
-						currSelect.value = String(data.fromLevel);
-						currSelect.dispatchEvent(new Event('change'));
-					}
-				}
-			}
+			const speedCb = document.getElementById(`speed_${safeId}`);
+			if (speedCb && data.speedupWasChecked !== undefined) speedCb.checked = data.speedupWasChecked;
 			if (data.toLevel) {
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				if (targSelect) {

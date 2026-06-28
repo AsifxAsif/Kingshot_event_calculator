@@ -554,52 +554,52 @@ function onWidgetUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-// ============================================
-// WIDGETS - FIXED TARGET DROPDOWN RESTORATION
-// ============================================
+
 function loadWidgets() {
-	loadPresetSelections();
-	const currentPage = window.getCurrentPageKey ? window.getCurrentPageKey() : "widgets";
-	if (currentPage !== "widgets") return;
-	renderHeroWidgetCards();
-	const presetName = localStorage.getItem("current_preset") || "default";
+	const inventoryContainer = document.getElementById('widgetInventoryContainer');
+	const widgetsGridContainer = document.getElementById('widgetsGrid');
+	if (!inventoryContainer || !widgetsGridContainer) return;
+	if (!window.gameDB || !window.gameDB.Widgets || !window.gameDB.Hero) {
+		console.warn('Widget data not loaded yet, retrying...');
+		setTimeout(loadWidgets, 100);
+		return;
+	}
+	loadHeroWidgetsFromStorage();
+	inventoryContainer.innerHTML = '';
+	widgetsGridContainer.innerHTML = '';
+	inventoryContainer.innerHTML = createWidgetInventoryCard();
+	const ssrHeroes = getSSRHeroes();
+	const dataArray = getWidgetsData();
+	let widgetsHtml = '';
+	for (const hero of ssrHeroes) {
+		widgetsHtml += createWidgetCard(hero.name, dataArray);
+	}
+	widgetsGridContainer.innerHTML = widgetsHtml;
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="widgets"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onWidgetCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
-		const targetUpdates = new Map();
 		for (const [id, value] of Object.entries(preset.selections)) {
 			if (id.startsWith('curr_widgets_') || id.startsWith('targ_widgets_')) {
 				const element = document.getElementById(id);
 				if (element && element.tagName === "SELECT") {
-					if (id.startsWith('curr_widgets_')) {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
 						}
-						if (valueExists) {
-							element.value = value;
-							// CRITICAL FIX: Forces rebuilding target choices on preset shift/reload
-							element.dispatchEvent(new Event('change'));
-						}
-					} else {
-						targetUpdates.set(id, value);
 					}
+					if (valueExists) element.value = value;
 				}
-			}
-		}
-		for (const [id, value] of targetUpdates.entries()) {
-			const element = document.getElementById(id);
-			if (element) {
-				let valueExists = false;
-				for (let i = 0; i < element.options.length; i++) {
-					if (element.options[i].value === value) {
-						valueExists = true;
-						break;
-					}
-				}
-				if (valueExists) element.value = value;
 			}
 		}
 	}
@@ -608,33 +608,15 @@ function loadWidgets() {
 		if (safeId.startsWith('widgets_')) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = true;
-			if (data.fromLevel) {
-				const currSelect = document.getElementById(`curr_${safeId}`);
-				if (currSelect) {
-					let valueExists = false;
-					for (let i = 0; i < currSelect.options.length; i++) {
-						if (currSelect.options[i].value === String(data.fromLevel)) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) {
-						currSelect.value = String(data.fromLevel);
-						currSelect.dispatchEvent(new Event('change'));
-					}
-				}
-			}
 			if (data.toLevel) {
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				if (targSelect) {
-					let valueExists = false;
 					for (let i = 0; i < targSelect.options.length; i++) {
 						if (targSelect.options[i].value === String(data.toLevel)) {
-							valueExists = true;
+							targSelect.selectedIndex = i;
 							break;
 						}
 					}
-					if (valueExists) targSelect.value = String(data.toLevel);
 				}
 			}
 		}

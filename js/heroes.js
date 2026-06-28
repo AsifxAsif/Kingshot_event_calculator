@@ -1048,9 +1048,7 @@ function loadHeroes() {
 		}
 	}
 	heroesGridContainer.innerHTML = heroesHtml;
-	// CRITICAL FIX: Update flower visuals for all heroes
-	Object.keys(heroFlowerStates).forEach(id => updateHeroFlowerVisuals(id));
-	// Restore selections from preset
+	// Restore selections
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.heroFlowerStates) {
@@ -1061,7 +1059,6 @@ function loadHeroes() {
 			}
 		}
 		saveHeroFlowerStates();
-		Object.keys(heroFlowerStates).forEach(id => updateHeroFlowerVisuals(id));
 	}
 	if (preset && preset.heroSpecificShards) {
 		for (const [heroName, shards] of Object.entries(preset.heroSpecificShards)) {
@@ -1075,7 +1072,6 @@ function loadHeroes() {
 		});
 		saveHeroShardsToStorage();
 	}
-	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('hero_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -1084,6 +1080,7 @@ function loadHeroes() {
 			if (generalCb && data.useGeneralShards) generalCb.checked = true;
 		}
 	}
+	Object.keys(heroFlowerStates).forEach(id => updateHeroFlowerVisuals(id));
 	refreshCalculations();
 }
 // ============================================

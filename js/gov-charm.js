@@ -717,53 +717,65 @@ function onGovCharmUpgradeCheckboxChange(safeId, isChecked) {
 	}
 	refreshCalculations();
 }
-// ============================================
-// GOV CHARM - FIXED TARGET DROPDOWN RESTORATION
-// ============================================
-function loadGovCharm() {
-	loadPresetSelections();
-	const currentPage = window.getCurrentPageKey ? window.getCurrentPageKey() : "gov_charm";
-	if (currentPage !== "gov_charm") return;
-	renderGovCharmCards();
-	const presetName = localStorage.getItem("current_preset") || "default";
+
+
+	const container = document.getElementById('govCharmGrid');
+	function loadGovCharm() {if (!container) return;
+	if (!window.gameDB || !window.gameDB.Gov_Charm) {
+		console.warn('GOV Charm data not loaded yet, retrying...');
+		setTimeout(loadGovCharm, 100);
+		return;
+	}
+	container.innerHTML = '';
+	container.className = 'items-grid gov-charm-grid';
+	const dataArray = getGovCharmData();
+	const charmGroups = [{
+		type: 'Helmet',
+		charms: ['Helmet Charm #1', 'Helmet Charm #2', 'Helmet Charm #3']
+	}, {
+		type: 'Watch',
+		charms: ['Watch Charm #1', 'Watch Charm #2', 'Watch Charm #3']
+	}, {
+		type: 'Armor',
+		charms: ['Armor Charm #1', 'Armor Charm #2', 'Armor Charm #3']
+	}, {
+		type: 'Pant',
+		charms: ['Pant Charm #1', 'Pant Charm #2', 'Pant Charm #3']
+	}, {
+		type: 'Belt',
+		charms: ['Belt Charm #1', 'Belt Charm #2', 'Belt Charm #3']
+	}, {
+		type: 'Weapon',
+		charms: ['Weapon Charm #1', 'Weapon Charm #2', 'Weapon Charm #3']
+	}];
+	for (const group of charmGroups) {
+		container.innerHTML += createGovCharmGroupCard(group.type, group.charms, dataArray);
+	}
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="govcharm"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onGovCharmCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
-		const targetUpdates = new Map();
 		for (const [id, value] of Object.entries(preset.selections)) {
 			if (id.startsWith('curr_govcharm_') || id.startsWith('targ_govcharm_')) {
 				const element = document.getElementById(id);
 				if (element && element.tagName === "SELECT") {
-					if (id.startsWith('curr_govcharm_')) {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
 						}
-						if (valueExists) {
-							element.value = value;
-							// CRITICAL FIX: Trigger change event to filter options in the target dropdown
-							element.dispatchEvent(new Event('change'));
-						}
-					} else {
-						targetUpdates.set(id, value);
 					}
+					if (valueExists) element.value = value;
 				}
-			}
-		}
-		// Apply target values safely after options have been dynamically filtered
-		for (const [id, value] of targetUpdates.entries()) {
-			const element = document.getElementById(id);
-			if (element) {
-				let valueExists = false;
-				for (let i = 0; i < element.options.length; i++) {
-					if (element.options[i].value === value) {
-						valueExists = true;
-						break;
-					}
-				}
-				if (valueExists) element.value = value;
 			}
 		}
 	}
@@ -772,23 +784,6 @@ function loadGovCharm() {
 		if (safeId.startsWith('govcharm_')) {
 			const cb = document.getElementById(`active_${safeId}`);
 			if (cb) cb.checked = true;
-			if (data.fromLevel) {
-				const currSelect = document.getElementById(`curr_${safeId}`);
-				if (currSelect) {
-					let valueExists = false;
-					for (let i = 0; i < currSelect.options.length; i++) {
-						if (currSelect.options[i].value === String(data.fromLevel)) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) {
-						currSelect.value = String(data.fromLevel);
-						// CRITICAL FIX: Ensure locked current upgrades refresh target lists
-						currSelect.dispatchEvent(new Event('change'));
-					}
-				}
-			}
 			if (data.toLevel) {
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				if (targSelect) {
@@ -802,7 +797,20 @@ function loadGovCharm() {
 					if (valueExists) targSelect.value = String(data.toLevel);
 				}
 			}
-			const card = document.querySelector(`.item-card[data-id=\"${safeId}\"]`);
+			if (data.fromLevel) {
+				const currSelect = document.getElementById(`curr_${safeId}`);
+				if (currSelect) {
+					let valueExists = false;
+					for (let i = 0; i < currSelect.options.length; i++) {
+						if (currSelect.options[i].value === String(data.fromLevel)) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) currSelect.value = String(data.fromLevel);
+				}
+			}
+			const card = document.querySelector(`.item-card[data-id="${safeId}"]`);
 			if (card) {
 				const currSelect = document.getElementById(`curr_${safeId}`);
 				const targSelect = document.getElementById(`targ_${safeId}`);
