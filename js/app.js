@@ -197,7 +197,6 @@ function debouncedRefresh(module) {
 		refreshTimeout = null;
 	}, 50);
 }
-window.debouncedRefresh = debouncedRefresh;
 // ============================================
 // PERFORMANCE: Cache DOM queries
 // ============================================
@@ -230,7 +229,6 @@ const DOMCache = {
 		});
 	}
 };
-window.DOMCache = DOMCache;
 // ============================================
 // RESOURCE DISPLAY
 // ============================================
