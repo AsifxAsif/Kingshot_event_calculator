@@ -775,6 +775,11 @@ function buildPointsDisplay(troopPoints, speedupPoints, speedupDetails) {
 function loadTroops() {
 	const container = document.getElementById('troopsGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Troops) {
+		console.warn('Troops data not loaded yet, retrying...');
+		setTimeout(loadTroops, 100);
+		return;
+	}
 	container.innerHTML = '';
 	const troopTypes = ['Infantry', 'Cavalry', 'Archer'];
 	let trainingHtml = '';

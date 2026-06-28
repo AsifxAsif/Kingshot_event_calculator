@@ -673,6 +673,11 @@ function onAcademySpeedupChange(safeId, isChecked) {
 function loadWarAcademy() {
 	const container = document.getElementById('academyGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.War_Academy) {
+		console.warn('War Academy data not loaded yet, retrying...');
+		setTimeout(loadWarAcademy, 100);
+		return;
+	}
 	container.innerHTML = '';
 	const allItems = getWarAcademyData();
 	const categoryGroups = {

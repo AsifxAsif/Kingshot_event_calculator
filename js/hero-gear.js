@@ -779,6 +779,11 @@ function refreshCalculations() {
 }
 
 function loadCombinedPage() {
+	if (!window.gameDB || !window.gameDB.Hero_Gear || !window.gameDB.Forgehammer) {
+		console.warn('Hero Gear data not loaded yet, retrying...');
+		setTimeout(loadCombinedPage, 100);
+		return;
+	}
 	const forgehammerContainer = document.getElementById('forgehammerContainer');
 	if (forgehammerContainer) {
 		forgehammerContainer.innerHTML = '';

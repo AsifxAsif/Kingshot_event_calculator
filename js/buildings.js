@@ -616,6 +616,11 @@ function onBuildingSpeedupChange(safeId, isChecked) {
 function loadBuildings() {
 	const container = document.getElementById('buildingsGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Buildings) {
+		console.warn('Building data not loaded yet, retrying...');
+		setTimeout(loadBuildings, 100);
+		return;
+	}
 	container.innerHTML = '';
 	for (const name in window.gameDB.Buildings) {
 		if (window.gameDB.Buildings[name]?.length) {

@@ -562,6 +562,11 @@ function onGovGearUpgradeCheckboxChange(safeId, isChecked) {
 function loadGovGear() {
 	const container = document.getElementById('govGearGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Gov_Gear) {
+		console.warn('GOV Gear data not loaded yet, retrying...');
+		setTimeout(loadGovGear, 100);
+		return;
+	}
 	container.innerHTML = '';
 	container.className = 'items-grid gov-gear-grid';
 	const parents = ['Helmet', 'Watch', 'Armor', 'Pant', 'Belt', 'Weapon'];

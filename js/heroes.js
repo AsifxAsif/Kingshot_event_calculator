@@ -1023,6 +1023,11 @@ function loadHeroes() {
 	const inventoryContainer = document.getElementById('heroInventoryContainer');
 	const heroesGridContainer = document.getElementById('heroesGrid');
 	if (!inventoryContainer || !heroesGridContainer) return;
+	if (!window.gameDB || !window.gameDB.Hero) {
+		console.warn('Hero data not loaded yet, retrying...');
+		setTimeout(loadHeroes, 100);
+		return;
+	}
 	loadHeroShardsFromStorage();
 	loadGenerationFilterFromStorage();
 	loadHeroFlowerStates();

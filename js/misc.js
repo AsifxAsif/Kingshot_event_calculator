@@ -371,6 +371,11 @@ function getGatheringRates() {
 function renderGatheringCards() {
 	const container = document.getElementById('gatheringGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Misc) {
+		console.warn('Misc data not loaded yet, retrying...');
+		setTimeout(renderGatheringCards, 100);
+		return;
+	}
 	container.innerHTML = '';
 	container.className = 'items-grid misc-grid';
 	const marchUnits = globalMarchUnits || 1;

@@ -559,6 +559,11 @@ function loadWidgets() {
 	const inventoryContainer = document.getElementById('widgetInventoryContainer');
 	const widgetsGridContainer = document.getElementById('widgetsGrid');
 	if (!inventoryContainer || !widgetsGridContainer) return;
+	if (!window.gameDB || !window.gameDB.Widgets || !window.gameDB.Hero) {
+		console.warn('Widget data not loaded yet, retrying...');
+		setTimeout(loadWidgets, 100);
+		return;
+	}
 	loadHeroWidgetsFromStorage();
 	inventoryContainer.innerHTML = '';
 	widgetsGridContainer.innerHTML = '';

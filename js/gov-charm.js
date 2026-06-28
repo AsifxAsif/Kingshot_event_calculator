@@ -721,6 +721,11 @@ function onGovCharmUpgradeCheckboxChange(safeId, isChecked) {
 function loadGovCharm() {
 	const container = document.getElementById('govCharmGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Gov_Charm) {
+		console.warn('GOV Charm data not loaded yet, retrying...');
+		setTimeout(loadGovCharm, 100);
+		return;
+	}
 	container.innerHTML = '';
 	container.className = 'items-grid gov-charm-grid';
 	const dataArray = getGovCharmData();

@@ -513,6 +513,11 @@ function onPetUpgradeCheckboxChange(safeId, isChecked) {
 function loadPets() {
 	const container = document.getElementById('petsGrid');
 	if (!container) return;
+	if (!window.gameDB || !window.gameDB.Pet) {
+		console.warn('Pet data not loaded yet, retrying...');
+		setTimeout(loadPets, 100);
+		return;
+	}
 	container.innerHTML = '';
 	const pets = getAllPets();
 	for (const pet of pets) {
