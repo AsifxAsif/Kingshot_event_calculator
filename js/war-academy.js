@@ -1,6 +1,13 @@
 // ============================================
 // WAR ACADEMY - FULLY FIXED (Resources show, Max level works)
 // ============================================
+// ============================================
+// HELPER: Consistent safeId generation
+// ============================================
+function generateAcademySafeId(displayName) {
+	return 'academy_' + displayName.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+}
+
 function getWarAcademyImageFileName(researchName) {
 	const imageMap = {
 		'Truegold Battalion (Infantry)': 'truegold_battalion_infantry.webp',
@@ -163,10 +170,9 @@ function createAcademyIndividualCard(item, dataArray) {
 	if (!dataArray?.length) return '';
 	const fromLevels = getAcademyLevels(dataArray);
 	const toLevels = getAcademyTargetLevels(dataArray);
-	const safeId = `academy_${item.displayName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+	const safeId = generateAcademySafeId(item.displayName);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
 	const imgUrl = getWarAcademyImageFileName(item.displayName);
-	// CRITICAL FIX: Use buildLevelOptions which properly handles "Max" detection
 	const currOpts = buildLevelOptions(fromLevels, 'Current Level', highestLevel, '');
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 	return `<div class="item-card" data-type="academy" data-name="${item.displayName}" data-id="${safeId}" style="margin-bottom: 10px;">
@@ -320,9 +326,9 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		// Get the specific research data
+		// Get the specific research data using the consistent safeId
 		const academyItems = getWarAcademyData();
-		const item = academyItems.find(i => `academy_${i.displayName.replace(/[^a-zA-Z0-9]/g, '_')}` === safeId);
+		const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
 		if (!item) continue;
 		const dataArray = item.data;
 		const toLevels = getAcademyTargetLevels(dataArray);
@@ -462,7 +468,7 @@ function onAcademyCurrentSelect(safeId, name) {
 	if (!curr || !targ) return;
 	const from = curr.value;
 	const academyItems = getWarAcademyData();
-	const item = academyItems.find(i => `academy_${i.displayName.replace(/[^a-zA-Z0-9]/g, '_')}` === safeId);
+	const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
 	if (!item) return;
 	const dataArray = item.data;
 	const toLevels = getAcademyTargetLevels(dataArray);
@@ -562,7 +568,7 @@ function onAcademyUpgradeCheckboxChange(safeId, isChecked) {
 			return;
 		}
 		const academyItems = getWarAcademyData();
-		const item = academyItems.find(i => `academy_${i.displayName.replace(/[^a-zA-Z0-9]/g, '_')}` === safeId);
+		const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
 		if (!item) return;
 		const dataArray = item.data;
 		const toLevels = getAcademyTargetLevels(dataArray);
@@ -645,7 +651,7 @@ function onAcademySpeedupChange(safeId, isChecked) {
 					}
 				}
 				const academyItems = getWarAcademyData();
-				const item = academyItems.find(i => `academy_${i.displayName.replace(/[^a-zA-Z0-9]/g, '_')}` === safeId);
+				const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
 				if (item) {
 					const dataArray = item.data;
 					const costs = calculateAcademyCosts(dataArray, from, to, isChecked, vault, otherLocked);
@@ -704,37 +710,7 @@ function loadWarAcademy() {
 			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
 		}
 	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="academy"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const name = card.dataset.name;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		const targSelect = document.getElementById(`targ_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onAcademyCurrentSelect(safeId, name);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('curr_academy_') || id.startsWith('targ_academy_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
-			}
-		}
-	}
-	// Restore locked upgrades
+	// Restore locked upgrades first
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('academy_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -756,11 +732,62 @@ function loadWarAcademy() {
 			}
 		}
 	}
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// First restore current levels
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('curr_academy_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+		// Apply filtering based on current selections
+		document.querySelectorAll('.item-card[data-type="academy"]').forEach(card => {
+			const safeId = card.dataset.id;
+			const name = card.dataset.name;
+			const currSelect = document.getElementById(`curr_${safeId}`);
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onAcademyCurrentSelect(safeId, name);
+			}
+		});
+		// Now restore target values
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('targ_academy_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+	}
 	refreshCalculations();
 }
+// ============================================
+// EXPORTS
+// ============================================
 window.loadWarAcademy = loadWarAcademy;
 window.refreshCalculations = refreshCalculations;
 window.onAcademyCurrentSelect = onAcademyCurrentSelect;
 window.onAcademyTargetChange = onAcademyTargetChange;
 window.onAcademyUpgradeCheckboxChange = onAcademyUpgradeCheckboxChange;
 window.onAcademySpeedupChange = onAcademySpeedupChange;
+window.generateAcademySafeId = generateAcademySafeId;
+window.getWarAcademyData = getWarAcademyData;

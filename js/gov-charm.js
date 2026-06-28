@@ -751,35 +751,7 @@ function loadGovCharm() {
 	for (const group of charmGroups) {
 		container.innerHTML += createGovCharmGroupCard(group.type, group.charms, dataArray);
 	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="govcharm"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onGovCharmCurrentSelect(safeId);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('curr_govcharm_') || id.startsWith('targ_govcharm_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
-			}
-		}
-	}
-	// Restore locked upgrades
+	// Restore locked upgrades first
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('govcharm_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -815,6 +787,51 @@ function loadGovCharm() {
 				const currSelect = document.getElementById(`curr_${safeId}`);
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				updateGovCharmImages(safeId, card.dataset.name, currSelect ? currSelect.value : '1', targSelect ? targSelect.value : '1');
+			}
+		}
+	}
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// First restore current levels
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('curr_govcharm_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+		// Apply filtering based on current selections
+		document.querySelectorAll('.item-card[data-type="govcharm"]').forEach(card => {
+			const safeId = card.dataset.id;
+			const currSelect = document.getElementById(`curr_${safeId}`);
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onGovCharmCurrentSelect(safeId);
+			}
+		});
+		// Now restore target values
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('targ_govcharm_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
 			}
 		}
 	}

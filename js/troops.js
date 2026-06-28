@@ -795,40 +795,7 @@ function loadTroops() {
 	if (promotionHtml) {
 		container.innerHTML += createTroopGroupCard('PROMOTION', promotionHtml);
 	}
-	// CRITICAL FIX: Auto-filter promotion target dropdowns based on current selections
-	document.querySelectorAll('.troop-card[data-type="promotion"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const troopType = card.dataset.name;
-		const fromSelect = document.getElementById(`promo_from_${safeId}`);
-		if (fromSelect && fromSelect.value && fromSelect.value !== '') {
-			onPromotionCurrentSelect(safeId, troopType);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('troop_lvl_') || id.startsWith('troop_qty_') || id.startsWith('promo_from_') || id.startsWith('promo_to_') || id.startsWith('promo_qty_')) {
-				const element = document.getElementById(id);
-				if (element) {
-					if (element.tagName === "SELECT") {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
-						}
-						if (valueExists) element.value = value;
-					} else {
-						element.value = value || '';
-					}
-				}
-			}
-		}
-	}
-	// Restore locked upgrades
+	// Restore locked upgrades first
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('troops_')) {
 			const activeCb = document.getElementById(`active_${safeId}`);
@@ -890,13 +857,71 @@ function loadTroops() {
 			}
 		}
 	}
-	// Force 2 column layout
-	if (window._troopsResizeHandler) {
-		window.removeEventListener('resize', window._troopsResizeHandler);
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// First restore current/promo_from selections (needed for filtering)
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('promo_from_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+		// Apply filtering based on promo_from selections
+		document.querySelectorAll('.troop-card[data-type="promotion"]').forEach(card => {
+			const safeId = card.dataset.id;
+			const troopType = card.dataset.name;
+			const fromSelect = document.getElementById(`promo_from_${safeId}`);
+			if (fromSelect && fromSelect.value && fromSelect.value !== '') {
+				onPromotionCurrentSelect(safeId, troopType);
+			}
+		});
+		// Now restore the rest of the selections
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('troop_lvl_') || id.startsWith('troop_qty_') || id.startsWith('promo_qty_')) {
+				const element = document.getElementById(id);
+				if (element) {
+					if (element.tagName === "SELECT") {
+						let valueExists = false;
+						for (let i = 0; i < element.options.length; i++) {
+							if (element.options[i].value === value) {
+								valueExists = true;
+								break;
+							}
+						}
+						if (valueExists) element.value = value;
+					} else {
+						element.value = value || '';
+					}
+				}
+			}
+			// Restore promo_to (target) values only if they exist in the filtered options
+			if (id.startsWith('promo_to_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
 	}
-	setTimeout(() => {
-		refreshTroopsCalculations();
-	}, 50);
+	refreshTroopsCalculations();
 }
 // ============================================
 // EXPORTS

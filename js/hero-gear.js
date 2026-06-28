@@ -784,36 +784,13 @@ function loadCombinedPage() {
 		setTimeout(loadCombinedPage, 100);
 		return;
 	}
+	// ===== FORGEHAMMER =====
 	const forgehammerContainer = document.getElementById('forgehammerContainer');
 	if (forgehammerContainer) {
 		forgehammerContainer.innerHTML = '';
 		const dataArray = getForgehammerData();
 		forgehammerContainer.innerHTML += createForgehammerCombinedCard(dataArray);
-		// CRITICAL FIX: Auto-filter target dropdown
-		const currSelect = document.getElementById('curr_forgehammer_mastery');
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onForgehammerCurrentSelect('forgehammer_mastery');
-		}
-		// Restore selections
-		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-		const preset = allPresets[presetName];
-		if (preset && preset.selections) {
-			for (const [id, value] of Object.entries(preset.selections)) {
-				if (id === 'curr_forgehammer_mastery' || id === 'targ_forgehammer_mastery') {
-					const element = document.getElementById(id);
-					if (element && element.tagName === "SELECT") {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
-						}
-						if (valueExists) element.value = value;
-					}
-				}
-			}
-		}
+		// Restore locked upgrades
 		for (const [safeId, data] of lockedUpgrades.entries()) {
 			if (safeId === 'forgehammer_mastery') {
 				const cb = document.getElementById(`active_${safeId}`);
@@ -833,38 +810,54 @@ function loadCombinedPage() {
 				}
 			}
 		}
+		// Restore selections from preset
+		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+		const preset = allPresets[presetName];
+		if (preset && preset.selections) {
+			// First restore current level
+			if (preset.selections['curr_forgehammer_mastery'] !== undefined) {
+				const element = document.getElementById('curr_forgehammer_mastery');
+				if (element && element.tagName === "SELECT") {
+					const value = preset.selections['curr_forgehammer_mastery'];
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+			// Apply filtering
+			const currSelect = document.getElementById('curr_forgehammer_mastery');
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onForgehammerCurrentSelect('forgehammer_mastery');
+			}
+			// Now restore target value
+			if (preset.selections['targ_forgehammer_mastery'] !== undefined) {
+				const element = document.getElementById('targ_forgehammer_mastery');
+				if (element && element.tagName === "SELECT") {
+					const value = preset.selections['targ_forgehammer_mastery'];
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
 	}
+	// ===== HERO GEAR =====
 	const heroGearContainer = document.getElementById('heroGearContainer');
 	if (heroGearContainer) {
 		heroGearContainer.innerHTML = '';
 		const dataArray = getHeroGearData();
 		heroGearContainer.innerHTML += createHeroGearCombinedCard(dataArray);
-		// CRITICAL FIX: Auto-filter target dropdown
-		const currSelect = document.getElementById('curr_herogear_mastery');
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onHeroGearCurrentSelect('herogear_mastery');
-			updateHeroGearImage(currSelect.value);
-		}
-		// Restore selections
-		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-		const preset = allPresets[presetName];
-		if (preset && preset.selections) {
-			for (const [id, value] of Object.entries(preset.selections)) {
-				if (id === 'curr_herogear_mastery' || id === 'targ_herogear_mastery') {
-					const element = document.getElementById(id);
-					if (element && element.tagName === "SELECT") {
-						let valueExists = false;
-						for (let i = 0; i < element.options.length; i++) {
-							if (element.options[i].value === value) {
-								valueExists = true;
-								break;
-							}
-						}
-						if (valueExists) element.value = value;
-					}
-				}
-			}
-		}
+		// Restore locked upgrades
 		for (const [safeId, data] of lockedUpgrades.entries()) {
 			if (safeId === 'herogear_mastery') {
 				const cb = document.getElementById(`active_${safeId}`);
@@ -886,6 +879,47 @@ function loadCombinedPage() {
 					updateHeroGearImage(data.fromLevel);
 				} else {
 					updateHeroGearImage('0');
+				}
+			}
+		}
+		// Restore selections from preset
+		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+		const preset = allPresets[presetName];
+		if (preset && preset.selections) {
+			// First restore current level
+			if (preset.selections['curr_herogear_mastery'] !== undefined) {
+				const element = document.getElementById('curr_herogear_mastery');
+				if (element && element.tagName === "SELECT") {
+					const value = preset.selections['curr_herogear_mastery'];
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+			// Apply filtering
+			const currSelect = document.getElementById('curr_herogear_mastery');
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onHeroGearCurrentSelect('herogear_mastery');
+				updateHeroGearImage(currSelect.value);
+			}
+			// Now restore target value
+			if (preset.selections['targ_herogear_mastery'] !== undefined) {
+				const element = document.getElementById('targ_herogear_mastery');
+				if (element && element.tagName === "SELECT") {
+					const value = preset.selections['targ_herogear_mastery'];
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
 				}
 			}
 		}

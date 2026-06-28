@@ -383,8 +383,60 @@ function renderGatheringCards() {
 	for (let i = 1; i <= numCards; i++) {
 		container.innerHTML += createGatheringCard(i);
 	}
-	// Restore saved values - this will also update node images
+	// Restore saved values
 	loadMiscFromStorage();
+	// 🔥 FIX: Restore from preset (to ensure preset overrides saved values)
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			const nodeSelect = document.getElementById(`gather_node_${cardId}`);
+			const skillSelect = document.getElementById(`gather_skill_${cardId}`);
+			const speedInput = document.getElementById(`gather_speed_${cardId}`);
+			if (resourceSelect && preset.selections[`gather_resource_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_resource_${cardId}`];
+				for (let i = 0; i < resourceSelect.options.length; i++) {
+					if (String(resourceSelect.options[i].value) === String(value)) {
+						resourceSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (nodeSelect && preset.selections[`gather_node_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_node_${cardId}`];
+				for (let i = 0; i < nodeSelect.options.length; i++) {
+					if (String(nodeSelect.options[i].value) === String(value)) {
+						nodeSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (skillSelect && preset.selections[`gather_skill_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_skill_${cardId}`];
+				for (let i = 0; i < skillSelect.options.length; i++) {
+					if (String(skillSelect.options[i].value) === String(value)) {
+						skillSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (speedInput && preset.selections[`gather_speed_${cardId}`] !== undefined) {
+				speedInput.value = preset.selections[`gather_speed_${cardId}`];
+			}
+		});
+	}
+	// Update all node images after restoring
+	setTimeout(() => {
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			if (resourceSelect && resourceSelect.value) {
+				updateNodeImage(parseInt(cardId), resourceSelect.value);
+			}
+		});
+	}, 100);
 	refreshCalculations();
 }
 
@@ -762,6 +814,120 @@ function loadGlobalSettings() {
 	if (bisonDisplay) {
 		bisonDisplay.style.display = globalBisonGrip > 0 ? 'block' : 'none';
 	}
+	// 🔥 FIX: Restore gathering card selections from storage
+	loadMiscFromStorage();
+	// 🔥 FIX: Restore gathering card selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// Restore roulette spins
+		if (preset.selections['heroRouletteCount'] !== undefined) {
+			const rouletteInput = document.getElementById('rouletteSpinsInput');
+			if (rouletteInput) rouletteInput.value = preset.selections['heroRouletteCount'];
+		}
+		// Restore global gathering settings
+		if (preset.selections['globalGatheringBuffPercent'] !== undefined) {
+			const input = document.getElementById('globalGatheringBuffPercent');
+			if (input) input.value = preset.selections['globalGatheringBuffPercent'];
+		}
+		if (preset.selections['globalMarchUnits'] !== undefined) {
+			const select = document.getElementById('globalMarchUnits');
+			if (select) {
+				const value = preset.selections['globalMarchUnits'];
+				for (let i = 0; i < select.options.length; i++) {
+					if (String(select.options[i].value) === String(value)) {
+						select.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		if (preset.selections['globalBisonGrip'] !== undefined) {
+			const select = document.getElementById('globalBisonGrip');
+			if (select) {
+				const value = preset.selections['globalBisonGrip'];
+				for (let i = 0; i < select.options.length; i++) {
+					if (String(select.options[i].value) === String(value)) {
+						select.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		if (preset.selections['globalBisonResource'] !== undefined) {
+			const select = document.getElementById('globalBisonResource');
+			if (select) {
+				const value = preset.selections['globalBisonResource'];
+				for (let i = 0; i < select.options.length; i++) {
+					if (String(select.options[i].value) === String(value)) {
+						select.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		if (preset.selections['globalBisonNode'] !== undefined) {
+			const select = document.getElementById('globalBisonNode');
+			if (select) {
+				const value = preset.selections['globalBisonNode'];
+				for (let i = 0; i < select.options.length; i++) {
+					if (String(select.options[i].value) === String(value)) {
+						select.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		// Restore gathering card selections
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			const nodeSelect = document.getElementById(`gather_node_${cardId}`);
+			const skillSelect = document.getElementById(`gather_skill_${cardId}`);
+			const speedInput = document.getElementById(`gather_speed_${cardId}`);
+			if (resourceSelect && preset.selections[`gather_resource_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_resource_${cardId}`];
+				for (let i = 0; i < resourceSelect.options.length; i++) {
+					if (String(resourceSelect.options[i].value) === String(value)) {
+						resourceSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (nodeSelect && preset.selections[`gather_node_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_node_${cardId}`];
+				for (let i = 0; i < nodeSelect.options.length; i++) {
+					if (String(nodeSelect.options[i].value) === String(value)) {
+						nodeSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (skillSelect && preset.selections[`gather_skill_${cardId}`] !== undefined) {
+				const value = preset.selections[`gather_skill_${cardId}`];
+				for (let i = 0; i < skillSelect.options.length; i++) {
+					if (String(skillSelect.options[i].value) === String(value)) {
+						skillSelect.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			if (speedInput && preset.selections[`gather_speed_${cardId}`] !== undefined) {
+				speedInput.value = preset.selections[`gather_speed_${cardId}`];
+			}
+		});
+	}
+	// Update all node images after restoring
+	setTimeout(() => {
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+			if (resourceSelect && resourceSelect.value) {
+				updateNodeImage(parseInt(cardId), resourceSelect.value);
+			}
+		});
+	}, 100);
+	updateGlobalSettings();
 }
 
 function updateGlobalSettings() {

@@ -347,6 +347,14 @@ function generateFlowerContainerMarkup(safeId, type) {
 
 function handleHeroPetalClick(event, safeId, type, flowerId, clickedIndex, clickedValue, absoluteIndex) {
 	event.stopPropagation();
+	// Validate target selection isn't at or below current
+	if (type === 'targ') {
+		const state = heroFlowerStates[safeId];
+		if (state && state.currentMaxIdx !== -1 && absoluteIndex <= state.currentMaxIdx) {
+			showNotification('Target level cannot be at or below current level!', 'error');
+			return;
+		}
+	}
 	if (!heroFlowerStates[safeId]) {
 		heroFlowerStates[safeId] = {
 			currentMaxIdx: -1,
@@ -398,7 +406,6 @@ function handleHeroPetalClick(event, safeId, type, flowerId, clickedIndex, click
 		const cb = document.getElementById(`active_${safeId}`);
 		if (cb) cb.checked = false;
 	}
-	// CRITICAL FIX: Save flower states to localStorage
 	saveHeroFlowerStates();
 	updateHeroFlowerVisuals(safeId);
 	refreshCalculations();
@@ -411,6 +418,7 @@ function updateHeroFlowerVisuals(safeId) {
 		currentMaxIdx: -1,
 		targetMaxIdx: -1
 	};
+	const currentMaxIdx = state.currentMaxIdx;
 	['curr', 'targ'].forEach(type => {
 		const container = card.querySelector(`.flowers-container[data-type="${type}"]`);
 		if (!container) return;
@@ -429,10 +437,29 @@ function updateHeroFlowerVisuals(safeId) {
 				remainingSelections = 0;
 			}
 			petals.forEach((petal, pIdx) => {
+				// Handle selection state
 				if (activeSelectionLimit !== -1 && pIdx <= activeSelectionLimit) {
 					petal.classList.add('selected');
 				} else {
 					petal.classList.remove('selected');
+				}
+				// Handle visual filtering for target petals
+				if (type === 'targ') {
+					const absIdx = parseInt(petal.dataset.absoluteIndex);
+					// Disable petals that are at or below current level
+					if (currentMaxIdx !== -1 && absIdx <= currentMaxIdx) {
+						petal.style.opacity = '0.3';
+						petal.style.pointerEvents = 'none';
+						// Remove selected class from disabled petals too
+						petal.classList.remove('selected');
+					} else {
+						petal.style.opacity = '1';
+						petal.style.pointerEvents = 'auto';
+					}
+				} else {
+					// Ensure current petals are always clickable
+					petal.style.opacity = '1';
+					petal.style.pointerEvents = 'auto';
 				}
 			});
 		});

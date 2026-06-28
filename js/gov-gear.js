@@ -574,35 +574,7 @@ function loadGovGear() {
 	for (const parent of parents) {
 		container.innerHTML += createGovGearCard(parent, dataArray);
 	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="govgear"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onGovGearCurrentSelect(safeId);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('curr_govgear_') || id.startsWith('targ_govgear_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
-			}
-		}
-	}
-	// Restore locked upgrades
+	// Restore locked upgrades first
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('govgear_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -638,6 +610,51 @@ function loadGovGear() {
 				const currSelect = document.getElementById(`curr_${safeId}`);
 				const targSelect = document.getElementById(`targ_${safeId}`);
 				updateGovGearImages(safeId, card.dataset.name, currSelect ? currSelect.value : 'Green', targSelect ? targSelect.value : 'Green');
+			}
+		}
+	}
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// First restore current levels
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('curr_govgear_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+		// Apply filtering based on current selections
+		document.querySelectorAll('.item-card[data-type="govgear"]').forEach(card => {
+			const safeId = card.dataset.id;
+			const currSelect = document.getElementById(`curr_${safeId}`);
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onGovGearCurrentSelect(safeId);
+			}
+		});
+		// Now restore target values
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('targ_govgear_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
 			}
 		}
 	}

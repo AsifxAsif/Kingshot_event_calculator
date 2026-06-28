@@ -523,35 +523,7 @@ function loadPets() {
 	for (const pet of pets) {
 		container.innerHTML += createPetCard(pet);
 	}
-	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
-	document.querySelectorAll('.item-card[data-type="pet"]').forEach(card => {
-		const safeId = card.dataset.id;
-		const currSelect = document.getElementById(`curr_${safeId}`);
-		if (currSelect && currSelect.value && currSelect.value !== '') {
-			onPetCurrentSelect(safeId);
-		}
-	});
-	// Restore selections from preset
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		for (const [id, value] of Object.entries(preset.selections)) {
-			if (id.startsWith('curr_pet_') || id.startsWith('targ_pet_')) {
-				const element = document.getElementById(id);
-				if (element && element.tagName === "SELECT") {
-					let valueExists = false;
-					for (let i = 0; i < element.options.length; i++) {
-						if (element.options[i].value === value) {
-							valueExists = true;
-							break;
-						}
-					}
-					if (valueExists) element.value = value;
-				}
-			}
-		}
-	}
-	// Restore locked upgrades
+	// Restore locked upgrades first
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('pet_')) {
 			const cb = document.getElementById(`active_${safeId}`);
@@ -567,6 +539,51 @@ function loadPets() {
 						}
 					}
 					if (valueExists) targSelect.value = String(data.toLevel);
+				}
+			}
+		}
+	}
+	// Restore selections from preset
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (preset && preset.selections) {
+		// First restore current levels
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('curr_pet_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
+				}
+			}
+		}
+		// Apply filtering based on current selections
+		document.querySelectorAll('.item-card[data-type="pet"]').forEach(card => {
+			const safeId = card.dataset.id;
+			const currSelect = document.getElementById(`curr_${safeId}`);
+			if (currSelect && currSelect.value && currSelect.value !== '') {
+				onPetCurrentSelect(safeId);
+			}
+		});
+		// Now restore target values
+		for (const [id, value] of Object.entries(preset.selections)) {
+			if (id.startsWith('targ_pet_')) {
+				const element = document.getElementById(id);
+				if (element && element.tagName === "SELECT") {
+					let valueExists = false;
+					for (let i = 0; i < element.options.length; i++) {
+						if (element.options[i].value === value) {
+							valueExists = true;
+							break;
+						}
+					}
+					if (valueExists) element.value = value;
 				}
 			}
 		}
