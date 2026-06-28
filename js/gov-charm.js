@@ -751,7 +751,15 @@ function loadGovCharm() {
 	for (const group of charmGroups) {
 		container.innerHTML += createGovCharmGroupCard(group.type, group.charms, dataArray);
 	}
-	// Restore selections
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="govcharm"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onGovCharmCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -771,6 +779,7 @@ function loadGovCharm() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('govcharm_')) {
 			const cb = document.getElementById(`active_${safeId}`);

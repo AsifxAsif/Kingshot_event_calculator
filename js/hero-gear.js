@@ -789,6 +789,11 @@ function loadCombinedPage() {
 		forgehammerContainer.innerHTML = '';
 		const dataArray = getForgehammerData();
 		forgehammerContainer.innerHTML += createForgehammerCombinedCard(dataArray);
+		// CRITICAL FIX: Auto-filter target dropdown
+		const currSelect = document.getElementById('curr_forgehammer_mastery');
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onForgehammerCurrentSelect('forgehammer_mastery');
+		}
 		// Restore selections
 		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 		const preset = allPresets[presetName];
@@ -834,6 +839,12 @@ function loadCombinedPage() {
 		heroGearContainer.innerHTML = '';
 		const dataArray = getHeroGearData();
 		heroGearContainer.innerHTML += createHeroGearCombinedCard(dataArray);
+		// CRITICAL FIX: Auto-filter target dropdown
+		const currSelect = document.getElementById('curr_herogear_mastery');
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onHeroGearCurrentSelect('herogear_mastery');
+			updateHeroGearImage(currSelect.value);
+		}
 		// Restore selections
 		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 		const preset = allPresets[presetName];
@@ -877,10 +888,6 @@ function loadCombinedPage() {
 					updateHeroGearImage('0');
 				}
 			}
-		}
-		const currSelect = document.getElementById('curr_herogear_mastery');
-		if (currSelect && currSelect.value) {
-			updateHeroGearImage(currSelect.value);
 		}
 	}
 	refreshCalculations();

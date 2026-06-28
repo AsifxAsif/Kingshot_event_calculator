@@ -575,7 +575,15 @@ function loadWidgets() {
 		widgetsHtml += createWidgetCard(hero.name, dataArray);
 	}
 	widgetsGridContainer.innerHTML = widgetsHtml;
-	// Restore selections
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="widgets"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onWidgetCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -595,6 +603,7 @@ function loadWidgets() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('widgets_')) {
 			const cb = document.getElementById(`active_${safeId}`);

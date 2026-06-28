@@ -704,7 +704,17 @@ function loadWarAcademy() {
 			container.innerHTML += createAcademyGroupCard(categoryName, categoryItems, group.icon);
 		}
 	}
-	// Restore selections
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="academy"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const name = card.dataset.name;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		const targSelect = document.getElementById(`targ_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onAcademyCurrentSelect(safeId, name);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -724,6 +734,7 @@ function loadWarAcademy() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('academy_')) {
 			const cb = document.getElementById(`active_${safeId}`);

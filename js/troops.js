@@ -795,7 +795,16 @@ function loadTroops() {
 	if (promotionHtml) {
 		container.innerHTML += createTroopGroupCard('PROMOTION', promotionHtml);
 	}
-	// Restore selections
+	// CRITICAL FIX: Auto-filter promotion target dropdowns based on current selections
+	document.querySelectorAll('.troop-card[data-type="promotion"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const troopType = card.dataset.name;
+		const fromSelect = document.getElementById(`promo_from_${safeId}`);
+		if (fromSelect && fromSelect.value && fromSelect.value !== '') {
+			onPromotionCurrentSelect(safeId, troopType);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -819,6 +828,7 @@ function loadTroops() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('troops_')) {
 			const activeCb = document.getElementById(`active_${safeId}`);
@@ -884,16 +894,6 @@ function loadTroops() {
 	if (window._troopsResizeHandler) {
 		window.removeEventListener('resize', window._troopsResizeHandler);
 	}
-	const resizeHandler = function() {
-		if (window.innerWidth > 768) {
-			container.style.gridTemplateColumns = 'repeat(2, 1fr)';
-		} else {
-			container.style.gridTemplateColumns = '1fr';
-		}
-	};
-	window._troopsResizeHandler = resizeHandler;
-	resizeHandler();
-	window.addEventListener('resize', resizeHandler);
 	setTimeout(() => {
 		refreshTroopsCalculations();
 	}, 50);

@@ -574,7 +574,15 @@ function loadGovGear() {
 	for (const parent of parents) {
 		container.innerHTML += createGovGearCard(parent, dataArray);
 	}
-	// Restore selections
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="govgear"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onGovGearCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -594,6 +602,7 @@ function loadGovGear() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('govgear_')) {
 			const cb = document.getElementById(`active_${safeId}`);

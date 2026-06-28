@@ -523,7 +523,15 @@ function loadPets() {
 	for (const pet of pets) {
 		container.innerHTML += createPetCard(pet);
 	}
-	// Restore selections
+	// CRITICAL FIX: Auto-filter target dropdowns based on current selections
+	document.querySelectorAll('.item-card[data-type="pet"]').forEach(card => {
+		const safeId = card.dataset.id;
+		const currSelect = document.getElementById(`curr_${safeId}`);
+		if (currSelect && currSelect.value && currSelect.value !== '') {
+			onPetCurrentSelect(safeId);
+		}
+	});
+	// Restore selections from preset
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (preset && preset.selections) {
@@ -543,6 +551,7 @@ function loadPets() {
 			}
 		}
 	}
+	// Restore locked upgrades
 	for (const [safeId, data] of lockedUpgrades.entries()) {
 		if (safeId.startsWith('pet_')) {
 			const cb = document.getElementById(`active_${safeId}`);
