@@ -1,5 +1,5 @@
 // ============================================
-// HERO GEAR & FORGEHAMMER - FIXED (Double deduction fixed)
+// HERO GEAR & FORGEHAMMER - FIXED (Double deduction fixed + Preset saving fixed)
 // ============================================
 // ============================================
 // SECTION 1: FORGEHAMMER
@@ -76,7 +76,8 @@ function createForgehammerCombinedCard(dataArray) {
 	if (!dataArray?.length) return '';
 	const fromLevels = getForgehammerLevels(dataArray);
 	const toLevels = getForgehammerTargetLevels(dataArray);
-	const safeId = 'forgehammer_mastery';
+	// FIXED: Use herogear_forgehammer prefix for proper preset saving
+	const safeId = 'herogear_forgehammer';
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : '';
 	const currOpts = buildLevelOptions(fromLevels, 'Current Level', highestLevel, '');
 	const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
@@ -790,9 +791,9 @@ function loadCombinedPage() {
 		forgehammerContainer.innerHTML = '';
 		const dataArray = getForgehammerData();
 		forgehammerContainer.innerHTML += createForgehammerCombinedCard(dataArray);
-		// Restore locked upgrades
+		// Restore locked upgrades - FIXED: use the new safeId
 		for (const [safeId, data] of lockedUpgrades.entries()) {
-			if (safeId === 'forgehammer_mastery') {
+			if (safeId === 'herogear_forgehammer') {
 				const cb = document.getElementById(`active_${safeId}`);
 				if (cb) cb.checked = true;
 				if (data.toLevel) {
@@ -814,11 +815,11 @@ function loadCombinedPage() {
 		const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 		const preset = allPresets[presetName];
 		if (preset && preset.selections) {
-			// First restore current level
-			if (preset.selections['curr_forgehammer_mastery'] !== undefined) {
-				const element = document.getElementById('curr_forgehammer_mastery');
+			// First restore current level - FIXED: use the new safeId
+			if (preset.selections['curr_herogear_forgehammer'] !== undefined) {
+				const element = document.getElementById('curr_herogear_forgehammer');
 				if (element && element.tagName === "SELECT") {
-					const value = preset.selections['curr_forgehammer_mastery'];
+					const value = preset.selections['curr_herogear_forgehammer'];
 					let valueExists = false;
 					for (let i = 0; i < element.options.length; i++) {
 						if (element.options[i].value === value) {
@@ -829,16 +830,16 @@ function loadCombinedPage() {
 					if (valueExists) element.value = value;
 				}
 			}
-			// Apply filtering
-			const currSelect = document.getElementById('curr_forgehammer_mastery');
+			// Apply filtering - FIXED: use the new safeId
+			const currSelect = document.getElementById('curr_herogear_forgehammer');
 			if (currSelect && currSelect.value && currSelect.value !== '') {
-				onForgehammerCurrentSelect('forgehammer_mastery');
+				onForgehammerCurrentSelect('herogear_forgehammer');
 			}
-			// Now restore target value
-			if (preset.selections['targ_forgehammer_mastery'] !== undefined) {
-				const element = document.getElementById('targ_forgehammer_mastery');
+			// Now restore target value - FIXED: use the new safeId
+			if (preset.selections['targ_herogear_forgehammer'] !== undefined) {
+				const element = document.getElementById('targ_herogear_forgehammer');
 				if (element && element.tagName === "SELECT") {
-					const value = preset.selections['targ_forgehammer_mastery'];
+					const value = preset.selections['targ_herogear_forgehammer'];
 					let valueExists = false;
 					for (let i = 0; i < element.options.length; i++) {
 						if (element.options[i].value === value) {
@@ -926,6 +927,9 @@ function loadCombinedPage() {
 	}
 	refreshCalculations();
 }
+// ============================================
+// EXPORTS
+// ============================================
 window.loadCombinedPage = loadCombinedPage;
 window.refreshCalculations = refreshCalculations;
 window.onForgehammerCurrentSelect = onForgehammerCurrentSelect;
