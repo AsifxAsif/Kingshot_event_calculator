@@ -160,25 +160,17 @@ function createHeroShardsInventoryCard() {
 		genOptions += `<option value="${i}" ${selected}>Gen ${i}</option>`;
 	}
 	return `
-        <div class="speedup-buff-card" style="margin-bottom: 20px;">
-            <div class="speedup-buff-header">
-			<span><img src="assets/hero_specific_shard.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Shards"></span>
-                <span>HERO SPECIFIC SHARDS INVENTORY</span>
+        <div class="buff-row">
+            <div class="buff-field">
+                <label>Latest Hero Generation</label>
+                <select id="heroGenerationSelect" onchange="updateGenerationFilter()">
+                    ${genOptions}
+                </select>
+                <small>Only shows heroes from Gen 1 to selected generation</small>
             </div>
-            <div class="speedup-buff-body">
-                <div class="buff-row">
-                    <div class="buff-field">
-                        <label>Latest Hero Generation</label>
-                        <select id="heroGenerationSelect" onchange="updateGenerationFilter()">
-                            ${genOptions}
-                        </select>
-                        <small>Only shows heroes from Gen 1 to selected generation</small>
-                    </div>
-                </div>
-                <div class="hero-shards-grid" id="heroShardsGrid">
-                    ${heroesHtml}
-                </div>
-            </div>
+        </div>
+        <div class="hero-shards-grid" id="heroShardsGrid">
+            ${heroesHtml}
         </div>
     `;
 }

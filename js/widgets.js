@@ -101,22 +101,14 @@ function createWidgetInventoryCard() {
         `;
 	}
 	return `
-        <div class="speedup-buff-card" style="margin-bottom: 20px;">
-            <div class="speedup-buff-header">
-			<span><img src="assets/widgets.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Widgets"></span>
-                <span>SSR HERO WIDGET INVENTORY</span>
+        <div class="buff-row">
+            <div class="buff-field">
+                <label>SSR Heroes Only</label>
+                <small>Enter your hero-specific widget counts here. Widgets are hero-specific only.</small>
             </div>
-            <div class="speedup-buff-body">
-                <div class="buff-row">
-                    <div class="buff-field">
-                        <label>SSR Heroes Only</label>
-                        <small>Enter your hero-specific widget counts here. Widgets are hero-specific only.</small>
-                    </div>
-                </div>
-                <div class="hero-shards-grid" id="heroWidgetsGrid">
-                    ${heroesHtml}
-                </div>
-            </div>
+        </div>
+        <div class="hero-shards-grid" id="heroWidgetsGrid">
+            ${heroesHtml}
         </div>
     `;
 }

@@ -63,7 +63,6 @@
 		</style>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-		<!-- Font Awesome -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	</head>
 
@@ -78,7 +77,6 @@
 		<div class="navbar">
 			<!-- ROW 1: Hamburger + Nav Links + Preset Hamburger -->
 			<div class="navbar-row-1">
-				<!-- Hamburger -->
 				<label class="hamburger" id="hamburgerIcon">
 					<input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
 					<svg viewBox="0 0 32 32">
@@ -86,7 +84,6 @@
 						<path class="line" d="M7 16 27 16"></path>
 					</svg>
 				</label>
-				<!-- Nav Links -->
 				<div class="nav-links" id="navLinks">
 					<a href="index.html" class="nav-link">VAULT</a>
 					<a href="buildings.html" class="nav-link active" aria-current="page">BUILDINGS</a>
@@ -100,7 +97,6 @@
 					<a href="troops.html" class="nav-link">TROOPS</a>
 					<a href="misc.html" class="nav-link">MISC</a>
 				</div>
-				<!-- Preset Hamburger (Mobile only) -->
 				<button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
 					<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
 						<path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"></path>
@@ -121,7 +117,6 @@
 						<div class="lcd-value" id="globalTotalScoreDisplay">0</div>
 					</div>
 				</div>
-				<!-- Preset Controls (Desktop only) -->
 				<div class="preset-controls">
 					<div class="preset-dropdown" id="presetDropdown">
 						<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
@@ -136,12 +131,16 @@
 			</div>
 		</div>
 		<div class="app-container">
-			<!-- Global Speedup Buff Card -->
-			<div class="speedup-buff-card">
-				<div class="speedup-buff-header">
-					<span><img src="assets/building_speedup.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Speed"> BUILDING SPEEDUP BUFFS</span>
+			<!-- Building Speedup Buff Card - Collapsible -->
+			<div class="collapsible-section" data-section-id="building_speedups">
+				<div class="collapsible-header">
+					<div class="header-content">
+						<img src="assets/building_speedup.webp" onerror="this.style.display='none';" alt="Speed">
+						<span>BUILDING SPEEDUP BUFFS</span>
+					</div>
+					<span class="toggle-icon">▼</span>
 				</div>
-				<div class="speedup-buff-body">
+				<div class="collapsible-body">
 					<div class="buff-row">
 						<div class="buff-field">
 							<label><img src="assets/building_speedup.webp" onerror="this.style.display='none';" style="height:30px;width:30px;vertical-align:middle;margin-right:4px;" alt="Building"> Building Speedup (%)</label>
@@ -230,6 +229,9 @@
 						}
 						if (typeof refreshCalculations === 'function') {
 							refreshCalculations();
+						}
+						if (typeof initCollapsibleSections === 'function') {
+							initCollapsibleSections();
 						}
 						hideLoading();
 					}, 150);

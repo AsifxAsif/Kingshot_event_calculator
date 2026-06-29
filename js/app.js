@@ -749,6 +749,89 @@ function saveCurrentToPreset(presetName) {
 	updatePresetSelect();
 	showNotification(`Preset "${presetName}" saved!`, 'success');
 }
+// ============================================
+// COLLAPSIBLE SECTIONS
+// ============================================
+// Store collapse states in localStorage
+function getCollapseState(sectionId) {
+	const saved = localStorage.getItem(`collapse_${sectionId}`);
+	// Default: collapsed on mobile, expanded on desktop
+	if (saved === null) {
+		const isMobile = window.innerWidth < 769;
+		return isMobile; // true = collapsed on mobile
+	}
+	return saved === 'true';
+}
+
+function setCollapseState(sectionId, isCollapsed) {
+	localStorage.setItem(`collapse_${sectionId}`, String(isCollapsed));
+}
+
+function toggleCollapsible(headerElement) {
+	const section = headerElement.closest('.collapsible-section');
+	if (!section) return;
+	const body = section.querySelector('.collapsible-body');
+	const icon = headerElement.querySelector('.toggle-icon');
+	const sectionId = section.dataset.sectionId || 'default';
+	if (!body) return;
+	const isCollapsed = body.classList.toggle('collapsed');
+	if (icon) {
+		icon.classList.toggle('collapsed', isCollapsed);
+	}
+	setCollapseState(sectionId, isCollapsed);
+	// Trigger resize event for any embedded content
+	window.dispatchEvent(new Event('resize'));
+}
+
+function initCollapsibleSections() {
+	document.querySelectorAll('.collapsible-section').forEach(section => {
+		const header = section.querySelector('.collapsible-header');
+		const body = section.querySelector('.collapsible-body');
+		const icon = header?.querySelector('.toggle-icon');
+		const sectionId = section.dataset.sectionId || 'default';
+		if (!header || !body) return;
+		// Restore state
+		const shouldCollapse = getCollapseState(sectionId);
+		if (shouldCollapse) {
+			body.classList.add('collapsed');
+			if (icon) icon.classList.add('collapsed');
+		}
+		// Click handler
+		header.addEventListener('click', function(e) {
+			// Don't toggle if clicking on interactive elements inside header
+			if (e.target.closest('select') || e.target.closest('input') || e.target.closest('button')) {
+				return;
+			}
+			toggleCollapsible(this);
+		});
+	});
+}
+// Auto-collapse on resize (mobile/desktop switch)
+let resizeTimeout = null;
+window.addEventListener('resize', function() {
+	if (resizeTimeout) clearTimeout(resizeTimeout);
+	resizeTimeout = setTimeout(() => {
+		const isMobile = window.innerWidth < 769;
+		document.querySelectorAll('.collapsible-section').forEach(section => {
+			const sectionId = section.dataset.sectionId || 'default';
+			const body = section.querySelector('.collapsible-body');
+			const icon = section.querySelector('.toggle-icon');
+			const shouldCollapse = getCollapseState(sectionId);
+			// Only auto-collapse if user hasn't explicitly changed state on this device
+			// For new sections, collapse on mobile
+			if (shouldCollapse === null) {
+				if (isMobile) {
+					body?.classList.add('collapsed');
+					icon?.classList.add('collapsed');
+				} else {
+					body?.classList.remove('collapsed');
+					icon?.classList.remove('collapsed');
+				}
+			}
+		});
+		resizeTimeout = null;
+	}, 250);
+});
 
 function getCurrentPageInfo() {
 	const path = window.location.pathname;
@@ -2252,3 +2335,5 @@ window.DOMCache = DOMCache;
 window.preloadCriticalAssets = preloadCriticalAssets;
 window.exportPreset = exportPreset;
 window.importPreset = importPreset;
+window.initCollapsibleSections = initCollapsibleSections;
+window.toggleCollapsible = toggleCollapsible;

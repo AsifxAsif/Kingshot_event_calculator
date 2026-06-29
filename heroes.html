@@ -10,7 +10,6 @@
 		<link rel="preload" as="style" href="style.css">
 		<link rel="preload" as="script" href="js/app.js">
 		<meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
-		<!-- Critical CSS for above-the-fold -->
 		<style>
 			.items-grid {
 				display: grid;
@@ -54,12 +53,10 @@
 		</style>
 		<link rel="stylesheet" href="style.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-		<!-- Font Awesome -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	</head>
 
 	<body>
-		<!-- Loading Overlay -->
 		<div class="loading-overlay" id="loadingOverlay">
 			<div class="loading-spinner">
 				<div class="spinner"></div>
@@ -67,9 +64,7 @@
 			</div>
 		</div>
 		<div class="navbar">
-			<!-- ROW 1: Hamburger + Nav Links + Preset Hamburger -->
 			<div class="navbar-row-1">
-				<!-- Hamburger -->
 				<label class="hamburger" id="hamburgerIcon">
 					<input type="checkbox" id="hamburgerCheckbox" onclick="toggleNavMenu()" />
 					<svg viewBox="0 0 32 32">
@@ -77,7 +72,6 @@
 						<path class="line" d="M7 16 27 16"></path>
 					</svg>
 				</label>
-				<!-- Nav Links -->
 				<div class="nav-links" id="navLinks">
 					<a href="index.html" class="nav-link">VAULT</a>
 					<a href="buildings.html" class="nav-link">BUILDINGS</a>
@@ -91,7 +85,6 @@
 					<a href="troops.html" class="nav-link">TROOPS</a>
 					<a href="misc.html" class="nav-link">MISC</a>
 				</div>
-				<!-- Preset Hamburger (Mobile only) -->
 				<button class="action_has has_saved preset-hamburger" aria-label="Preset Menu" type="button" onclick="togglePresetMenu()">
 					<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none">
 						<path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z"></path>
@@ -100,7 +93,6 @@
 					</svg>
 				</button>
 			</div>
-			<!-- ROW 2: Scoreboard + Preset Controls (Desktop) -->
 			<div class="navbar-row-2">
 				<div class="scoreboard-total">
 					<div class="scoreboard">
@@ -112,7 +104,6 @@
 						<div class="lcd-value" id="globalTotalScoreDisplay">0</div>
 					</div>
 				</div>
-				<!-- Preset Controls (Desktop only) -->
 				<div class="preset-controls">
 					<div class="preset-dropdown" id="presetDropdown">
 						<select id="presetSelect" class="preset-select" onchange="loadPreset(this.value)"></select>
@@ -127,7 +118,17 @@
 			</div>
 		</div>
 		<div class="app-container">
-			<div id="heroInventoryContainer"></div>
+			<!-- Hero Shards Inventory - Collapsible -->
+			<div class="collapsible-section" data-section-id="hero_shards_inventory" style="margin-bottom: 20px;">
+				<div class="collapsible-header">
+					<div class="header-content">
+						<img src="assets/hero_specific_shard.webp" onerror="this.style.display='none';" alt="Shards">
+						<span>HERO SPECIFIC SHARDS INVENTORY</span>
+					</div>
+					<span class="toggle-icon">▼</span>
+				</div>
+				<div class="collapsible-body" id="heroInventoryContainer"></div>
+			</div>
 			<div class="items-grid" id="heroesGrid"></div>
 		</div>
 		<script src="js/app.js"></script>
@@ -152,10 +153,27 @@
 					if (currentPreset && allPresets[currentPreset]) {
 						applyPresetToCurrentPage(allPresets[currentPreset]);
 					}
+					if (typeof initCollapsibleSections === 'function') {
+						initCollapsibleSections();
+					}
+					// Update shard count badge
+					setTimeout(() => {
+						const badge = document.getElementById('heroShardCount');
+						if (badge && typeof heroSpecificShards !== 'undefined') {
+							const total = Object.values(heroSpecificShards).reduce((sum, val) => sum + (val || 0), 0);
+							badge.textContent = total;
+						}
+					}, 200);
 					hideLoading();
 				}, 150);
 				window.addEventListener('vaultUpdate', () => {
 					if (typeof refreshCalculations === 'function') refreshCalculations();
+					// Update badge
+					const badge = document.getElementById('heroShardCount');
+					if (badge && typeof heroSpecificShards !== 'undefined') {
+						const total = Object.values(heroSpecificShards).reduce((sum, val) => sum + (val || 0), 0);
+						badge.textContent = total;
+					}
 				});
 			});
 
