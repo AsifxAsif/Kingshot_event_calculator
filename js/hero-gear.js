@@ -357,7 +357,7 @@ function updateHeroGearImage(level) {
 	const imgElement = document.getElementById('heroGearHeaderImage');
 	if (!imgElement) return;
 	const levelNum = parseFloat(level);
-	if (levelNum >= 100) {
+	if (levelNum > 100) {
 		imgElement.src = 'assets/hero-gear-red.webp';
 	} else {
 		imgElement.src = 'assets/hero-gear-mythic.webp';
@@ -425,10 +425,12 @@ function onHeroGearCurrentSelect(safeId) {
 	const targ = document.getElementById(`targ_${safeId}`);
 	if (!curr || !targ) return;
 	const from = curr.value;
+	const to = targ.value; // Get target value
 	const dataArray = getHeroGearData();
 	const toLevels = getHeroGearTargetLevels(dataArray);
 	const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
-	updateHeroGearImage(from);
+	// FIXED: Show target state if available, otherwise current
+	updateHeroGearImage(to || from);
 	if (!from || from === '') {
 		const targOpts = buildLevelOptions(toLevels, 'Target Level', highestLevel, '');
 		targ.innerHTML = targOpts;
@@ -478,6 +480,13 @@ function onHeroGearCurrentSelect(safeId) {
 }
 
 function onHeroGearTargetChange(safeId) {
+	const targ = document.getElementById(`targ_${safeId}`);
+	const curr = document.getElementById(`curr_${safeId}`);
+	if (targ && targ.value) {
+		updateHeroGearImage(targ.value);
+	} else if (curr && curr.value) {
+		updateHeroGearImage(curr.value);
+	}
 	if (lockedUpgrades.has(safeId)) {
 		lockedUpgrades.delete(safeId);
 		const cb = document.getElementById(`active_${safeId}`);
@@ -677,7 +686,7 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
-		updateHeroGearImage(from);
+		updateHeroGearImage(to || from);
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
 			status.innerHTML = `Select current & target level`;
