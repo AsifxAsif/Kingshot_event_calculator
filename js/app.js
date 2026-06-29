@@ -1806,7 +1806,6 @@ function parseTimeStringToSeconds(timeStr) {
 function getBuildingTotalBuffPercentage() {
 	let total = globalBuildingBuffPercent + globalWolfPetPercent + globalKingPositionPercent;
 	if (globalGroundWorksActive) total += 10;
-	if (globalDoubleTimeActive) total += 20;
 	return total;
 }
 
@@ -1823,6 +1822,9 @@ function applyBuildingSpeedupBuffs(originalSeconds) {
 	}
 	if (globalPansReductionSeconds > 0) {
 		remainingSeconds = Math.max(0, remainingSeconds - globalPansReductionSeconds);
+	}
+	if (globalDoubleTimeActive) {
+		remainingSeconds = remainingSeconds / 1.20;
 	}
 	return Math.max(1, Math.ceil(remainingSeconds));
 }
@@ -1869,6 +1871,9 @@ function updateBuildingSpeedupBuffs() {
 		let displayText = `${totalPercent}%`;
 		if (globalPansReductionSeconds > 0) {
 			displayText += ` + ${formatSecondsToTime(globalPansReductionSeconds)}`;
+		}
+		if (globalDoubleTimeActive) {
+			displayText += ` + Double Time (20%)`;
 		}
 		displayElement.textContent = displayText;
 	}
