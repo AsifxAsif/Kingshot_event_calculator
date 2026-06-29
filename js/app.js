@@ -280,9 +280,17 @@ function buildResourceDisplay(costTotals, vault, lockedResources, heroName) {
 		} else if (isSpeed) {
 			category = 'speedup';
 		}
-		const req = isSpeed ? `${amt} min` : formatNumber(amt);
+		// ✅ FIXED: Show speedup time in hours format
+		const req = isSpeed ? `${formatSecondsToTime(amt * 60)}` : formatNumber(amt);
+		// ✅ FIXED: Show remaining speedups in hours format too
+		let statusText;
+		if (isSpeed) {
+			const remainingSeconds = Math.max(0, remaining * 60);
+			statusText = remaining < 0 ? `${formatSecondsToTime(Math.abs(remaining) * 60)} short` : `${formatSecondsToTime(remainingSeconds)} remaining`;
+		} else {
+			statusText = remaining < 0 ? `${formatNumber(-remaining)} short` : `${formatNumber(remaining)} remaining`;
+		}
 		const statusClass = remaining < 0 ? 'text-deficit' : 'text-remaining';
-		const statusText = remaining < 0 ? `${formatNumber(-remaining)} short` : `${formatNumber(remaining)} remaining`;
 		const imgStyle = isHeroResource(res) ? 'height:30px;width:30px;object-fit:contain;border-radius:4px;' : '';
 		const tag = `<div class="resource-tag"><img loading="lazy" decoding="async" src="${img}" onerror="this.style.display='none';" style="${imgStyle}" alt="${disp}"> ${disp}: ${req} <span class="${statusClass}">(${statusText})</span></div>`;
 		if (category === 'hero') {

@@ -1,5 +1,9 @@
 // ============================================
-// WAR ACADEMY - FULLY FIXED (Resources show, Max level works)
+// WAR ACADEMY - FULLY FIXED 
+// - Time displays consistently in all states (estimated, active, speedup)
+// - Proper time formatting (hours/days, not minutes)
+// - Double deduction fixed
+// - Max level detection fixed
 // ============================================
 // ============================================
 // HELPER: Consistent safeId generation
@@ -262,7 +266,10 @@ function calculateAcademyCosts(dataArray, from, to, speedCheck, vault, otherLock
 		if (available < speedupCostMinutes) {
 			actualSpeedupUsed = Math.max(0, available);
 			if (actualSpeedupUsed > 0) {
-				partialNote = `Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
+				// ✅ FIXED: Use formatSecondsToTime for proper display
+				const neededDisplay = formatSecondsToTime(speedupCostMinutes * 60);
+				const availableDisplay = formatSecondsToTime(actualSpeedupUsed * 60);
+				partialNote = `Only ${availableDisplay} available (need ${neededDisplay})`;
 				stepPoints += actualSpeedupUsed * SCORE_RULES.speedup_min;
 				costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
 			}
@@ -285,7 +292,7 @@ function calculateAcademyCosts(dataArray, from, to, speedCheck, vault, otherLock
 	};
 }
 // ============================================
-// CRITICAL FIX: refreshCalculations - Custom implementation for War Academy
+// CRITICAL FIX: refreshCalculations - Time displays in ALL states
 // ============================================
 function refreshCalculations() {
 	let vault = getCurrentVault();
@@ -313,6 +320,22 @@ function refreshCalculations() {
 		const to = targ.value;
 		const isLocked = lockedUpgrades.has(safeId);
 		if (activeCb && activeCb.checked !== isLocked) activeCb.checked = isLocked;
+		// Get the specific research data using the consistent safeId
+		const academyItems = getWarAcademyData();
+		const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
+		if (!item) continue;
+		const dataArray = item.data;
+		const toLevels = getAcademyTargetLevels(dataArray);
+		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
+		// Build time display helper
+		function buildTimeDisplay(totalTimeSeconds) {
+			if (!totalTimeSeconds || totalTimeSeconds <= 0) return '';
+			const buffedTime = getBuffedTime(totalTimeSeconds);
+			if (buffedTime !== totalTimeSeconds) {
+				return `<div class="resource-tag">Total Time: ${formatSecondsToTime(buffedTime)} (original: ${formatSecondsToTime(totalTimeSeconds)})</div>`;
+			}
+			return `<div class="resource-tag">Total Time: ${formatSecondsToTime(totalTimeSeconds)}</div>`;
+		}
 		if (!from || from === '' || !to || to === '') {
 			status.className = "status-pane";
 			status.innerHTML = `Select current & target level`;
@@ -326,13 +349,6 @@ function refreshCalculations() {
 			}
 			continue;
 		}
-		// Get the specific research data using the consistent safeId
-		const academyItems = getWarAcademyData();
-		const item = academyItems.find(i => generateAcademySafeId(i.displayName) === safeId);
-		if (!item) continue;
-		const dataArray = item.data;
-		const toLevels = getAcademyTargetLevels(dataArray);
-		const highestLevel = toLevels.length ? toLevels[toLevels.length - 1] : null;
 		// CRITICAL FIX: Properly detect max level
 		const isAtMax = highestLevel && String(from) === String(highestLevel);
 		if (isAtMax) {
@@ -361,13 +377,17 @@ function refreshCalculations() {
 			}
 			continue;
 		}
+		// ============================================
+		// ACTIVE STATE (Upgrade checked)
+		// ============================================
 		if (isLocked) {
 			const locked = lockedUpgrades.get(safeId);
 			const {
 				stepPoints,
 				costTotals,
 				stepsCount,
-				partialNote
+				partialNote,
+				totalTimeSeconds
 			} = locked;
 			if (speedCb && speedCb.checked !== locked.speedupWasChecked) speedCb.checked = locked.speedupWasChecked;
 			// CRITICAL FIX: Exclude current upgrade from totalLocked
@@ -381,13 +401,19 @@ function refreshCalculations() {
 			let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 			const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 			const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
+			// ✅ FIXED: Time always shows in active state
+			const timeHtml = buildTimeDisplay(totalTimeSeconds);
 			status.className = "status-pane status-ok";
-			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>ACTIVE${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br>
+                <div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
 			totalScore += stepPoints;
 			if (activeCb) activeCb.disabled = false;
 			if (speedCb) speedCb.disabled = false;
 			continue;
 		}
+		// ============================================
+		// ESTIMATED STATE (Upgrade not checked)
+		// ============================================
 		const speedCheck = speedCb?.checked || false;
 		// For non-locked upgrades, totalLocked already excludes this upgrade
 		const otherLocked = {};
@@ -419,8 +445,8 @@ function refreshCalculations() {
 		let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
-		const buffedTime = getBuffedTime(totalTimeSeconds);
-		const timeHtml = totalTimeSeconds > 0 ? `<div class="resource-tag">Total Time: ${formatSecondsToTime(buffedTime)}${buffedTime !== totalTimeSeconds ? ` (original: ${formatSecondsToTime(totalTimeSeconds)})` : ''}</div>` : '';
+		const timeHtml = buildTimeDisplay(totalTimeSeconds);
+		// Enable/disable Upgrade checkbox
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
@@ -430,6 +456,7 @@ function refreshCalculations() {
 				activeCb.parentElement.classList.remove('disabled');
 			}
 		}
+		// Enable/disable Speedup checkbox
 		if (speedCb && totalTimeSeconds > 0) {
 			const speedKey = 'research_speedup';
 			const hasSpeedups = (vault[speedKey] || 0) > 0;
@@ -446,10 +473,13 @@ function refreshCalculations() {
 		}
 		if (canAfford) {
 			status.className = "status-pane status-info";
-			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div><br><span class="text-remaining">Click "Upgrade" to lock</span>`;
+			status.innerHTML = `<strong>ESTIMATED${stepsInfo}</strong> +${stepPoints.toLocaleString()} pts<br>
+                <div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>
+                <br><span class="text-remaining">Click "Upgrade" to lock</span>`;
 		} else {
 			status.className = "status-pane status-error";
-			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br><div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
+			status.innerHTML = `<strong>INSUFFICIENT RESOURCES${stepsInfo}</strong><br>
+                <div class="cost-grid">${costHtml}${timeHtml}${partialHtml}</div>`;
 		}
 	}
 	const scoreDisplay = document.getElementById('globalScoreDisplay');

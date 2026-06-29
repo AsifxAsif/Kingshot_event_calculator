@@ -1,5 +1,5 @@
 // ============================================
-// BUILDINGS - FIXED (Double resource deduction bug fixed)
+// BUILDINGS - FIXED (Double resource deduction bug fixed, consistent time display)
 // ============================================
 function getBuildingImageFileName(buildingName) {
 	const imageMap = {
@@ -228,7 +228,10 @@ function calculateBuildingCosts(dataArray, from, to, speedCheck, vault, otherLoc
 		if (available < speedupCostMinutes) {
 			actualSpeedupUsed = Math.max(0, available);
 			if (actualSpeedupUsed > 0) {
-				partialNote = `Only ${actualSpeedupUsed} min available (need ${speedupCostMinutes})`;
+				// ✅ FIXED: Show time in hours format
+				const neededDisplay = formatSecondsToTime(speedupCostMinutes * 60);
+				const availableDisplay = formatSecondsToTime(actualSpeedupUsed * 60);
+				partialNote = `Only ${availableDisplay} available (need ${neededDisplay})`;
 				stepPoints += actualSpeedupUsed * SCORE_RULES.speedup_min;
 				costTotals[speedKey] = (costTotals[speedKey] || 0) + actualSpeedupUsed;
 			}

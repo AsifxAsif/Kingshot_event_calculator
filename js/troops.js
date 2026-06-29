@@ -1,5 +1,5 @@
 // ============================================
-// TROOPS - FULLY FIXED (Active buttons always work when valid)
+// TROOPS - FULLY FIXED (Remaining resources display correctly)
 // ============================================
 function getTroopsTrainingData(type) {
 	const training = window.gameDB.Troops?.Troops?.Training;
@@ -324,9 +324,11 @@ function calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked) {
 	}
 	// Check if we have enough total
 	if (remainingNeeded > 0) {
-		partialNote = `Only ${usedTraining + usedGeneral} min available (need ${totalSpeedupMinutesNeeded})`;
+		const totalNeededDisplay = formatSecondsToTime(totalSpeedupMinutesNeeded * 60);
+		const totalUsedDisplay = formatSecondsToTime((usedTraining + usedGeneral) * 60);
+		partialNote = `Only ${totalUsedDisplay} available (need ${totalNeededDisplay})`;
 		if (usedTraining === 0 && usedGeneral === 0) {
-			partialNote = `No speedups available (need ${totalSpeedupMinutesNeeded} min)`;
+			partialNote = `No speedups available (need ${totalNeededDisplay})`;
 		}
 	}
 	const totalUsed = usedTraining + usedGeneral;
@@ -341,7 +343,7 @@ function calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked) {
 	};
 }
 // ============================================
-// FIXED: refreshTroopsCalculations - Active buttons always work
+// FIXED: refreshTroopsCalculations - Remaining resources display correctly
 // ============================================
 function refreshTroopsCalculations() {
 	let vault = getCurrentVault();
@@ -387,7 +389,6 @@ function refreshTroopsCalculations() {
 			const otherLocked = {};
 			for (const [res, amt] of Object.entries(allLocked)) {
 				if (!res.startsWith('_')) {
-					// Subtract this card's costs if it's already contribution to allLocked
 					const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
 					if (amt - currentAmt > 0) {
 						otherLocked[res] = amt - currentAmt;
@@ -484,19 +485,24 @@ function refreshTroopsCalculations() {
 			speedCb.parentElement.classList.toggle('disabled', isSpeedDisabled);
 			speedCb.parentElement.title = !hasAnySpeedups && isValidSelection ? 'No speedups available in vault' : '';
 		}
-		// Build and update display info
-		const displayOtherLocked = {};
+		// ✅ FIXED: Build displayLocked PER CARD - exclude current card's costs when locked
+		const displayLocked = {};
 		for (const [res, amt] of Object.entries(allLocked)) {
 			if (!res.startsWith('_')) {
-				const currentAmt = lockedUpgrades.has(safeId) ? (costTotals[res] || 0) : 0;
-				if (amt - currentAmt > 0) displayOtherLocked[res] = amt - currentAmt;
+				const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+				if (amt - currentAmt > 0) {
+					displayLocked[res] = (displayLocked[res] || 0) + (amt - currentAmt);
+				}
 			}
 		}
 		let speedupDetails = '';
 		if (speedCb?.checked && speedupResult.totalUsed > 0) {
-			speedupDetails = ` (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general)`;
+			const trainingDisplay = formatSecondsToTime(speedupResult.usedTraining * 60);
+			const generalDisplay = formatSecondsToTime(speedupResult.usedGeneral * 60);
+			speedupDetails = ` (${trainingDisplay} training + ${generalDisplay} general)`;
 		}
-		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked, partialNote, speedupDetails);
+		// Pass displayLocked to display function
+		displayTroopStatus(status, troopType, level, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayLocked, partialNote, speedupDetails);
 	}
 	// ============================================
 	// 2. Promotion Cards
@@ -630,19 +636,24 @@ function refreshTroopsCalculations() {
 			speedCb.parentElement.classList.toggle('disabled', isSpeedDisabled);
 			speedCb.parentElement.title = !hasAnySpeedups && isValidSelection ? 'No speedups available in vault' : '';
 		}
-		// Build and update display info
-		const displayOtherLocked = {};
+		// ✅ FIXED: Build displayLocked PER CARD - exclude current card's costs when locked
+		const displayLocked = {};
 		for (const [res, amt] of Object.entries(allLocked)) {
 			if (!res.startsWith('_')) {
-				const currentAmt = lockedUpgrades.has(safeId) ? (costTotals[res] || 0) : 0;
-				if (amt - currentAmt > 0) displayOtherLocked[res] = amt - currentAmt;
+				const currentAmt = isLocked ? (costTotals[res] || 0) : 0;
+				if (amt - currentAmt > 0) {
+					displayLocked[res] = (displayLocked[res] || 0) + (amt - currentAmt);
+				}
 			}
 		}
 		let speedupDetails = '';
 		if (speedCb?.checked && speedupResult.totalUsed > 0) {
-			speedupDetails = ` (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general)`;
+			const trainingDisplay = formatSecondsToTime(speedupResult.usedTraining * 60);
+			const generalDisplay = formatSecondsToTime(speedupResult.usedGeneral * 60);
+			speedupDetails = ` (${trainingDisplay} training + ${generalDisplay} general)`;
 		}
-		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayOtherLocked, pointsPerUnit, partialNote, speedupDetails);
+		// Pass displayLocked to display function
+		displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, activeCb?.checked || false, speedCb?.checked || false, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, displayLocked, pointsPerUnit, partialNote, speedupDetails);
 	}
 	const totalScore = totalTroopPoints + totalSpeedupPoints;
 	const scoreDisplay = document.getElementById('globalScoreDisplay');
@@ -652,7 +663,7 @@ function refreshTroopsCalculations() {
 	}
 	window.dispatchEvent(new Event('troopsUpdate'));
 }
-
+// displayTroopStatus - Shows remaining correctly
 function displayTroopStatus(status, troopType, level, quantity, isActive, speedupTroop, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, totalLocked, partialNote, speedupDetails) {
 	if (level > 0 && quantity > 0 && isActive) {
 		let costHtml = buildResourceDisplay(costTotals, vault, totalLocked);
@@ -679,9 +690,12 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 			}
 			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
 			if (speedupResult.totalUsed > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+				const trainingDisplay = formatSecondsToTime(speedupResult.usedTraining * 60);
+				const generalDisplay = formatSecondsToTime(speedupResult.usedGeneral * 60);
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${trainingDisplay} training + ${generalDisplay} general available)</div></div>`;
 			} else if (speedupResult.totalNeeded > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag text-warning">No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+				const neededDisplay = formatSecondsToTime(speedupResult.totalNeeded * 60);
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Troop Points: +${stepPoints.toLocaleString()}</div><div class="resource-tag text-warning">No speedups available (need ${neededDisplay})</div></div>`;
 			}
 		}
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
@@ -697,7 +711,7 @@ function displayTroopStatus(status, troopType, level, quantity, isActive, speedu
 		status.innerHTML = `Select troop tier and quantity`;
 	}
 }
-
+// displayPromotionStatus - Shows remaining correctly
 function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity, isActive, speedupTroop, costTotals, stepPoints, finalSpeedupPoints, totalTimeSeconds, canAfford, vault, totalLocked, pointsPerUnit, partialNote, speedupDetails) {
 	if (fromLevel > 0 && toLevel > 0 && toLevel <= fromLevel && quantity > 0) {
 		status.className = "status-pane status-warning";
@@ -729,9 +743,12 @@ function displayPromotionStatus(status, troopType, fromLevel, toLevel, quantity,
 			}
 			const speedupResult = calculateSpeedupUsage(totalTimeSeconds, vault, otherLocked);
 			if (speedupResult.totalUsed > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${speedupResult.usedTraining} training + ${speedupResult.usedGeneral} general available)</div></div>`;
+				const trainingDisplay = formatSecondsToTime(speedupResult.usedTraining * 60);
+				const generalDisplay = formatSecondsToTime(speedupResult.usedGeneral * 60);
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag">Speedup Points: +${speedupResult.totalPoints.toLocaleString()} (${trainingDisplay} training + ${generalDisplay} general available)</div></div>`;
 			} else if (speedupResult.totalNeeded > 0) {
-				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag text-warning">No speedups available (need ${speedupResult.totalNeeded} min)</div></div>`;
+				const neededDisplay = formatSecondsToTime(speedupResult.totalNeeded * 60);
+				estimatedPointsDisplay = `<div class="cost-grid"><div class="resource-tag">Promotion Points: +${stepPoints.toLocaleString()} (${pointsPerUnit} pts per unit)</div><div class="resource-tag text-warning">No speedups available (need ${neededDisplay})</div></div>`;
 			}
 		}
 		if (canAfford) {
