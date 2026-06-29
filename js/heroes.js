@@ -162,6 +162,7 @@ function createHeroShardsInventoryCard() {
 	return `
         <div class="speedup-buff-card" style="margin-bottom: 20px;">
             <div class="speedup-buff-header">
+			<span><img src="assets/hero_specific_shard.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Shards"></span>
                 <span>HERO SPECIFIC SHARDS INVENTORY</span>
             </div>
             <div class="speedup-buff-body">
@@ -673,7 +674,6 @@ function refreshCalculations() {
 			if (activeCb) {
 				activeCb.checked = false;
 				activeCb.disabled = true;
-				window.clearTimeout(timeoutId);
 			}
 			if (generalCb) {
 				generalCb.checked = false;

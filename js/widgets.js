@@ -103,6 +103,7 @@ function createWidgetInventoryCard() {
 	return `
         <div class="speedup-buff-card" style="margin-bottom: 20px;">
             <div class="speedup-buff-header">
+			<span><img src="assets/widgets.webp" onerror="this.style.display='none';" style="height:50px;width:50px;vertical-align:middle;margin-right:6px;" alt="Widgets"></span>
                 <span>SSR HERO WIDGET INVENTORY</span>
             </div>
             <div class="speedup-buff-body">

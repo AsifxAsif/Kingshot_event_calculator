@@ -419,7 +419,8 @@ function refreshCalculations() {
 		let costHtml = buildResourceDisplay(costTotals, vault, otherLocked);
 		const stepsInfo = stepsCount > 1 ? ` (${stepsCount} levels)` : '';
 		const partialHtml = partialNote ? `<div class="resource-tag text-warning">${partialNote}</div>` : '';
-		const timeHtml = totalTimeSeconds > 0 ? `<div class="resource-tag">Total Time: ${formatSecondsToTime(getBuffedTime(totalTimeSeconds))}</div>` : '';
+		const buffedTime = getBuffedTime(totalTimeSeconds);
+		const timeHtml = totalTimeSeconds > 0 ? `<div class="resource-tag">Total Time: ${formatSecondsToTime(buffedTime)}${buffedTime !== totalTimeSeconds ? ` (original: ${formatSecondsToTime(totalTimeSeconds)})` : ''}</div>` : '';
 		if (activeCb) {
 			activeCb.disabled = !canAfford;
 			activeCb.parentElement.style.opacity = canAfford ? '1' : '0.5';
