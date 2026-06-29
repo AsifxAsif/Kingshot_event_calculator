@@ -465,7 +465,7 @@ function exportPreset() {
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = `kingshot_presets_${new Date().toISOString().slice(0,10)}.json`;
+		a.download = `kingshot_presets_${new Date().toISOString().slice(0, 10)}.json`;
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
@@ -574,6 +574,7 @@ document.addEventListener('click', function(event) {
 // ============================================
 function togglePresetMenu() {
 	const dropdown = DOMCache.get('presetDropdown');
+	if (!dropdown) return;
 	const isOpen = dropdown.classList.contains('show');
 	if (!isOpen) {
 		dropdown.classList.add('show');
