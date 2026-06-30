@@ -738,10 +738,17 @@ function saveCurrentToPreset(presetName) {
 		}
 	}
 	if (page === 'misc') {
-		// Save misc data using the dedicated function
-		if (typeof saveMiscToPresetData === 'function') {
-			saveMiscToPresetData(presetData);
-		}
+		document.querySelectorAll('.gathering-card').forEach(card => {
+			const cardId = card.dataset.cardId;
+			const resourceSelect = DOMCache.get(`gather_resource_${cardId}`);
+			const nodeSelect = DOMCache.get(`gather_node_${cardId}`);
+			const skillSelect = DOMCache.get(`gather_skill_${cardId}`);
+			const speedInput = DOMCache.get(`gather_speed_${cardId}`);
+			if (resourceSelect) presetData.selections[`gather_resource_${cardId}`] = resourceSelect.value;
+			if (nodeSelect) presetData.selections[`gather_node_${cardId}`] = nodeSelect.value;
+			if (skillSelect) presetData.selections[`gather_skill_${cardId}`] = skillSelect.value;
+			if (speedInput) presetData.selections[`gather_speed_${cardId}`] = speedInput.value;
+		});
 	}
 	allPresets[presetName] = presetData;
 	localStorage.setItem("governor_presets", JSON.stringify(allPresets));
@@ -1455,9 +1462,6 @@ function applyPresetToCurrentPage(preset) {
 	}
 	if (category === 'troops' && typeof updateTrainingSpeedupBuffs === 'function') {
 		updateTrainingSpeedupBuffs();
-	}
-	if (category === 'misc' && typeof loadMiscFromPreset === 'function') {
-		loadMiscFromPreset();
 	}
 	window.dispatchEvent(new Event("presetLoaded"));
 }
