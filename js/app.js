@@ -201,27 +201,27 @@ function debouncedRefresh(module) {
 // PERFORMANCE: Cache DOM queries
 // ============================================
 const DOMCache = {
-	get: function (id) {
+	get: function(id) {
 		if (!this[id]) {
 			this[id] = document.getElementById(id);
 		}
 		return this[id];
 	},
-	query: function (selector) {
+	query: function(selector) {
 		const key = 'q_' + selector;
 		if (!this[key]) {
 			this[key] = document.querySelector(selector);
 		}
 		return this[key];
 	},
-	queryAll: function (selector) {
+	queryAll: function(selector) {
 		const key = 'qa_' + selector;
 		if (!this[key]) {
 			this[key] = document.querySelectorAll(selector);
 		}
 		return this[key];
 	},
-	clear: function () {
+	clear: function() {
 		Object.keys(this).forEach(k => {
 			if (k !== 'get' && k !== 'query' && k !== 'queryAll' && k !== 'clear') {
 				delete this[k];
@@ -432,7 +432,7 @@ function showModal(options) {
 	});
 	const confirmBtn = document.getElementById('appModalConfirm');
 	if (confirmBtn) {
-		confirmBtn.addEventListener('click', function () {
+		confirmBtn.addEventListener('click', function() {
 			const input = document.getElementById('appModalInput');
 			let value = input ? input.value : '';
 			if (onConfirm) onConfirm(value);
@@ -442,7 +442,7 @@ function showModal(options) {
 	}
 	const input = document.getElementById('appModalInput');
 	if (input) {
-		input.addEventListener('keydown', function (e) {
+		input.addEventListener('keydown', function(e) {
 			if (e.key === 'Enter') {
 				e.preventDefault();
 				confirmBtn?.click();
@@ -489,11 +489,11 @@ function importPreset() {
 	const input = document.createElement('input');
 	input.type = 'file';
 	input.accept = '.json';
-	input.onchange = function (e) {
+	input.onchange = function(e) {
 		const file = e.target.files[0];
 		if (!file) return;
 		const reader = new FileReader();
-		reader.onload = function (event) {
+		reader.onload = function(event) {
 			try {
 				const importedData = JSON.parse(event.target.result);
 				if (typeof importedData !== 'object' || importedData === null) {
@@ -505,7 +505,7 @@ function importPreset() {
 					confirmText: 'Import',
 					cancelText: 'Cancel',
 					isDanger: true,
-					onConfirm: function () {
+					onConfirm: function() {
 						allPresets = importedData;
 						localStorage.setItem("governor_presets", JSON.stringify(allPresets));
 						currentPreset = "default";
@@ -562,13 +562,13 @@ function closeNavMenu() {
 	if (overlay) overlay.classList.remove('active');
 	document.body.style.overflow = '';
 }
-document.addEventListener('keydown', function (event) {
+document.addEventListener('keydown', function(event) {
 	if (event.key === 'Escape') {
 		closeNavMenu();
 		closeModal();
 	}
 });
-document.addEventListener('click', function (event) {
+document.addEventListener('click', function(event) {
 	const navLinks = DOMCache.get('navLinks');
 	const hamburger = DOMCache.get('hamburgerIcon');
 	if (navLinks && navLinks.classList.contains('show')) {
@@ -615,7 +615,7 @@ async function createNewPreset() {
 			inputValue: '',
 			confirmText: 'Create',
 			cancelText: 'Cancel',
-			onConfirm: function (value) { }
+			onConfirm: function(value) {}
 		});
 		if (value === undefined || value === null) {
 			return;
@@ -632,7 +632,7 @@ async function createNewPreset() {
 				confirmText: 'Overwrite',
 				cancelText: 'Cancel',
 				isDanger: true,
-				onConfirm: function () { }
+				onConfirm: function() {}
 			});
 			if (overwrite === undefined || overwrite === null) {
 				return;
@@ -798,7 +798,7 @@ function initCollapsibleSections() {
 			if (icon) icon.classList.add('collapsed');
 		}
 		// Click handler
-		header.addEventListener('click', function (e) {
+		header.addEventListener('click', function(e) {
 			// Don't toggle if clicking on interactive elements inside header
 			if (e.target.closest('select') || e.target.closest('input') || e.target.closest('button')) {
 				return;
@@ -809,7 +809,7 @@ function initCollapsibleSections() {
 }
 // Auto-collapse on resize (mobile/desktop switch)
 let resizeTimeout = null;
-window.addEventListener('resize', function () {
+window.addEventListener('resize', function() {
 	if (resizeTimeout) clearTimeout(resizeTimeout);
 	resizeTimeout = setTimeout(() => {
 		const isMobile = window.innerWidth < 769;
@@ -935,7 +935,7 @@ async function deletePreset(presetName) {
 			confirmText: 'Delete',
 			cancelText: 'Cancel',
 			isDanger: true,
-			onConfirm: function () { }
+			onConfirm: function() {}
 		});
 		if (value === undefined || value === null) {
 			return;
@@ -974,7 +974,7 @@ async function resetWithConfirmation() {
 			confirmText: 'Reset All',
 			cancelText: 'Cancel',
 			isDanger: true,
-			onConfirm: function () { }
+			onConfirm: function() {}
 		});
 		if (value === undefined || value === null) {
 			return;
@@ -1009,7 +1009,7 @@ function loadPresetsFromStorage() {
 	currentPreset = localStorage.getItem("governor_current_preset") || "default";
 	updatePresetSelect();
 }
-window.clearAllSelections = function () {
+window.clearAllSelections = function() {
 	const pageInfo = getCurrentPageInfo();
 	const category = pageInfo.category;
 	const prefix = category + '_';
@@ -1263,7 +1263,7 @@ window.clearAllSelections = function () {
 	window.dispatchEvent(new Event('vaultUpdate'));
 	showNotification(`All selections on this page have been reset.`, 'info');
 };
-window.updateVaultResource = function (id, value) {
+window.updateVaultResource = function(id, value) {
 	localStorage.setItem(`vault_${id}`, value);
 	window.dispatchEvent(new Event('vaultUpdate'));
 };
@@ -1624,12 +1624,12 @@ async function fetchWithCache(filename) {
 		if (cached) {
 			return JSON.parse(cached);
 		}
-	} catch (e) { }
+	} catch (e) {}
 	const response = await fetch(`data/${filename}.json`);
 	const data = await response.json();
 	try {
 		sessionStorage.setItem(cacheKey, JSON.stringify(data));
-	} catch (e) { }
+	} catch (e) {}
 	return data;
 }
 async function loadGameData(filesToLoad = null) {
@@ -1692,19 +1692,19 @@ function attachInputValidation(input) {
 	if (!input) return;
 	const isNumericField = input.id?.startsWith('vault_') || input.id?.includes('qty') || input.id?.includes('quantity') || input.id?.includes('troop') || input.placeholder?.toLowerCase().includes('quantity') || input.classList.contains('hero-shard-input') || input.type === 'number';
 	if (!isNumericField) return;
-	input.addEventListener('blur', function () {
+	input.addEventListener('blur', function() {
 		sanitizeNumericInput(this, true);
 		if (typeof refreshCalculations === 'function') refreshCalculations();
 		if (typeof refreshTroopsCalculations === 'function') refreshTroopsCalculations();
 	});
-	input.addEventListener('keydown', function (e) {
+	input.addEventListener('keydown', function(e) {
 		if (e.key === '-' || e.key === 'Minus') {
 			e.preventDefault();
 			return false;
 		}
 	});
 	if (input.type === 'number') {
-		input.addEventListener('input', function () {
+		input.addEventListener('input', function() {
 			if (this.value.startsWith('-')) {
 				this.value = this.value.replace('-', '');
 			}
@@ -1722,9 +1722,9 @@ function attachValidationToAllInputs() {
 
 function initializeInputValidation() {
 	attachValidationToAllInputs();
-	const observer = new MutationObserver(function (mutations) {
-		mutations.forEach(function (mutation) {
-			mutation.addedNodes.forEach(function (node) {
+	const observer = new MutationObserver(function(mutations) {
+		mutations.forEach(function(mutation) {
+			mutation.addedNodes.forEach(function(node) {
 				if (node.nodeType === 1) {
 					if (node.tagName === 'INPUT') attachInputValidation(node);
 					node.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
