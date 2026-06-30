@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 		<title>Strongest Governor - Misc</title>
 		<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-		<link rel="dns-prefetch" href="https://cdnjs.cloudflare">
+		<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 		<link rel="preload" as="style" href="style.css">
 		<link rel="preload" as="script" href="js/app.js">
 		<meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
@@ -278,8 +278,9 @@
 				initializeInputValidation();
 				// Load data
 				await loadGameData(["Points", "Misc"]);
-				// Load saved values
-				loadMiscFromStorage();
+				// Load saved values from cache
+				loadMiscDataFromCache();
+				// Load global settings (which also applies preset)
 				loadGlobalSettings();
 				const renderMisc = () => {
 					if (typeof renderGatheringCards === 'function') {
