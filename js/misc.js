@@ -202,7 +202,6 @@ function loadMiscFromPreset() {
 	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
 	const preset = allPresets[presetName];
 	if (!preset || !preset.selections) return false;
-	console.log('Loading Misc from preset:', presetName);
 	// Restore roulette spins
 	if (preset.selections['heroRouletteCount'] !== undefined) {
 		const rouletteInput = document.getElementById('rouletteSpinsInput');
