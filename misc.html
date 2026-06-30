@@ -279,7 +279,7 @@
 				// Load data
 				await loadGameData(["Points", "Misc"]);
 				// Load saved values
-				loadMiscFromStorage();
+				loadMiscDataFromCache();
 				loadGlobalSettings();
 				const renderMisc = () => {
 					if (typeof renderGatheringCards === 'function') {
