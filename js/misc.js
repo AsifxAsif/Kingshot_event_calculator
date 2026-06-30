@@ -154,77 +154,105 @@ function getGatheringNodeData(nodeLevel, resourceType) {
 	return data.find(item => parseInt(item.node.replace('lvl ', '')) === nodeLevel && item.item === resourceType);
 }
 // ============================================
-// LOCAL STORAGE - FIXED: Better data structure
+// PRESET - LOAD MISC DATA FROM PRESET
 // ============================================
-function loadMiscFromStorage() {
-	const saved = localStorage.getItem('misc_data');
-	if (saved) {
-		try {
-			const data = JSON.parse(saved);
-			// Restore roulette spins
-			if (data.rouletteSpins !== undefined) {
-				const spinsInput = document.getElementById('rouletteSpinsInput');
-				if (spinsInput) spinsInput.value = data.rouletteSpins;
-			}
-			// Restore gathering cards data
-			if (data.gatheringCards) {
-				for (const [cardId, cardData] of Object.entries(data.gatheringCards)) {
-					const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
-					const nodeSelect = document.getElementById(`gather_node_${cardId}`);
-					const skillSelect = document.getElementById(`gather_skill_${cardId}`);
-					const speedInput = document.getElementById(`gather_speed_${cardId}`);
-					if (resourceSelect && cardData.resource !== undefined) {
-						// Find and select the option
-						for (let i = 0; i < resourceSelect.options.length; i++) {
-							if (String(resourceSelect.options[i].value) === String(cardData.resource)) {
-								resourceSelect.selectedIndex = i;
-								break;
-							}
-						}
-					}
-					if (nodeSelect && cardData.node !== undefined) {
-						for (let i = 0; i < nodeSelect.options.length; i++) {
-							if (String(nodeSelect.options[i].value) === String(cardData.node)) {
-								nodeSelect.selectedIndex = i;
-								break;
-							}
-						}
-					}
-					if (skillSelect && cardData.skill !== undefined) {
-						for (let i = 0; i < skillSelect.options.length; i++) {
-							if (String(skillSelect.options[i].value) === String(cardData.skill)) {
-								skillSelect.selectedIndex = i;
-								break;
-							}
-						}
-					}
-					if (speedInput && cardData.speed !== undefined) {
-						speedInput.value = cardData.speed;
-					}
-				}
-			}
-		} catch (e) {
-			console.warn('Failed to load misc data:', e);
+function loadMiscFromPreset() {
+	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
+	const preset = allPresets[presetName];
+	if (!preset || !preset.selections) return false;
+	console.log('Loading Misc from preset:', presetName);
+	// Restore roulette spins
+	if (preset.selections['heroRouletteCount'] !== undefined) {
+		const rouletteInput = document.getElementById('rouletteSpinsInput');
+		if (rouletteInput) {
+			rouletteInput.value = preset.selections['heroRouletteCount'];
+			console.log('Restored roulette spins:', preset.selections['heroRouletteCount']);
 		}
 	}
-	// Update all node images after restoring values
-	setTimeout(() => {
-		document.querySelectorAll('.gathering-card').forEach(card => {
-			const cardId = card.dataset.cardId;
-			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
-			if (resourceSelect && resourceSelect.value) {
-				updateNodeImage(parseInt(cardId), resourceSelect.value);
-				// Also update the skill and speed labels
-				updateGatheringCardLabels(parseInt(cardId));
+	// Restore global settings
+	const globalSettings = ['globalMarchUnits', 'globalBisonGrip', 'globalBisonResource', 'globalBisonNode'];
+	for (const setting of globalSettings) {
+		if (preset.selections[setting] !== undefined) {
+			const el = document.getElementById(setting);
+			if (el) {
+				if (el.tagName === 'SELECT') {
+					// Find and select the option
+					for (let i = 0; i < el.options.length; i++) {
+						if (String(el.options[i].value) === String(preset.selections[setting])) {
+							el.selectedIndex = i;
+							break;
+						}
+					}
+				} else {
+					el.value = preset.selections[setting];
+				}
+				console.log('Restored', setting, ':', preset.selections[setting]);
 			}
-		});
-	}, 100);
+		}
+	}
+	// Update global variables
+	globalMarchUnits = parseInt(preset.selections['globalMarchUnits']) || 0;
+	globalBisonGrip = parseInt(preset.selections['globalBisonGrip']) || 0;
+	globalBisonResource = preset.selections['globalBisonResource'] || 'bread';
+	globalBisonNode = parseInt(preset.selections['globalBisonNode']) || 1;
+	// Restore gathering cards
+	document.querySelectorAll('.gathering-card').forEach(card => {
+		const cardId = card.dataset.cardId;
+		const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+		const nodeSelect = document.getElementById(`gather_node_${cardId}`);
+		const skillSelect = document.getElementById(`gather_skill_${cardId}`);
+		const speedInput = document.getElementById(`gather_speed_${cardId}`);
+		if (resourceSelect && preset.selections[`gather_resource_${cardId}`] !== undefined) {
+			const value = preset.selections[`gather_resource_${cardId}`];
+			for (let i = 0; i < resourceSelect.options.length; i++) {
+				if (String(resourceSelect.options[i].value) === String(value)) {
+					resourceSelect.selectedIndex = i;
+					break;
+				}
+			}
+			console.log('Restored gather_resource_' + cardId + ':', value);
+		}
+		if (nodeSelect && preset.selections[`gather_node_${cardId}`] !== undefined) {
+			const value = preset.selections[`gather_node_${cardId}`];
+			for (let i = 0; i < nodeSelect.options.length; i++) {
+				if (String(nodeSelect.options[i].value) === String(value)) {
+					nodeSelect.selectedIndex = i;
+					break;
+				}
+			}
+			console.log('Restored gather_node_' + cardId + ':', value);
+		}
+		if (skillSelect && preset.selections[`gather_skill_${cardId}`] !== undefined) {
+			const value = preset.selections[`gather_skill_${cardId}`];
+			for (let i = 0; i < skillSelect.options.length; i++) {
+				if (String(skillSelect.options[i].value) === String(value)) {
+					skillSelect.selectedIndex = i;
+					break;
+				}
+			}
+			console.log('Restored gather_skill_' + cardId + ':', value);
+		}
+		if (speedInput && preset.selections[`gather_speed_${cardId}`] !== undefined) {
+			speedInput.value = preset.selections[`gather_speed_${cardId}`];
+			console.log('Restored gather_speed_' + cardId + ':', preset.selections[`gather_speed_${cardId}`]);
+		}
+	});
+	// Update UI
+	updateBisonGripUI();
+	updateAllGatheringCardLabelsAndImages();
+	return true;
 }
-
-function saveMiscToStorage() {
+// ============================================
+// LOCAL STORAGE - CACHE ONLY
+// ============================================
+function cacheMiscDataToLocalStorage() {
 	const data = {
 		rouletteSpins: '',
-		gatheringCards: {}
+		gatheringCards: {},
+		marchUnits: globalMarchUnits,
+		bisonGrip: globalBisonGrip,
+		bisonResource: globalBisonResource,
+		bisonNode: globalBisonNode
 	};
 	// Save roulette spins
 	const spinsInput = document.getElementById('rouletteSpinsInput');
@@ -249,9 +277,116 @@ function saveMiscToStorage() {
 	});
 	localStorage.setItem('misc_data', JSON.stringify(data));
 }
+
+function loadMiscDataFromCache() {
+	const saved = localStorage.getItem('misc_data');
+	if (!saved) return false;
+	try {
+		const data = JSON.parse(saved);
+		// Restore roulette spins
+		if (data.rouletteSpins !== undefined) {
+			const spinsInput = document.getElementById('rouletteSpinsInput');
+			if (spinsInput) spinsInput.value = data.rouletteSpins;
+		}
+		// Restore global settings
+		if (data.marchUnits !== undefined) {
+			globalMarchUnits = data.marchUnits;
+			const marchSelect = document.getElementById('globalMarchUnits');
+			if (marchSelect) {
+				if (globalMarchUnits >= 1 && globalMarchUnits <= 6) {
+					marchSelect.value = globalMarchUnits;
+				} else {
+					marchSelect.value = "";
+				}
+			}
+		}
+		if (data.bisonGrip !== undefined) {
+			globalBisonGrip = data.bisonGrip;
+			const bisonSelect = document.getElementById('globalBisonGrip');
+			if (bisonSelect) bisonSelect.value = globalBisonGrip;
+		}
+		if (data.bisonResource !== undefined) {
+			globalBisonResource = data.bisonResource;
+			const bisonResource = document.getElementById('globalBisonResource');
+			if (bisonResource) bisonResource.value = globalBisonResource;
+		}
+		if (data.bisonNode !== undefined) {
+			globalBisonNode = data.bisonNode;
+			const bisonNode = document.getElementById('globalBisonNode');
+			if (bisonNode) bisonNode.value = globalBisonNode;
+		}
+		// Restore gathering cards
+		if (data.gatheringCards) {
+			for (const [cardId, cardData] of Object.entries(data.gatheringCards)) {
+				const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+				const nodeSelect = document.getElementById(`gather_node_${cardId}`);
+				const skillSelect = document.getElementById(`gather_skill_${cardId}`);
+				const speedInput = document.getElementById(`gather_speed_${cardId}`);
+				if (resourceSelect && cardData.resource) {
+					for (let i = 0; i < resourceSelect.options.length; i++) {
+						if (String(resourceSelect.options[i].value) === String(cardData.resource)) {
+							resourceSelect.selectedIndex = i;
+							break;
+						}
+					}
+				}
+				if (nodeSelect && cardData.node) {
+					for (let i = 0; i < nodeSelect.options.length; i++) {
+						if (String(nodeSelect.options[i].value) === String(cardData.node)) {
+							nodeSelect.selectedIndex = i;
+							break;
+						}
+					}
+				}
+				if (skillSelect && cardData.skill) {
+					for (let i = 0; i < skillSelect.options.length; i++) {
+						if (String(skillSelect.options[i].value) === String(cardData.skill)) {
+							skillSelect.selectedIndex = i;
+							break;
+						}
+					}
+				}
+				if (speedInput && cardData.speed !== undefined) {
+					speedInput.value = cardData.speed;
+				}
+			}
+		}
+		// Update UI
+		updateBisonGripUI();
+		updateAllGatheringCardLabelsAndImages();
+		return true;
+	} catch (e) {
+		console.warn('Failed to load misc cache:', e);
+		return false;
+	}
+}
 // ============================================
-// UPDATE GATHERING CARD LABELS
+// UPDATE BISON GRIP UI
 // ============================================
+function updateBisonGripUI() {
+	const details = document.getElementById('bisonGripDetails');
+	if (details) {
+		details.style.display = globalBisonGrip > 0 ? 'flex' : 'none';
+	}
+	const bisonDisplay = document.getElementById('bisonPointsDisplay');
+	if (bisonDisplay) {
+		bisonDisplay.style.display = globalBisonGrip > 0 ? 'block' : 'none';
+	}
+}
+// ============================================
+// UPDATE GATHERING CARD LABELS AND IMAGES
+// ============================================
+function updateAllGatheringCardLabelsAndImages() {
+	document.querySelectorAll('.gathering-card').forEach(card => {
+		const cardId = card.dataset.cardId;
+		const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
+		if (resourceSelect && resourceSelect.value) {
+			updateNodeImage(parseInt(cardId), resourceSelect.value);
+			updateGatheringCardLabels(parseInt(cardId));
+		}
+	});
+}
+
 function updateGatheringCardLabels(cardId) {
 	const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
 	const skillLabel = document.getElementById(`skill_label_${cardId}`);
@@ -452,69 +587,15 @@ function renderGatheringCards() {
 	for (let i = 1; i <= numCards; i++) {
 		container.innerHTML += createGatheringCard(i);
 	}
-	// Load saved data after rendering
-	loadMiscFromStorage();
-	// Restore from preset (overrides saved data)
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		// Restore roulette spins
-		if (preset.selections['heroRouletteCount'] !== undefined) {
-			const rouletteInput = document.getElementById('rouletteSpinsInput');
-			if (rouletteInput) rouletteInput.value = preset.selections['heroRouletteCount'];
-		}
-		// Restore gathering card selections
-		document.querySelectorAll('.gathering-card').forEach(card => {
-			const cardId = card.dataset.cardId;
-			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
-			const nodeSelect = document.getElementById(`gather_node_${cardId}`);
-			const skillSelect = document.getElementById(`gather_skill_${cardId}`);
-			const speedInput = document.getElementById(`gather_speed_${cardId}`);
-			if (resourceSelect && preset.selections[`gather_resource_${cardId}`] !== undefined) {
-				const value = preset.selections[`gather_resource_${cardId}`];
-				for (let i = 0; i < resourceSelect.options.length; i++) {
-					if (String(resourceSelect.options[i].value) === String(value)) {
-						resourceSelect.selectedIndex = i;
-						break;
-					}
-				}
-			}
-			if (nodeSelect && preset.selections[`gather_node_${cardId}`] !== undefined) {
-				const value = preset.selections[`gather_node_${cardId}`];
-				for (let i = 0; i < nodeSelect.options.length; i++) {
-					if (String(nodeSelect.options[i].value) === String(value)) {
-						nodeSelect.selectedIndex = i;
-						break;
-					}
-				}
-			}
-			if (skillSelect && preset.selections[`gather_skill_${cardId}`] !== undefined) {
-				const value = preset.selections[`gather_skill_${cardId}`];
-				for (let i = 0; i < skillSelect.options.length; i++) {
-					if (String(skillSelect.options[i].value) === String(value)) {
-						skillSelect.selectedIndex = i;
-						break;
-					}
-				}
-			}
-			if (speedInput && preset.selections[`gather_speed_${cardId}`] !== undefined) {
-				speedInput.value = preset.selections[`gather_speed_${cardId}`];
-			}
-		});
-	}
-	// Update labels and images
-	setTimeout(() => {
-		document.querySelectorAll('.gathering-card').forEach(card => {
-			const cardId = card.dataset.cardId;
-			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
-			if (resourceSelect && resourceSelect.value) {
-				updateNodeImage(parseInt(cardId), resourceSelect.value);
-				updateGatheringCardLabels(parseInt(cardId));
-			}
-		});
-	}, 150);
-	// Save to ensure data consistency
-	saveMiscToStorage();
+	// Load from cache first (for speed)
+	loadMiscDataFromCache();
+	// THEN load from preset (primary source - overrides cache)
+	loadMiscFromPreset();
+	// Update UI
+	updateBisonGripUI();
+	updateAllGatheringCardLabelsAndImages();
+	// Cache the final state
+	cacheMiscDataToLocalStorage();
 	refreshCalculations();
 }
 
@@ -604,13 +685,12 @@ function createGatheringCard(cardId) {
 }
 
 function onGatheringCardChange(cardId) {
-	// Update labels and images
 	updateGatheringCardLabels(cardId);
 	const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
 	if (resourceSelect && resourceSelect.value) {
 		updateNodeImage(cardId, resourceSelect.value);
 	}
-	saveMiscToStorage();
+	cacheMiscDataToLocalStorage();
 	refreshCalculations();
 }
 // ============================================
@@ -754,7 +834,51 @@ function refreshCalculations() {
 			saveCurrentPageScore(totalMiscPoints);
 		}
 	}
-	saveMiscToStorage();
+	cacheMiscDataToLocalStorage();
+}
+// ============================================
+// GLOBAL SETTINGS
+// ============================================
+function loadGlobalSettings() {
+	// First load from cache
+	loadMiscDataFromCache();
+	// Then apply preset (primary source)
+	loadMiscFromPreset();
+	// Update UI
+	updateBisonGripUI();
+	updateAllGatheringCardLabelsAndImages();
+	// Cache the final state
+	cacheMiscDataToLocalStorage();
+	updateGlobalSettings();
+}
+
+function updateGlobalSettings() {
+	const marchSelect = document.getElementById("globalMarchUnits");
+	if (marchSelect) {
+		const value = parseInt(marchSelect.value) || 0;
+		if (value >= 1 && value <= 6) {
+			globalMarchUnits = value;
+		} else {
+			globalMarchUnits = 0;
+			marchSelect.value = "";
+		}
+	}
+	const bisonSelect = document.getElementById("globalBisonGrip");
+	if (bisonSelect) {
+		globalBisonGrip = parseInt(bisonSelect.value) || 0;
+		updateBisonGripUI();
+	}
+	const bisonResource = document.getElementById("globalBisonResource");
+	if (bisonResource) {
+		globalBisonResource = bisonResource.value;
+	}
+	const bisonNode = document.getElementById("globalBisonNode");
+	if (bisonNode) {
+		globalBisonNode = parseInt(bisonNode.value) || 1;
+	}
+	cacheMiscDataToLocalStorage();
+	renderGatheringCards();
+	refreshCalculations();
 }
 // ============================================
 // CLEAR ALL SELECTIONS
@@ -778,159 +902,29 @@ function clearAllSelections() {
 		if (skillSelect) skillSelect.value = '';
 		if (speedInput) speedInput.value = '';
 	});
-	// Reset buffs
-	localStorage.removeItem('globalMarchUnits');
-	localStorage.removeItem('globalBisonGrip');
-	localStorage.removeItem('globalBisonResource');
-	localStorage.removeItem('globalBisonNode');
+	// Reset global settings
+	globalMarchUnits = 0;
+	globalBisonGrip = 0;
+	globalBisonResource = 'bread';
+	globalBisonNode = 1;
+	const marchSelect = document.getElementById('globalMarchUnits');
+	if (marchSelect) marchSelect.value = '';
+	const bisonSelect = document.getElementById('globalBisonGrip');
+	if (bisonSelect) bisonSelect.value = '0';
+	const bisonResource = document.getElementById('globalBisonResource');
+	if (bisonResource) bisonResource.value = 'bread';
+	const bisonNode = document.getElementById('globalBisonNode');
+	if (bisonNode) bisonNode.value = '1';
+	// Clear cache
 	localStorage.removeItem('misc_data');
-	// Reload global settings
-	loadGlobalSettings();
+	// Update UI
+	updateBisonGripUI();
+	updateAllGatheringCardLabelsAndImages();
 	renderGatheringCards();
 	refreshCalculations();
 	showNotification('All Misc inputs have been reset.', 'info');
 }
 window.clearAllSelections = clearAllSelections;
-// ============================================
-// GLOBAL SETTINGS LOAD/SAVE
-// ============================================
-function loadGlobalSettings() {
-	globalMarchUnits = parseInt(localStorage.getItem("globalMarchUnits") || "0");
-	globalBisonGrip = parseInt(localStorage.getItem("globalBisonGrip") || "0");
-	globalBisonResource = localStorage.getItem("globalBisonResource") || "bread";
-	globalBisonNode = parseInt(localStorage.getItem("globalBisonNode") || "1");
-	const marchSelect = document.getElementById("globalMarchUnits");
-	if (marchSelect) {
-		if (globalMarchUnits >= 1 && globalMarchUnits <= 6) {
-			marchSelect.value = globalMarchUnits;
-		} else {
-			marchSelect.value = "";
-		}
-	}
-	const bisonSelect = document.getElementById("globalBisonGrip");
-	if (bisonSelect) bisonSelect.value = globalBisonGrip;
-	const bisonResource = document.getElementById("globalBisonResource");
-	if (bisonResource) bisonResource.value = globalBisonResource;
-	const bisonNode = document.getElementById("globalBisonNode");
-	if (bisonNode) bisonNode.value = globalBisonNode;
-	const details = document.getElementById('bisonGripDetails');
-	if (details) {
-		details.style.display = globalBisonGrip > 0 ? 'flex' : 'none';
-	}
-	const bisonDisplay = document.getElementById('bisonPointsDisplay');
-	if (bisonDisplay) {
-		bisonDisplay.style.display = globalBisonGrip > 0 ? 'block' : 'none';
-	}
-	// Restore from preset (overrides storage)
-	const presetName = currentPreset || localStorage.getItem("governor_current_preset") || "default";
-	const preset = allPresets[presetName];
-	if (preset && preset.selections) {
-		// Restore roulette spins
-		if (preset.selections['heroRouletteCount'] !== undefined) {
-			const rouletteInput = document.getElementById('rouletteSpinsInput');
-			if (rouletteInput) rouletteInput.value = preset.selections['heroRouletteCount'];
-		}
-		// Restore global gathering settings
-		if (preset.selections['globalMarchUnits'] !== undefined) {
-			const select = document.getElementById('globalMarchUnits');
-			if (select) {
-				const value = preset.selections['globalMarchUnits'];
-				for (let i = 0; i < select.options.length; i++) {
-					if (String(select.options[i].value) === String(value)) {
-						select.selectedIndex = i;
-						break;
-					}
-				}
-			}
-		}
-		if (preset.selections['globalBisonGrip'] !== undefined) {
-			const select = document.getElementById('globalBisonGrip');
-			if (select) {
-				const value = preset.selections['globalBisonGrip'];
-				for (let i = 0; i < select.options.length; i++) {
-					if (String(select.options[i].value) === String(value)) {
-						select.selectedIndex = i;
-						break;
-					}
-				}
-			}
-		}
-		if (preset.selections['globalBisonResource'] !== undefined) {
-			const select = document.getElementById('globalBisonResource');
-			if (select) {
-				const value = preset.selections['globalBisonResource'];
-				for (let i = 0; i < select.options.length; i++) {
-					if (String(select.options[i].value) === String(value)) {
-						select.selectedIndex = i;
-						break;
-					}
-				}
-			}
-		}
-		if (preset.selections['globalBisonNode'] !== undefined) {
-			const select = document.getElementById('globalBisonNode');
-			if (select) {
-				const value = preset.selections['globalBisonNode'];
-				for (let i = 0; i < select.options.length; i++) {
-					if (String(select.options[i].value) === String(value)) {
-						select.selectedIndex = i;
-						break;
-					}
-				}
-			}
-		}
-	}
-	// Load from storage after preset (storage values override preset for gathering cards)
-	loadMiscFromStorage();
-	// Update images
-	setTimeout(() => {
-		document.querySelectorAll('.gathering-card').forEach(card => {
-			const cardId = card.dataset.cardId;
-			const resourceSelect = document.getElementById(`gather_resource_${cardId}`);
-			if (resourceSelect && resourceSelect.value) {
-				updateNodeImage(parseInt(cardId), resourceSelect.value);
-				updateGatheringCardLabels(parseInt(cardId));
-			}
-		});
-	}, 150);
-	updateGlobalSettings();
-}
-
-function updateGlobalSettings() {
-	const marchSelect = document.getElementById("globalMarchUnits");
-	if (marchSelect) {
-		const value = parseInt(marchSelect.value) || 0;
-		if (value >= 1 && value <= 6) {
-			globalMarchUnits = value;
-			localStorage.setItem("globalMarchUnits", globalMarchUnits);
-		} else {
-			globalMarchUnits = 0;
-			localStorage.setItem("globalMarchUnits", "0");
-			marchSelect.value = "";
-		}
-	}
-	const bisonSelect = document.getElementById("globalBisonGrip");
-	if (bisonSelect) {
-		globalBisonGrip = parseInt(bisonSelect.value) || 0;
-		localStorage.setItem("globalBisonGrip", globalBisonGrip);
-		const details = document.getElementById('bisonGripDetails');
-		if (details) {
-			details.style.display = globalBisonGrip > 0 ? 'flex' : 'none';
-		}
-	}
-	const bisonResource = document.getElementById("globalBisonResource");
-	if (bisonResource) {
-		globalBisonResource = bisonResource.value;
-		localStorage.setItem("globalBisonResource", globalBisonResource);
-	}
-	const bisonNode = document.getElementById("globalBisonNode");
-	if (bisonNode) {
-		globalBisonNode = parseInt(bisonNode.value) || 1;
-		localStorage.setItem("globalBisonNode", globalBisonNode);
-	}
-	renderGatheringCards();
-	refreshCalculations();
-}
 // ============================================
 // RESET FUNCTION
 // ============================================
@@ -942,8 +936,9 @@ function resetWithConfirmation() {
 // ============================================
 // EXPORTS
 // ============================================
-window.loadMiscFromStorage = loadMiscFromStorage;
-window.saveMiscToStorage = saveMiscToStorage;
+window.loadMiscFromPreset = loadMiscFromPreset;
+window.cacheMiscDataToLocalStorage = cacheMiscDataToLocalStorage;
+window.loadMiscDataFromCache = loadMiscDataFromCache;
 window.validateMiscInput = validateMiscInput;
 window.refreshCalculations = refreshCalculations;
 window.clearAllSelections = clearAllSelections;
@@ -968,3 +963,5 @@ window.updateNodeImage = updateNodeImage;
 window.getResourceOptionHtml = getResourceOptionHtml;
 window.getSkillImage = getSkillImage;
 window.updateGatheringCardLabels = updateGatheringCardLabels;
+window.updateAllGatheringCardLabelsAndImages = updateAllGatheringCardLabelsAndImages;
+window.updateBisonGripUI = updateBisonGripUI;
